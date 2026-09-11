@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # LinuxNetwork.ir - Infrastructure Automation & Server Tuning Script
-# Repository: https://github.com/linuxnetwork-ir/server-setup
+# Repository: https://github.com/SalarTaheri/LinuxNetwork
 # Website:    https://linuxnetwork.ir
 # License:    MIT
 # Description: Automated, idempotent server hardening, BBR tuning, Docker setup,

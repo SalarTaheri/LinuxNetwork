@@ -6,9 +6,8 @@
 
 ## ۱. تنظیمات اعمال‌شده در پروژه
 
-1. **`public/_redirects`**:
-   - روتینگ SPA لینوکس‌نتورک را کنترل می‌کند (`/* -> /index.html 200`) تا در صورت رفرش یا باز کردن مسیرهای مختلف، خطای ۴۰۴ ایجاد نشود.
-   - دسترسی مستقیم به اسکریپت `setup.sh` و `standalone.html` را بدون بازنویسی حفظ می‌کند.
+1. **روتینگ SPA و دارایی‌های استاتیک**:
+   - در `wrangler.toml` با تنظیم `not_found_handling = "single-page-application"` کنترل می‌شود تا در صورت رفرش یا باز کردن مسیرهای مختلف خطای ۴۰۴ ایجاد نشود و فایل‌های استاتیک نظیر `setup.sh` و `standalone.html` مستقیماً سرو شوند.
 
 2. **`public/_headers`**:
    - برای آدرس `https://linuxnetwork.ir/setup.sh` هدر `Content-Type: text/x-shellscript; charset=utf-8` و `Access-Control-Allow-Origin: *` را تنظیم می‌کند تا دستور وان‌لاینر `curl -fsSL https://linuxnetwork.ir/setup.sh | sudo bash` بدون مشکل اجرا شود.
@@ -16,10 +15,10 @@
    - هدرهای امنیتی `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` را اعمال می‌کند.
 
 3. **`wrangler.toml`**:
-   - نام پروژه را `linuxnetwork-ir` و دایرکتوری بیلد را `dist` مشخص کرده است.
+   - نام ورکر را `linuxnetwork` و دایرکتوری دارایی‌ها را `dist` مشخص کرده است.
 
 4. **`.nvmrc` و `package.json`**:
-   - نسخه Node.js را روی `20` قفل کرده است تا کلودفلر از آخرین نسخه LTS استفاده کند.
+   - نسخه Node.js را روی `22` تنظیم کرده است تا با آخرین نسخه ابزار Wrangler سازگار باشد.
 
 ---
 

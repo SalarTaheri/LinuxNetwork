@@ -48,7 +48,7 @@ export const Header: React.FC<HeaderProps> = ({ lang, onToggleLang }) => {
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Docs & Github links */}
           <a
-            href="https://github.com"
+            href="https://github.com/SalarTaheri/LinuxNetwork"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent hover:border-slate-700/60 transition-all font-medium"
