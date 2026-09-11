@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Globe2, ShieldCheck, Radio, Server, ArrowRightLeft, Lock, Sliders, CheckCircle2 } from 'lucide-react';
+import { Globe2, Server, ArrowRightLeft, Lock, Sliders } from 'lucide-react';
 import { Language, NginxSettings } from '../types';
 import { translations } from '../i18n/translations';
 import { generateNginxConfig, generateNginxOneLiner } from '../utils/nginxGenerator';
