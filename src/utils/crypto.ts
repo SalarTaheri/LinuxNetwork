@@ -114,9 +114,16 @@ function x25519(k: Uint8Array, uPoint: Uint8Array): Uint8Array {
 }
 
 function uint8ToBase64(bytes: Uint8Array): string {
+  const CHUNK_SIZE = 0x8000;
+  if (bytes.length <= CHUNK_SIZE) {
+    return btoa(String.fromCharCode.apply(null, bytes as unknown as number[]));
+  }
   let binary = '';
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
+  for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
+    binary += String.fromCharCode.apply(
+      null,
+      bytes.subarray(i, i + CHUNK_SIZE) as unknown as number[]
+    );
   }
   return btoa(binary);
 }
