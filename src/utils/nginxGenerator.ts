@@ -1,0 +1,190 @@
+import { NginxSettings } from '../types';
+
+export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'): string {
+  const isFa = lang === 'fa';
+  const domain = settings.domain.trim() || 'api.example.com';
+  const upstream = settings.upstreamAddress.trim() || '127.0.0.1:8000';
+  const proxyPass = settings.upstreamType === 'unix'
+    ? (upstream.startsWith('unix:') ? `http://${upstream}` : `http://unix:${upstream}`)
+    : (upstream.startsWith('http://') || upstream.startsWith('https://') ? upstream : `http://${upstream}`);
+
+  const lines: string[] = [
+    '# ==========================================================================',
+    `# LinuxNetwork.ir - Nginx Reverse Proxy Config for ${domain}`,
+    '# Target File: /etc/nginx/sites-available/' + domain.replace(/[^a-zA-Z0-9_.-]/g, '_') + '.conf',
+    '# ==========================================================================',
+    '',
+  ];
+
+  // Upstream block
+  lines.push('upstream backend_upstream {');
+  if (settings.upstreamType === 'unix') {
+    lines.push(`    server ${upstream.startsWith('unix:') ? upstream : 'unix:' + upstream} fail_timeout=0;`);
+  } else {
+    lines.push(`    server ${upstream.replace(/^https?:\/\//, '')} max_fails=3 fail_timeout=10s;`);
+    lines.push('    keepalive 32;');
+  }
+  lines.push('}');
+  lines.push('');
+
+  // HTTP to HTTPS redirect if SSL enabled
+  if (settings.enableSsl) {
+    lines.push('server {');
+    lines.push(`    listen 80;`);
+    lines.push(`    listen [::]:80;`);
+    lines.push(`    server_name ${domain}${settings.serverAlias ? ' ' + settings.serverAlias : ''};`);
+    lines.push('');
+    lines.push('    # ACME-challenge for Certbot SSL Renewal');
+    lines.push('    location ^~ /.well-known/acme-challenge/ {');
+    lines.push('        default_type "text/plain";');
+    lines.push('        root /var/www/html;');
+    lines.push('        allow all;');
+    lines.push('    }');
+    lines.push('');
+    lines.push('    location / {');
+    lines.push('        return 301 https://$host$request_uri;');
+    lines.push('    }');
+    lines.push('}');
+    lines.push('');
+  }
+
+  // Primary Server Block
+  lines.push('server {');
+  if (settings.enableSsl) {
+    lines.push(`    listen 443 ssl${settings.enableHttp2 ? ' http2' : ''};`);
+    lines.push(`    listen [::]:443 ssl${settings.enableHttp2 ? ' http2' : ''};`);
+  } else {
+    lines.push(`    listen ${settings.listenPort};`);
+    lines.push(`    listen [::]:${settings.listenPort};`);
+  }
+  lines.push(`    server_name ${domain}${settings.serverAlias ? ' ' + settings.serverAlias : ''};`);
+  lines.push('');
+
+  // SSL Certificates and Parameters
+  if (settings.enableSsl) {
+    const cert = settings.sslCertPath.trim() || `/etc/letsencrypt/live/${domain}/fullchain.pem`;
+    const key = settings.sslKeyPath.trim() || `/etc/letsencrypt/live/${domain}/privkey.pem`;
+
+    lines.push('    # SSL Certificates (Let\'s Encrypt / Custom)');
+    lines.push(`    ssl_certificate ${cert};`);
+    lines.push(`    ssl_certificate_key ${key};`);
+    lines.push('    ssl_protocols TLSv1.2 TLSv1.3;');
+    lines.push('    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;');
+    lines.push('    ssl_prefer_server_ciphers off;');
+    lines.push('    ssl_session_cache shared:SSL:10m;');
+    lines.push('    ssl_session_timeout 1d;');
+    lines.push('    ssl_session_tickets off;');
+    lines.push('    ssl_stapling on;');
+    lines.push('    ssl_stapling_verify on;');
+    lines.push('    resolver 1.1.1.1 8.8.8.8 valid=300s;');
+    lines.push('    resolver_timeout 5s;');
+    lines.push('');
+  }
+
+  // Security Headers
+  if (settings.enableSecurityHeaders) {
+    lines.push('    # Security Headers');
+    if (settings.enableSsl) {
+      lines.push('    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;');
+    }
+    lines.push('    add_header X-Frame-Options "SAMEORIGIN" always;');
+    lines.push('    add_header X-Content-Type-Options "nosniff" always;');
+    lines.push('    add_header X-XSS-Protection "1; mode=block" always;');
+    lines.push('    add_header Referrer-Policy "strict-origin-when-cross-origin" always;');
+    lines.push('');
+  }
+
+  // Client Body Size
+  lines.push(`    # Maximum Allowed Request Payload Size`);
+  lines.push(`    client_max_body_size ${settings.clientMaxBodySize}M;`);
+  lines.push('    client_body_buffer_size 128k;');
+  lines.push('');
+
+  // Gzip Compression
+  if (settings.enableGzip) {
+    lines.push('    # Gzip Compression');
+    lines.push('    gzip on;');
+    lines.push('    gzip_vary on;');
+    lines.push('    gzip_proxied any;');
+    lines.push('    gzip_comp_level 5;');
+    lines.push('    gzip_min_length 256;');
+    lines.push('    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml;');
+    lines.push('');
+  }
+
+  // Timeouts configuration
+  let connectTimeout = '10s';
+  let sendTimeout = '30s';
+  let readTimeout = '60s';
+  if (settings.proxyTimeout === 'short') {
+    connectTimeout = '5s';
+    sendTimeout = '10s';
+    readTimeout = '15s';
+  } else if (settings.proxyTimeout === 'long') {
+    connectTimeout = '60s';
+    sendTimeout = '300s';
+    readTimeout = '300s';
+  }
+
+  lines.push('    # Reverse Proxy Location');
+  lines.push('    location / {');
+  lines.push('        proxy_pass http://backend_upstream;');
+  lines.push('        proxy_http_version 1.1;');
+  lines.push('');
+
+  // Headers
+  if (settings.enableRealIpHeaders) {
+    lines.push('        # Client Real IP & Forwarded Headers');
+    lines.push('        proxy_set_header Host $host;');
+    lines.push('        proxy_set_header X-Real-IP $remote_addr;');
+    lines.push('        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;');
+    lines.push('        proxy_set_header X-Forwarded-Proto $scheme;');
+    lines.push('        proxy_set_header X-Forwarded-Host $host;');
+    lines.push('        proxy_set_header X-Forwarded-Port $server_port;');
+    lines.push('');
+  }
+
+  // WebSockets
+  if (settings.enableWebsockets) {
+    lines.push('        # WebSocket Upgrade Headers');
+    lines.push('        proxy_set_header Upgrade $http_upgrade;');
+    lines.push('        proxy_set_header Connection "upgrade";');
+    lines.push('');
+  } else {
+    lines.push('        proxy_set_header Connection "";');
+    lines.push('');
+  }
+
+  // Buffering
+  if (settings.proxyBuffering === 'disabled' || settings.proxyBuffering === 'stream') {
+    lines.push('        # Streaming / Real-time Buffering Disabled');
+    lines.push('        proxy_buffering off;');
+    lines.push('        proxy_request_buffering off;');
+    lines.push('        proxy_cache off;');
+  } else {
+    lines.push('        # High Throughput Buffering');
+    lines.push('        proxy_buffering on;');
+    lines.push('        proxy_buffer_size 16k;');
+    lines.push('        proxy_buffers 8 64k;');
+    lines.push('        proxy_busy_buffers_size 128k;');
+  }
+  lines.push('');
+
+  // Timeouts
+  lines.push(`        proxy_connect_timeout ${connectTimeout};`);
+  lines.push(`        proxy_send_timeout ${sendTimeout};`);
+  lines.push(`        proxy_read_timeout ${readTimeout};`);
+  lines.push('    }');
+  lines.push('}');
+
+  return lines.join('\n');
+}
+
+export function generateNginxOneLiner(domain: string, configText: string): string {
+  const safeName = (domain || 'reverse-proxy').replace(/[^a-zA-Z0-9_.-]/g, '_');
+  return `sudo bash -c 'cat << "EOF" > /etc/nginx/sites-available/${safeName}.conf
+${configText.trim()}
+EOF
+ln -sf /etc/nginx/sites-available/${safeName}.conf /etc/nginx/sites-enabled/
+nginx -t && systemctl reload nginx'`;
+}

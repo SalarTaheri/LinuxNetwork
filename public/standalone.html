@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinuxNetwork.ir - Modern Infrastructure & Server Setup Generator</title>
+  <meta name="description" content="Central hub for Linux system administrators & DevOps in Iran. Interactive one-liner server setup, BBR kernel tuning, and Docker automation." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['Fira Code', 'monospace'],
+            sans: ['Plus Jakarta Sans', 'Vazirmatn', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              dark: '#090d16',
+              surface: '#0f172a',
+              border: '#1e293b',
+              emerald: '#10b981',
+              cyan: '#06b6d4',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom terminal scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #090d16; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+  </style>
+</head>
+<body class="bg-[#090d16] text-slate-100 font-sans min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
+
+  <!-- Privacy & Zero-Log Banner -->
+  <div class="bg-emerald-950/40 border-b border-emerald-800/30 px-4 py-1.5 text-xs text-emerald-300 flex items-center justify-center gap-2 font-mono">
+    <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+    <span>100% Client-Side Generator / Zero Logs / پردازش کاملاً سمت کاربر</span>
+  </div>
+
+  <!-- Header -->
+  <header class="border-b border-slate-800/80 bg-[#090d16]/90 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 via-cyan-500/10 to-transparent border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-950/50">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-lg tracking-tight font-mono">LinuxNetwork<span class="text-emerald-400">.ir</span></span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono">setup.sh v3.0</span>
+          </div>
+          <p class="text-xs text-slate-400 font-medium">Linux Infrastructure Automation & Kernel Optimization</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="https://github.com" target="_blank" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 font-medium transition-all">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          <span class="hidden sm:inline">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+    <!-- Hero Command Builder Sticky Box -->
+    <div class="bg-gradient-to-b from-[#0f172a] to-[#0a0f1d] border border-slate-700/80 rounded-2xl p-5 shadow-2xl space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-xs font-mono font-semibold text-emerald-300 uppercase tracking-wider">Live One-Liner Generator</span>
+        </div>
+        <div class="text-xs text-slate-400 font-mono">Debian 11/12 & Ubuntu 20.04/22.04/24.04</div>
+      </div>
+
+      <!-- Realtime Command Output -->
+      <div class="relative flex items-center bg-[#070b14] border border-slate-700 rounded-xl px-4 py-3 font-mono text-sm text-cyan-300 overflow-x-auto shadow-inner group">
+        <span class="text-slate-500 select-none mr-2 font-bold">$</span>
+        <code id="command-output" class="whitespace-nowrap flex-1 font-semibold text-slate-100">
+          curl -fsSL https://linuxnetwork.ir/setup.sh | sudo bash -s -- --bbr --sysctl-opt --tools
+        </code>
+        <button id="copy-btn" onclick="copyCommand()" class="ml-3 shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer">
+          <svg id="copy-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+          <span id="copy-text">Copy Command</span>
+        </button>
+      </div>
+      <div id="toast" class="hidden text-xs text-emerald-400 font-mono flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        <span>Command copied to clipboard! Paste directly into your server shell.</span>
+      </div>
+    </div>
+
+    <!-- Interactive Modules Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- Module A: Kernel & Network Tuning -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">a) Kernel & Network Tuning</h3>
+            <p class="text-xs text-slate-400">Optimize throughput, buffer sizes, and mitigate packet loss</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-2 border-t border-slate-800">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="flag-bbr" checked onchange="updateCommand()" class="mt-1 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/30">
+            <div class="text-xs">
+              <span class="font-semibold text-slate-200 font-mono">--bbr (Google BBR Congestion Control)</span>
+              <p class="text-slate-400 text-[11px] leading-relaxed">State-of-the-art congestion algorithm for maximum throughput and minimal bufferbloat.</p>
+            </div>
+          </label>
+
+          <div class="flex items-center gap-3 pl-7">
+            <span class="text-xs text-slate-400 font-mono">Qdisc:</span>
+            <select id="flag-qdisc" onchange="updateCommand()" class="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-cyan-300">
+              <option value="fq" selected>fq (Fair Queueing - Recommended)</option>
+              <option value="cake">cake (Comprehensive Queue Management)</option>
+            </select>
+          </div>
+
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="flag-sysctl" checked onchange="updateCommand()" class="mt-1 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/30">
+            <div class="text-xs">
+              <span class="font-semibold text-slate-200 font-mono">--sysctl-opt (Socket Buffers & Backlog)</span>
+              <p class="text-slate-400 text-[11px] leading-relaxed">Set rmem_max=64MB, wmem_max=64MB, somaxconn=65535, tcp_tw_reuse=1, and file-max=2M.</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Module B: Server Hardening & Security -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">b) Server Hardening & SSH</h3>
+            <p class="text-xs text-slate-400">Protect against brute-force attacks and unauthorized access</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-2 border-t border-slate-800">
+          <div class="flex items-center gap-3">
+            <input type="checkbox" id="flag-custom-ssh" onchange="toggleSshInput()" class="rounded bg-slate-800 border-slate-700 text-cyan-500">
+            <label for="flag-custom-ssh" class="text-xs font-semibold text-slate-200 font-mono cursor-pointer">--ssh-port</label>
+            <input type="number" id="flag-ssh-val" value="2222" min="1" max="65535" oninput="updateCommand()" disabled class="w-24 bg-slate-800 disabled:opacity-40 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-cyan-300">
+            <span class="text-[11px] text-slate-400">Change default SSH port</span>
+          </div>
+
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="flag-disable-pwd" onchange="updateCommand()" class="mt-1 rounded bg-slate-800 border-slate-700 text-cyan-500">
+            <div class="text-xs">
+              <span class="font-semibold text-slate-200 font-mono">--disable-pwd-auth (Key-Only Auth)</span>
+              <p class="text-slate-400 text-[11px] leading-relaxed">Disable SSH password login (requires your public key installed in authorized_keys first!).</p>
+            </div>
+          </label>
+
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="flag-fail2ban" checked onchange="updateCommand()" class="mt-1 rounded bg-slate-800 border-slate-700 text-cyan-500">
+            <div class="text-xs">
+              <span class="font-semibold text-slate-200 font-mono">--fail2ban (Fail2ban Daemon)</span>
+              <p class="text-slate-400 text-[11px] leading-relaxed">Auto-ban malicious IPs with 3 failed attempts for 24 hours.</p>
+            </div>
+          </label>
+
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="flag-ufw" onchange="updateCommand()" class="mt-1 rounded bg-slate-800 border-slate-700 text-cyan-500">
+            <div class="text-xs">
+              <span class="font-semibold text-slate-200 font-mono">--ufw (UFW Firewall Setup)</span>
+              <p class="text-slate-400 text-[11px] leading-relaxed">Allow SSH, 80, 443; deny all incoming by default.</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Module C: Containers & Docker -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">c) Containers & Registry Mirrors</h3>
+            <p class="text-xs text-slate-400">Official Docker CE + Compose + Iranian mirror registries</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-2 border-t border-slate-800">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="flag-docker" checked onchange="updateCommand()" class="mt-1 rounded bg-slate-800 border-slate-700 text-blue-500">
+            <div class="text-xs">
+              <span class="font-semibold text-slate-200 font-mono">--docker (Docker CE + Compose Plugin)</span>
+              <p class="text-slate-400 text-[11px] leading-relaxed">Install official Docker engine, containerd, and Compose v2 plugin from Docker APT repository.</p>
+            </div>
+          </label>
+
+          <label class="flex items-start gap-3 cursor-pointer pl-6">
+            <input type="checkbox" id="flag-mirror" checked onchange="updateCommand()" class="mt-1 rounded bg-slate-800 border-slate-700 text-blue-500">
+            <div class="text-xs">
+              <span class="font-semibold text-slate-200 font-mono">--docker-mirror (Iranian Mirrors in daemon.json)</span>
+              <p class="text-slate-400 text-[11px] leading-relaxed">Configures high-speed, working mirrors (dockerir.com, docker.arvancloud.ir) to bypass Docker Hub 403 blocks.</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Module D: Utilities & Tools -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">d) Modern CLI Tools & Utilities</h3>
+            <p class="text-xs text-slate-400">Production-ready diagnostics and management tools</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-2 border-t border-slate-800">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="flag-tools" checked onchange="updateCommand()" class="mt-1 rounded bg-slate-800 border-slate-700 text-amber-500">
+            <div class="text-xs">
+              <span class="font-semibold text-slate-200 font-mono">--tools (Essential Utilities Package)</span>
+              <p class="text-slate-400 text-[11px] leading-relaxed">Installs fastfetch, htop, iftop, iotop, net-tools, iperf3, curl, git, tmux, jq, traceroute, and mtr.</p>
+            </div>
+          </label>
+
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="flag-zsh" onchange="updateCommand()" class="mt-1 rounded bg-slate-800 border-slate-700 text-amber-500">
+            <div class="text-xs">
+              <span class="font-semibold text-slate-200 font-mono">--zsh (ZSH Shell Installation)</span>
+              <p class="text-slate-400 text-[11px] leading-relaxed">Installs Zsh for modern interactive terminal developer experience.</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="border-t border-slate-800/80 bg-[#070b12] py-8 text-xs text-slate-500 text-center">
+    <div class="max-w-7xl mx-auto px-4 space-y-2">
+      <div class="font-mono text-slate-300 font-semibold">LinuxNetwork.ir</div>
+      <p>Built with craftsmanship for Iranian System Administrators, DevOps Engineers, and Network Architects.</p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleSshInput() {
+      const checkbox = document.getElementById('flag-custom-ssh');
+      const input = document.getElementById('flag-ssh-val');
+      input.disabled = !checkbox.checked;
+      updateCommand();
+    }
+
+    function updateCommand() {
+      const bbr = document.getElementById('flag-bbr').checked;
+      const qdisc = document.getElementById('flag-qdisc').value;
+      const sysctl = document.getElementById('flag-sysctl').checked;
+      const customSsh = document.getElementById('flag-custom-ssh').checked;
+      const sshVal = document.getElementById('flag-ssh-val').value;
+      const disablePwd = document.getElementById('flag-disable-pwd').checked;
+      const fail2ban = document.getElementById('flag-fail2ban').checked;
+      const ufw = document.getElementById('flag-ufw').checked;
+      const docker = document.getElementById('flag-docker').checked;
+      const mirror = document.getElementById('flag-mirror').checked;
+      const tools = document.getElementById('flag-tools').checked;
+      const zsh = document.getElementById('flag-zsh').checked;
+
+      const flags = [];
+      if (bbr) flags.push('--bbr');
+      if (qdisc && qdisc !== 'fq') flags.push(`--qdisc ${qdisc}`);
+      if (sysctl) flags.push('--sysctl-opt');
+      if (customSsh && sshVal) flags.push(`--ssh-port ${sshVal}`);
+      if (disablePwd) flags.push('--disable-pwd-auth');
+      if (fail2ban) flags.push('--fail2ban');
+      if (ufw) flags.push('--ufw');
+      if (docker) flags.push('--docker');
+      if (mirror) flags.push('--docker-mirror');
+      if (tools) flags.push('--tools');
+      if (zsh) flags.push('--zsh');
+
+      const flagStr = flags.length > 0 ? ' ' + flags.join(' ') : '';
+      const fullCmd = `curl -fsSL https://linuxnetwork.ir/setup.sh | sudo bash -s --${flagStr}`;
+      document.getElementById('command-output').textContent = fullCmd;
+    }
+
+    function copyCommand() {
+      const text = document.getElementById('command-output').textContent.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        const copyText = document.getElementById('copy-text');
+        copyText.textContent = 'Copied!';
+        toast.classList.remove('hidden');
+        setTimeout(() => {
+          copyText.textContent = 'Copy Command';
+          toast.classList.add('hidden');
+        }, 3000);
+      });
+    }
+
+    // Initialize
+    updateCommand();
+  </script>
+</body>
+</html>

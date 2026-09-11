@@ -1,0 +1,6 @@
+{
+  "name": "LinuxNetwork.ir - Linux Network & Kernel Tuning Toolbox",
+  "description": "Bilingual Linux Network & Kernel Optimizer, Automated setup.sh Generator, Nginx Reverse Proxy, WireGuard Configurator, and CIDR Subnet Toolbox.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
