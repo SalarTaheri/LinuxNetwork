@@ -9,6 +9,10 @@ interface SysctlToolProps {
   lang: Language;
 }
 
+const SERVER_PROFILES: ServerProfile[] = ['web', 'proxy', 'download', 'lowlatency'];
+const RAM_SIZES: (RamSize | '32GB+')[] = ['1GB', '2GB', '4GB', '8GB', '16GB', '32GB+'];
+const BANDWIDTH_TIERS: BandwidthTier[] = ['100M', '1G', '10G'];
+
 export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
   const t = translations[lang];
 
@@ -102,7 +106,7 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
             <span>{t.sysctl.profileLabel}</span>
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {(['web', 'proxy', 'download', 'lowlatency'] as ServerProfile[]).map((prof) => {
+            {SERVER_PROFILES.map((prof) => {
               const active = settings.profile === prof;
               return (
                 <button
@@ -134,7 +138,7 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
               <span>{t.sysctl.ramLabel}</span>
             </label>
             <div className="grid grid-cols-3 gap-1.5 font-mono text-xs" dir="ltr">
-              {(['1GB', '2GB', '4GB', '8GB', '16GB', '32GB+'] as string[]).map((r) => {
+              {RAM_SIZES.map((r) => {
                 const ramVal = r === '32GB+' ? '32GB' : (r as RamSize);
                 const active = settings.ram === ramVal;
                 return (
@@ -162,7 +166,7 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
               <span>{t.sysctl.bandwidthLabel}</span>
             </label>
             <div className="grid grid-cols-3 gap-1.5 font-mono text-xs" dir="ltr">
-              {(['100M', '1G', '10G'] as BandwidthTier[]).map((bw) => {
+              {BANDWIDTH_TIERS.map((bw) => {
                 const active = settings.bandwidth === bw;
                 return (
                   <button
