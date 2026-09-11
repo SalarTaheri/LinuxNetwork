@@ -3,11 +3,14 @@ import { Terminal, Cpu, Globe2, Shield, Calculator } from 'lucide-react';
 import { Language, ToolTab } from './types';
 import { translations } from './i18n/translations';
 import { Header } from './components/Header';
+import { SEOHead } from './components/SEOHead';
 import { SetupScriptTool } from './components/SetupScriptTool';
 import { SysctlTool } from './components/SysctlTool';
 import { NginxTool } from './components/NginxTool';
 import { WireGuardTool } from './components/WireGuardTool';
 import { SubnetTool } from './components/SubnetTool';
+
+const VALID_TABS: ToolTab[] = ['setup', 'sysctl', 'nginx', 'wireguard', 'subnet'];
 
 export default function App() {
   const [lang, setLang] = useState<Language>(() => {
@@ -15,13 +18,40 @@ export default function App() {
     return saved === 'en' ? 'en' : 'fa';
   });
 
-  const [activeTab, setActiveTab] = useState<ToolTab>('setup');
+  const [activeTab, setActiveTab] = useState<ToolTab>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const toolParam = params.get('tool') as ToolTab | null;
+      if (toolParam && VALID_TABS.includes(toolParam)) {
+        return toolParam;
+      }
+      const hash = window.location.hash.replace('#', '') as ToolTab;
+      if (VALID_TABS.includes(hash)) {
+        return hash;
+      }
+    }
+    return 'setup';
+  });
 
   useEffect(() => {
     localStorage.setItem('linuxnetwork_lang', lang);
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
   }, [lang]);
+
+  // Sync tab with browser back/forward history navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const toolParam = params.get('tool') as ToolTab | null;
+      if (toolParam && VALID_TABS.includes(toolParam)) {
+        setActiveTab(toolParam);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   const toggleLanguage = () => {
     setLang((prev) => (prev === 'fa' ? 'en' : 'fa'));
@@ -103,6 +133,9 @@ export default function App() {
             );
           })}
         </div>
+
+        {/* Dynamic SEO, Open Graph Meta Tags & Social Sharing Manager */}
+        <SEOHead activeTab={activeTab} lang={lang} />
 
         {/* Active Tool View */}
         <div className="pt-2">
