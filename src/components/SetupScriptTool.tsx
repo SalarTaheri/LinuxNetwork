@@ -3,6 +3,7 @@ import { Terminal, Shield, Cpu, Layers, Copy, Check, ExternalLink, Download, Ale
 import { Language, SetupScriptSettings } from '../types';
 import { translations } from '../i18n/translations';
 import { CodeOutputPanel } from './CodeOutputPanel';
+import { DistroBadges } from './DistroBadges';
 
 interface SetupScriptToolProps {
   lang: Language;
@@ -103,7 +104,7 @@ export const SetupScriptTool: React.FC<SetupScriptToolProps> = ({ lang }) => {
 
 # 1. Verification & Safety:
 #   - Verifies root (EUID == 0)
-#   - Confirms OS distribution (Debian 11/12 or Ubuntu 20.04/22.04/24.04)
+#   - Confirms OS distribution (Debian 11/12, Ubuntu 20.04+, or RHEL/Rocky/AlmaLinux/CentOS 8/9, Fedora)
 #   - Creates automatic timestamped backups in /var/backups/linuxnetwork-*/
 
 # 2. Kernel & Network Tuning:
@@ -115,10 +116,10 @@ ${settings.enableSysctlOpt ? '#   [✔] Optimized TCP buffers: rmem_max=64MB, wm
 ${settings.enableCustomSshPort ? `#   [✔] Custom SSH Port: ${settings.sshPort} (sshd syntax checked before reload)` : '#   [ ] SSH Port default (22)'}
 ${settings.disablePasswordAuth ? '#   [✔] Password authentication disabled (PubkeyAuthentication only)' : '#   [ ] Password authentication retained'}
 ${settings.enableFail2ban ? '#   [✔] Fail2ban installed and guarding SSH (3 retries = 24h ban)' : '#   [ ] Fail2ban skipped'}
-${settings.enableUfw ? '#   [✔] UFW enabled with default deny incoming (allows SSH, 80, 443)' : '#   [ ] UFW skipped'}
+${settings.enableUfw ? '#   [✔] Firewall enabled (UFW on Debian/Ubuntu, Firewalld on Red Hat; allows SSH, 80, 443)' : '#   [ ] Firewall skipped'}
 
 # 4. Container Infrastructure:
-${settings.enableDocker ? '#   [✔] Docker CE & Docker Compose plugin installed from official APT repository' : '#   [ ] Docker skipped'}
+${settings.enableDocker ? '#   [✔] Docker CE & Docker Compose plugin installed from official repository (APT / DNF)' : '#   [ ] Docker skipped'}
 ${settings.enableDocker && settings.enableDockerMirror ? '#   [✔] Iranian registry mirrors (dockerir.com, docker.arvancloud.ir) configured in /etc/docker/daemon.json' : '#   [ ] Docker registry mirrors skipped'}
 
 # 5. Diagnostics & Utilities:
@@ -143,9 +144,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
               {t.setup.liveOneLiner}
             </span>
           </div>
-          <div className="text-xs text-slate-400 font-mono">
-            {t.setup.osSupport}
-          </div>
+          <DistroBadges lang={lang} />
         </div>
 
         {/* Real-time Command Preview Box */}

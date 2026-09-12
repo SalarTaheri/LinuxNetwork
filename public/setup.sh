@@ -5,7 +5,8 @@
 # Website:    https://linuxnetwork.ir
 # License:    MIT
 # Description: Automated, idempotent server hardening, BBR tuning, Docker setup,
-#              and modern developer tools installation for Debian/Ubuntu servers.
+#              and modern developer tools installation for Debian/Ubuntu and
+#              Red Hat-based (RHEL, Rocky, AlmaLinux, CentOS, Fedora) servers.
 # ==============================================================================
 
 set -euo pipefail
@@ -61,6 +62,13 @@ FLAG_TOOLS=false
 FLAG_ZSH=false
 FLAG_NON_INTERACTIVE=false
 
+OS_ID="unknown"
+OS_FAMILY="unknown"
+OS_VERSION="unknown"
+OS_VERSION_MAJOR="unknown"
+OS_CODENAME="unknown"
+PKG_MANAGER="unknown"
+
 BACKUP_DIR="/var/backups/linuxnetwork-$(date +%Y%m%d_%H%M%S)"
 
 # ------------------------------------------------------------------------------
@@ -98,7 +106,7 @@ Server Hardening:
   --ssh-port <PORT>       Change default SSH listen port (e.g. 2222)
   --disable-pwd-auth      Disable SSH password authentication (Key-Only auth)
   --fail2ban              Install and configure Fail2ban protection for SSH
-  --ufw                   Configure UFW firewall (allow SSH, 80, 443)
+  --ufw, --firewall       Configure firewall (UFW on Debian/Ubuntu, Firewalld on Red Hat)
 
 Containers & Infrastructure:
   --docker                Install Docker CE & Docker Compose plugin
@@ -140,9 +148,13 @@ detect_os() {
     OS_ID="${ID:-unknown}"
     OS_VERSION="${VERSION_ID:-unknown}"
     OS_CODENAME="${VERSION_CODENAME:-${UBUNTU_CODENAME:-unknown}}"
+    local id_like="${ID_LIKE:-}"
+    OS_VERSION_MAJOR="${OS_VERSION%%.*}"
 
     case "$OS_ID" in
         ubuntu)
+            OS_FAMILY="debian"
+            PKG_MANAGER="apt"
             case "$OS_VERSION" in
                 20.04*|22.04*|24.04*)
                     log_success "Detected supported OS: Ubuntu ${OS_VERSION} (${OS_CODENAME})"
@@ -153,6 +165,8 @@ detect_os() {
             esac
             ;;
         debian)
+            OS_FAMILY="debian"
+            PKG_MANAGER="apt"
             case "$OS_VERSION" in
                 11*|12*|13*)
                     log_success "Detected supported OS: Debian ${OS_VERSION} (${OS_CODENAME})"
@@ -162,11 +176,106 @@ detect_os() {
                     ;;
             esac
             ;;
+        rhel|rocky|almalinux|centos|fedora|ol|amzn)
+            OS_FAMILY="redhat"
+            if command -v dnf >/dev/null 2>&1; then
+                PKG_MANAGER="dnf"
+            elif command -v yum >/dev/null 2>&1; then
+                PKG_MANAGER="yum"
+            else
+                log_error "Neither dnf nor yum package manager found."
+                exit 1
+            fi
+
+            case "$OS_ID" in
+                rocky)
+                    log_success "Detected supported OS: Rocky Linux ${OS_VERSION} (${PKG_MANAGER})"
+                    ;;
+                almalinux)
+                    log_success "Detected supported OS: AlmaLinux ${OS_VERSION} (${PKG_MANAGER})"
+                    ;;
+                rhel)
+                    log_success "Detected supported OS: Red Hat Enterprise Linux ${OS_VERSION} (${PKG_MANAGER})"
+                    ;;
+                centos)
+                    log_success "Detected supported OS: CentOS Stream/Linux ${OS_VERSION} (${PKG_MANAGER})"
+                    ;;
+                fedora)
+                    log_success "Detected supported OS: Fedora ${OS_VERSION} (${PKG_MANAGER})"
+                    ;;
+                ol)
+                    log_success "Detected supported OS: Oracle Linux ${OS_VERSION} (${PKG_MANAGER})"
+                    ;;
+                amzn)
+                    log_success "Detected supported OS: Amazon Linux ${OS_VERSION} (${PKG_MANAGER})"
+                    ;;
+            esac
+            ;;
         *)
-            log_error "Unsupported Linux distribution: ${OS_ID}. This script targets Debian and Ubuntu."
-            exit 1
+            # Check ID_LIKE fallback for other Red Hat derivatives
+            if [[ "$id_like" =~ (rhel|fedora|centos) ]]; then
+                OS_FAMILY="redhat"
+                if command -v dnf >/dev/null 2>&1; then
+                    PKG_MANAGER="dnf"
+                else
+                    PKG_MANAGER="yum"
+                fi
+                log_success "Detected Red Hat-compatible OS: ${OS_ID} ${OS_VERSION} (${PKG_MANAGER})"
+            elif [[ "$id_like" =~ debian ]]; then
+                OS_FAMILY="debian"
+                PKG_MANAGER="apt"
+                log_success "Detected Debian-compatible OS: ${OS_ID} ${OS_VERSION} (${PKG_MANAGER})"
+            else
+                log_error "Unsupported Linux distribution: ${OS_ID}. This script targets Debian, Ubuntu, and Red Hat family (RHEL, Rocky, AlmaLinux, CentOS, Fedora)."
+                exit 1
+            fi
             ;;
     esac
+}
+
+ensure_epel_repo() {
+    if [[ "$OS_FAMILY" == "redhat" ]]; then
+        if [[ "$OS_ID" == "fedora" ]]; then
+            return 0
+        fi
+        if ! rpm -q epel-release >/dev/null 2>&1; then
+            log_info "Enabling EPEL repository for extra packages..."
+            if [[ "$PKG_MANAGER" == "dnf" ]]; then
+                dnf install -y -q epel-release > /dev/null 2>&1 || {
+                    local epel_rpm="https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION_MAJOR}.noarch.rpm"
+                    dnf install -y -q "$epel_rpm" > /dev/null 2>&1 || true
+                }
+            else
+                yum install -y -q epel-release > /dev/null 2>&1 || true
+            fi
+        fi
+    fi
+}
+
+pkg_update() {
+    if [[ "$OS_FAMILY" == "debian" ]]; then
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get update -qq
+    elif [[ "$OS_FAMILY" == "redhat" ]]; then
+        if [[ "$PKG_MANAGER" == "dnf" ]]; then
+            dnf makecache -q > /dev/null 2>&1 || true
+        else
+            yum makecache -q > /dev/null 2>&1 || true
+        fi
+    fi
+}
+
+pkg_install() {
+    if [[ "$OS_FAMILY" == "debian" ]]; then
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get install -y -qq "$@" > /dev/null
+    elif [[ "$OS_FAMILY" == "redhat" ]]; then
+        if [[ "$PKG_MANAGER" == "dnf" ]]; then
+            dnf install -y -q "$@" > /dev/null
+        else
+            yum install -y -q "$@" > /dev/null
+        fi
+    fi
 }
 
 backup_file() {
@@ -274,11 +383,29 @@ apply_hardening() {
         local hardening_dropin="${ssh_d_dir}/99-linuxnetwork-hardening.conf"
         backup_file "$ssh_conf"
 
+        # Ensure sshd_config includes sshd_config.d on non-standard or older configurations
+        if ! grep -Eq '^\s*Include\s+/etc/ssh/sshd_config\.d/\*\.conf' "$ssh_conf" 2>/dev/null; then
+            sed -i '1i Include /etc/ssh/sshd_config.d/*.conf' "$ssh_conf"
+        fi
+
         echo "# Managed by LinuxNetwork.ir" > "$hardening_dropin"
 
         if [[ -n "$FLAG_SSH_PORT" ]]; then
             echo "Port ${FLAG_SSH_PORT}" >> "$hardening_dropin"
             log_info "Configured custom SSH port: ${FLAG_SSH_PORT}"
+
+            # If SELinux is active on Red Hat, allow custom SSH port
+            if command -v getenforce >/dev/null 2>&1 && [[ "$(getenforce 2>/dev/null)" != "Disabled" ]]; then
+                if ! command -v semanage >/dev/null 2>&1; then
+                    log_info "Installing policycoreutils for SELinux port management..."
+                    pkg_install policycoreutils-python-utils 2>/dev/null || pkg_install policycoreutils-python 2>/dev/null || true
+                fi
+                if command -v semanage >/dev/null 2>&1; then
+                    semanage port -a -t ssh_port_t -p tcp "${FLAG_SSH_PORT}" 2>/dev/null || \
+                    semanage port -m -t ssh_port_t -p tcp "${FLAG_SSH_PORT}" 2>/dev/null || true
+                    log_success "SELinux policy updated for SSH port ${FLAG_SSH_PORT}."
+                fi
+            fi
         fi
 
         if [[ "$FLAG_DISABLE_PWD_AUTH" == true ]]; then
@@ -291,7 +418,7 @@ apply_hardening() {
 
         # Test sshd syntax before restart
         if sshd -t 2>/dev/null; then
-            systemctl reload ssh || systemctl reload sshd || service ssh restart
+            systemctl reload sshd 2>/dev/null || systemctl reload ssh 2>/dev/null || systemctl restart sshd 2>/dev/null || service ssh restart 2>/dev/null || service sshd restart 2>/dev/null || true
             log_success "SSH configuration validated and reloaded safely."
         else
             log_error "SSH configuration test failed! Reverting changes..."
@@ -303,20 +430,32 @@ apply_hardening() {
     # Fail2ban Installation
     if [[ "$FLAG_FAIL2BAN" == true ]]; then
         log_info "Installing and provisioning Fail2ban..."
-        export DEBIAN_FRONTEND=noninteractive
-        apt-get update -qq && apt-get install -y -qq fail2ban > /dev/null
+        local ssh_effective_port="${FLAG_SSH_PORT:-22}"
+        local banaction="iptables-multiport"
+
+        if [[ "$OS_FAMILY" == "debian" ]]; then
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update -qq && apt-get install -y -qq fail2ban > /dev/null
+            banaction="ufw"
+        elif [[ "$OS_FAMILY" == "redhat" ]]; then
+            ensure_epel_repo
+            pkg_install fail2ban fail2ban-firewalld 2>/dev/null || pkg_install fail2ban
+            if command -v firewall-cmd >/dev/null 2>&1 && systemctl is-active --quiet firewalld 2>/dev/null; then
+                banaction="firewallcmd-rich-rules"
+            elif command -v ufw >/dev/null 2>&1; then
+                banaction="ufw"
+            fi
+        fi
 
         local jail_local="/etc/fail2ban/jail.local"
         backup_file "$jail_local"
-
-        local ssh_effective_port="${FLAG_SSH_PORT:-22}"
 
         cat > "$jail_local" << EOF
 [DEFAULT]
 bantime = 1h
 findtime = 10m
 maxretry = 5
-banaction = ufw
+banaction = ${banaction}
 
 [sshd]
 enabled = true
@@ -328,27 +467,40 @@ EOF
 
         systemctl enable fail2ban > /dev/null 2>&1
         systemctl restart fail2ban
-        log_success "Fail2ban is active and monitoring SSH on port ${ssh_effective_port}."
+        log_success "Fail2ban is active and monitoring SSH on port ${ssh_effective_port} (banaction: ${banaction})."
     fi
 
-    # UFW Firewall Setup
+    # Firewall Setup (UFW on Debian/Ubuntu, Firewalld on Red Hat)
     if [[ "$FLAG_UFW" == true ]]; then
-        log_info "Configuring UFW (Uncomplicated Firewall)..."
-        export DEBIAN_FRONTEND=noninteractive
-        apt-get update -qq && apt-get install -y -qq ufw > /dev/null
-
         local ssh_effective_port="${FLAG_SSH_PORT:-22}"
 
-        ufw --force reset > /dev/null 2>&1
-        ufw default deny incoming > /dev/null
-        ufw default allow outgoing > /dev/null
+        if [[ "$OS_FAMILY" == "debian" ]]; then
+            log_info "Configuring UFW (Uncomplicated Firewall)..."
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update -qq && apt-get install -y -qq ufw > /dev/null
 
-        ufw allow "${ssh_effective_port}/tcp" comment "SSH Access" > /dev/null
-        ufw allow 80/tcp comment "HTTP Web" > /dev/null
-        ufw allow 443/tcp comment "HTTPS Web" > /dev/null
+            ufw --force reset > /dev/null 2>&1
+            ufw default deny incoming > /dev/null
+            ufw default allow outgoing > /dev/null
 
-        echo "y" | ufw enable > /dev/null
-        log_success "UFW firewall enabled with active rules for Port ${ssh_effective_port}, 80, and 443."
+            ufw allow "${ssh_effective_port}/tcp" comment "SSH Access" > /dev/null
+            ufw allow 80/tcp comment "HTTP Web" > /dev/null
+            ufw allow 443/tcp comment "HTTPS Web" > /dev/null
+
+            echo "y" | ufw enable > /dev/null
+            log_success "UFW firewall enabled with active rules for Port ${ssh_effective_port}, 80, and 443."
+        elif [[ "$OS_FAMILY" == "redhat" ]]; then
+            log_info "Configuring Firewalld..."
+            pkg_install firewalld
+            systemctl enable firewalld > /dev/null 2>&1
+            systemctl start firewalld > /dev/null 2>&1
+
+            firewall-cmd --permanent --add-port="${ssh_effective_port}/tcp" > /dev/null
+            firewall-cmd --permanent --add-service=http > /dev/null
+            firewall-cmd --permanent --add-service=https > /dev/null
+            firewall-cmd --reload > /dev/null
+            log_success "Firewalld enabled with active rules for Port ${ssh_effective_port}, 80, and 443."
+        fi
     fi
 }
 
@@ -358,22 +510,43 @@ EOF
 install_docker() {
     log_step "Installing Docker Engine & Container Tools..."
 
-    export DEBIAN_FRONTEND=noninteractive
-    apt-get update -qq
-    apt-get install -y -qq ca-certificates curl gnupg lsb-release > /dev/null
+    if [[ "$OS_FAMILY" == "debian" ]]; then
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get update -qq
+        apt-get install -y -qq ca-certificates curl gnupg lsb-release > /dev/null
 
-    install -m 0755 -d /etc/apt/keyrings
-    if [[ ! -f /etc/apt/keyrings/docker.gpg ]]; then
-        curl -fsSL "https://download.docker.com/linux/${OS_ID}/gpg" | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-        chmod a+r /etc/apt/keyrings/docker.gpg
+        install -m 0755 -d /etc/apt/keyrings
+        if [[ ! -f /etc/apt/keyrings/docker.gpg ]]; then
+            curl -fsSL "https://download.docker.com/linux/${OS_ID}/gpg" | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+            chmod a+r /etc/apt/keyrings/docker.gpg
+        fi
+
+        echo \
+          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${OS_ID} \
+          ${OS_CODENAME} stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+        apt-get update -qq
+        apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin > /dev/null
+    elif [[ "$OS_FAMILY" == "redhat" ]]; then
+        local docker_repo_name="centos"
+        if [[ "$OS_ID" == "fedora" ]]; then
+            docker_repo_name="fedora"
+        elif [[ "$OS_ID" == "rhel" ]]; then
+            docker_repo_name="rhel"
+        fi
+
+        log_info "Configuring official Docker repository for ${docker_repo_name}..."
+        mkdir -p /etc/yum.repos.d
+        curl -fsSL "https://download.docker.com/linux/${docker_repo_name}/docker-ce.repo" -o /etc/yum.repos.d/docker-ce.repo
+
+        if [[ "$PKG_MANAGER" == "dnf" ]]; then
+            dnf install -y -q docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --nobest > /dev/null 2>&1 || \
+            dnf install -y -q docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --allowerasing > /dev/null 2>&1 || \
+            dnf install -y -q docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin > /dev/null
+        else
+            yum install -y -q docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin > /dev/null
+        fi
     fi
-
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${OS_ID} \
-      ${OS_CODENAME} stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-    apt-get update -qq
-    apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin > /dev/null
 
     systemctl enable docker > /dev/null 2>&1
     systemctl start docker
@@ -411,39 +584,76 @@ EOF
 install_tools() {
     log_step "Installing Modern Infrastructure & Network Utilities..."
 
-    export DEBIAN_FRONTEND=noninteractive
-    apt-get update -qq
+    if [[ "$OS_FAMILY" == "debian" ]]; then
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get update -qq
 
-    local packages=(
-        curl
-        wget
-        git
-        net-tools
-        dnsutils
-        iperf3
-        htop
-        iotop
-        iftop
-        tmux
-        jq
-        mtr-tiny
-        traceroute
-        unzip
-        ca-certificates
-    )
+        local packages=(
+            curl
+            wget
+            git
+            net-tools
+            dnsutils
+            iperf3
+            htop
+            iotop
+            iftop
+            tmux
+            jq
+            mtr-tiny
+            traceroute
+            unzip
+            ca-certificates
+        )
 
-    apt-get install -y -qq "${packages[@]}" > /dev/null
-    log_success "Essential utilities installed: ${packages[*]}"
+        apt-get install -y -qq "${packages[@]}" > /dev/null
+        log_success "Essential utilities installed: ${packages[*]}"
 
-    # Fastfetch installation (clean fallback if repo not available)
-    if ! command -v fastfetch &> /dev/null; then
-        apt-get install -y -qq fastfetch > /dev/null 2>&1 || true
-    fi
+        # Fastfetch installation (clean fallback if repo not available)
+        if ! command -v fastfetch &> /dev/null; then
+            apt-get install -y -qq fastfetch > /dev/null 2>&1 || true
+        fi
 
-    if [[ "$FLAG_ZSH" == true ]]; then
-        log_info "Installing ZSH shell..."
-        apt-get install -y -qq zsh > /dev/null
-        log_success "Zsh shell installed. You can set it as default via: chsh -s \$(which zsh)"
+        if [[ "$FLAG_ZSH" == true ]]; then
+            log_info "Installing ZSH shell..."
+            apt-get install -y -qq zsh > /dev/null
+            log_success "Zsh shell installed. You can set it as default via: chsh -s \$(which zsh)"
+        fi
+    elif [[ "$OS_FAMILY" == "redhat" ]]; then
+        ensure_epel_repo
+        pkg_update
+
+        local packages=(
+            curl
+            wget
+            git
+            net-tools
+            bind-utils
+            iperf3
+            htop
+            iotop
+            iftop
+            tmux
+            jq
+            mtr
+            traceroute
+            unzip
+            ca-certificates
+        )
+
+        pkg_install "${packages[@]}"
+        log_success "Essential utilities installed: ${packages[*]}"
+
+        # Fastfetch installation (clean fallback)
+        if ! command -v fastfetch &> /dev/null; then
+            pkg_install fastfetch 2>/dev/null || true
+        fi
+
+        if [[ "$FLAG_ZSH" == true ]]; then
+            log_info "Installing ZSH shell..."
+            pkg_install zsh
+            log_success "Zsh shell installed. You can set it as default via: chsh -s \$(which zsh)"
+        fi
     fi
 }
 
@@ -490,7 +700,7 @@ parse_arguments() {
                 FLAG_FAIL2BAN=true
                 shift
                 ;;
-            --ufw)
+            --ufw|--firewall)
                 FLAG_UFW=true
                 shift
                 ;;

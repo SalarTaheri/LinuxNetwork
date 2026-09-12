@@ -25,7 +25,7 @@ export const translations = {
       liveOneLiner: 'دستور وان‌لاینر اجرایی در سرور (Live One-Liner)',
       copyCommand: 'کپی دستور اجرایی',
       copied: 'دستور کپی شد!',
-      osSupport: 'پشتیبانی از دبیان ۱۱/۱۲ و اوبونتو ۲۰.۰۴/۲۲.۰۴/۲۴.۰۴',
+      osSupport: 'پشتیبانی از دبیان، اوبونتو و خانواده ردهت (RHEL، راکی، آلمالینوکس، CentOS، فدورا)',
       
       moduleA: 'الف) بهینه‌سازی کرنل و استک شبکه',
       moduleADesc: 'فعالسازی کنترل ازدحام BBR، زمان‌بند fq/cake و تنظیم بافرهای سوکت',
@@ -44,8 +44,8 @@ export const translations = {
       disablePwdAuthDesc: 'تنها ورود از طریق کلید SSH Public Key مجاز خواهد بود (ابتدا کلید خود را ست کنید!)',
       fail2ban: 'نصب و فعالسازی Fail2ban (--fail2ban)',
       fail2banDesc: 'بستن خودکار IPهای مشکوک با بیش از ۳ بار تلاش ناموفق برای ۲۴ ساعت',
-      ufw: 'پیکربندی فایروال UFW (--ufw)',
-      ufwDesc: 'باز کردن پورت‌های ضروری (SSH انتخابی، 80، 443) و مسدودسازی سایر ورودی‌ها',
+      ufw: 'پیکربندی فایروال (--ufw)',
+      ufwDesc: 'پیکربندی خودکار فایروال (UFW در دبیان/اوبونتو و Firewalld در خانواده ردهت) برای پورت‌های ضروری (SSH، 80، 443)',
 
       moduleC: 'ج) موتور کانتینر داکر و میرورهای ایرانی',
       moduleCDesc: 'نصب رسمی Docker CE + Compose به همراه حل مشکل تحریم رجیستری',
@@ -258,7 +258,7 @@ export const translations = {
       liveOneLiner: 'Live Execution Command (Bash One-Liner)',
       copyCommand: 'Copy Command',
       copied: 'Command Copied!',
-      osSupport: 'Supports Debian 11/12 & Ubuntu 20.04/22.04/24.04 LTS',
+      osSupport: 'Supports Debian, Ubuntu & Red Hat Family (RHEL, Rocky, AlmaLinux, CentOS, Fedora)',
 
       moduleA: 'a) Kernel Network & Congestion Tuning',
       moduleADesc: 'Enable Google BBR, tune fq/cake packet schedulers, and expand TCP socket buffers',
@@ -277,8 +277,8 @@ export const translations = {
       disablePwdAuthDesc: 'Enforce SSH public key authentication only (ensure your public key is added first!).',
       fail2ban: 'Install Fail2ban Daemon (--fail2ban)',
       fail2banDesc: 'Automatically block malicious IPs after 3 failed attempts for 24 hours.',
-      ufw: 'UFW Firewall Configuration (--ufw)',
-      ufwDesc: 'Allow selected SSH port, 80, 443 and drop all unauthorized incoming traffic.',
+      ufw: 'Firewall Configuration (--ufw)',
+      ufwDesc: 'Automated firewall setup (UFW on Debian/Ubuntu, Firewalld on Red Hat) allowing SSH, 80, 443.',
 
       moduleC: 'c) Docker Engine & Registry Mirrors',
       moduleCDesc: 'Install official Docker CE + Compose plugin with high-speed mirrors for Iran',

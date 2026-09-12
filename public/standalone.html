@@ -81,7 +81,37 @@
           <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
           <span class="text-xs font-mono font-semibold text-emerald-300 uppercase tracking-wider">Live One-Liner Generator</span>
         </div>
-        <div class="text-xs text-slate-400 font-mono">Debian 11/12 & Ubuntu 20.04/22.04/24.04</div>
+        <div class="flex flex-wrap items-center gap-1.5 font-mono text-[11px]">
+          <span class="text-slate-400 hidden sm:inline mr-1">Tested Distros:</span>
+          <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-300 hover:border-[#E95420]/60 hover:text-[#E95420] transition-colors" title="Ubuntu 20.04 / 22.04 / 24.04 LTS">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="#E95420"><circle cx="12" cy="12" r="10" fill="none" stroke="#E95420" stroke-width="2" stroke-dasharray="16 2 16 2"/><circle cx="5" cy="12" r="1.8"/><circle cx="15.5" cy="5.9" r="1.8"/><circle cx="15.5" cy="18.1" r="1.8"/></svg>
+            <span>Ubuntu</span>
+          </span>
+          <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-300 hover:border-[#D70A53]/60 hover:text-[#D70A53] transition-colors" title="Debian 11 (Bullseye) / 12 (Bookworm)">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="#D70A53"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15.5c-2.8 0-4.5-1.9-4.5-4.2 0-2.6 2.1-4.8 5-4.8 2.2 0 3.8 1.3 3.8 3.2 0 1.5-1.1 2.8-2.6 2.8-1.2 0-1.8-.8-1.8-1.8 0-1.2.9-2.1 2.1-2.1.2 0 .5 0 .7.1-.4-1.2-1.4-1.7-2.3-1.7-1.8 0-3.2 1.5-3.2 3.4 0 1.8 1.4 3.1 3.3 3.1 1.2 0 2.2-.5 2.8-1.2l.9.8c-.8.9-2.1 1.4-3.7 1.4z"/></svg>
+            <span>Debian</span>
+          </span>
+          <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-300 hover:border-[#EE0000]/60 hover:text-[#EE0000] transition-colors" title="RHEL 8 / 9 / 10">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="#EE0000"><path d="M12 3C8.5 3 6 5.5 5.5 8c-.4 2 .3 3.9 1.7 5.1-3.6.5-6.2 2.6-6.2 5.2C1 21.4 5.9 23 12 23s11-1.6 11-4.7c0-2.6-2.6-4.7-6.2-5.2 1.4-1.2 2.1-3.1 1.7-5.1C18 5.5 15.5 3 12 3zm0 2.2c2.4 0 4.1 1.8 4.3 3.8.2 2.1-1.2 3.8-3.3 4-2.1.2-4.1-1.3-4.3-3.4-.2-2.1 1.4-4.4 3.3-4.4zm0 11.8c4.8 0 8.5 1.1 8.5 2.8 0 1.7-3.7 2.8-8.5 2.8S3.5 21.5 3.5 19.8c0-1.7 3.7-2.8 8.5-2.8z"/></svg>
+            <span>RHEL</span>
+          </span>
+          <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-300 hover:border-[#10B981]/60 hover:text-[#10B981] transition-colors" title="Rocky Linux 8 / 9">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="#10B981"><path d="M12 2L2 7.5v9L12 22l10-5.5v-9L12 2zm0 2.8L19.5 9v6L12 19.2 4.5 15V9L12 4.8zm-1 4.7l4.5 5.5h-2.5l-2-2.5-1.5 1.5h-2l3.5-4.5z"/></svg>
+            <span>Rocky</span>
+          </span>
+          <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-300 hover:border-[#0284C7]/60 hover:text-[#38BDF8] transition-colors" title="AlmaLinux 8 / 9">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="#0284C7"><circle cx="12" cy="12" r="9" fill="none" stroke="#0284C7" stroke-width="2"/><path d="M12 7l3.5 5-3.5 5-3.5-5L12 7z"/></svg>
+            <span>Alma</span>
+          </span>
+          <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-300 hover:border-[#F59E0B]/60 hover:text-[#F59E0B] transition-colors" title="CentOS Stream 8 / 9 / 10">
+            <svg class="w-3 h-3" viewBox="0 0 24 24"><path d="M12 2L8.5 7h7L12 2z" fill="#F59E0B"/><path d="M22 12l-5-3.5v7l5-3.5z" fill="#10B981"/><path d="M12 22l3.5-5h-7l3.5 5z" fill="#3B82F6"/><path d="M2 12l5 3.5v-7L2 12z" fill="#EC4899"/><rect x="9" y="9" width="6" height="6" fill="#64748B" rx="1"/></svg>
+            <span>CentOS</span>
+          </span>
+          <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-300 hover:border-[#3B82F6]/60 hover:text-[#60A5FA] transition-colors" title="Fedora 38 / 39 / 40 / 41+">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="#3B82F6"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.5 5.2c1.7 0 3 1.3 3 3 0 1.2-.7 2.2-1.7 2.7v-1.2c.5-.4.8-.9.8-1.5 0-1.1-.9-2-2-2s-2 .9-2 2v2.5h-1.8v-2.5c0-1.7 1.4-3 3.7-3zm-3.5 6.6h1.8v2.5c0 1.1.9 2 2 2s2-.9 2-2v-1.2h1.5v1.2c0 1.7-1.3 3-3.2 3-1.8 0-3.3-1.3-3.3-3v-2.5h-.8V14h.8v-.2z"/></svg>
+            <span>Fedora</span>
+          </span>
+        </div>
       </div>
 
       <!-- Realtime Command Output -->

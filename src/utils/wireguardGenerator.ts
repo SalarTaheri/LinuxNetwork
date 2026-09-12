@@ -50,7 +50,7 @@ export function generateWireGuardServerOneLiner(settings: WireGuardSettings): st
   const serverConfig = generateWireGuardServerConfig(settings);
   const iface = settings.serverInterface || 'eth0';
 
-  return `sudo bash -c 'apt-get update && apt-get install -y wireguard iptables qrencode
+  return `sudo bash -c 'if command -v dnf &>/dev/null; then dnf install -y -q epel-release 2>/dev/null || true; dnf install -y -q wireguard-tools iptables qrencode; elif command -v yum &>/dev/null; then yum install -y -q epel-release 2>/dev/null || true; yum install -y -q wireguard-tools iptables qrencode; elif command -v apt-get &>/dev/null; then export DEBIAN_FRONTEND=noninteractive; apt-get update -qq && apt-get install -y -qq wireguard iptables qrencode; fi
 sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward = 1" > /etc/sysctl.d/99-wireguard-forward.conf
 sysctl --system
