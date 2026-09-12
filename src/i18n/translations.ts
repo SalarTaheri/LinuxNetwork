@@ -239,7 +239,7 @@ export const translations = {
 
     landing: {
       hero: {
-        badge: 'v1.2.0 • کاملاً کلاینت‌ساید و متن‌باز',
+        badge: 'کاملاً کلاینت‌ساید و متن‌باز',
         titlePrefix: 'پلتفرم مهندسی شبکه، ',
         titleHighlight: 'تیونینگ کرنل و کانفیگ لینوکس',
         subtitle: 'مجموعه ابزارهای تخصصی برای فعال‌سازی BBR، ایمن‌سازی سرور، ساخت کانفیگ‌های استاندارد Nginx و WireGuard، و محاسبات پیشرفته شبکه — کاملاً در مرورگر، امن و بدون لاگ.',
@@ -577,7 +577,7 @@ export const translations = {
 
     landing: {
       hero: {
-        badge: 'v1.2.0 • 100% Client-Side & Open Source',
+        badge: '100% Client-Side & Open Source',
         titlePrefix: 'Modern Linux Network & ',
         titleHighlight: 'Kernel Optimization Suite',
         subtitle: 'Production-grade BBR congestion tuning, automated server setup, Nginx reverse proxy generator, WireGuard configurator, and CIDR subnet calculator — 100% client-side, zero-logging, and blazing fast.',
