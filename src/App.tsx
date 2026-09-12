@@ -100,13 +100,16 @@ export default function App() {
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Navigation Tabs Bar */}
-        <div className="bg-slate-900/80 border border-slate-800 p-1.5 rounded-xl shadow-lg flex flex-wrap gap-1.5 items-center">
+        <div role="tablist" aria-label="Linux Tools Navigation" className="bg-slate-900/80 border border-slate-800 p-1.5 rounded-xl shadow-lg flex flex-wrap gap-1.5 items-center">
           {tabs.map((tab) => {
             const active = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 id={`tab-nav-${tab.id}`}
+                role="tab"
+                aria-selected={active}
+                aria-controls={`tabpanel-${tab.id}`}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 min-w-[140px] sm:min-w-0 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
@@ -138,7 +141,7 @@ export default function App() {
         <SEOHead activeTab={activeTab} lang={lang} />
 
         {/* Active Tool View */}
-        <div className="pt-2">
+        <div id={`tabpanel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-nav-${activeTab}`} className="pt-2">
           {activeTab === 'setup' && <SetupScriptTool lang={lang} />}
           {activeTab === 'sysctl' && <SysctlTool lang={lang} />}
           {activeTab === 'nginx' && <NginxTool lang={lang} />}
