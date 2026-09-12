@@ -51,6 +51,7 @@ export const Header: React.FC<HeaderProps> = ({ lang, onToggleLang }) => {
             href="https://github.com/SalarTaheri/LinuxNetwork"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`${t.github} (opens in new tab)`}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent hover:border-slate-700/60 transition-all font-medium"
           >
             <Github className="w-4 h-4" />
@@ -61,6 +62,7 @@ export const Header: React.FC<HeaderProps> = ({ lang, onToggleLang }) => {
           <button
             id="lang-toggle-btn"
             onClick={onToggleLang}
+            aria-label={`Switch Language / تغییر زبان (${lang === 'fa' ? 'Farsi' : 'English'})`}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-slate-200 hover:text-white shadow-sm transition-all cursor-pointer"
             title="Switch Language / تغییر زبان"
           >

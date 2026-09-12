@@ -151,6 +151,13 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
           <button
             id="copy-config-btn"
             onClick={activeTab === 'bash' ? handleCopyBash : activeTab === 'reload' ? handleCopyReload : handleCopyConfig}
+            aria-label={
+              copiedConfig || copiedBash || copiedReload
+                ? t.output.copied
+                : activeTab === 'bash'
+                ? t.output.copyBash
+                : t.output.copyConfig
+            }
             className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
               copiedConfig || copiedBash || copiedReload
                 ? 'bg-emerald-600 text-white border border-emerald-500'
@@ -174,6 +181,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
           <button
             id="download-conf-btn"
             onClick={handleDownload}
+            aria-label={`${t.output.download} ${filename}`}
             className="px-2.5 py-1.5 rounded-lg text-xs font-mono text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 transition-all flex items-center gap-1.5 cursor-pointer"
             title={t.output.download}
           >
