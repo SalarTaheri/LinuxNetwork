@@ -124,6 +124,20 @@ export const DISTROS: DistroInfo[] = [
       </svg>
     ),
   },
+  {
+    id: 'alpine',
+    name: 'Alpine',
+    versions: '3.18 / 3.19 / 3.20 / 3.21+',
+    brandColor: '#0D597F',
+    badgeBorder: 'hover:border-[#38BDF8]/60',
+    badgeBg: 'hover:bg-[#0D597F]/20',
+    badgeText: 'text-[#38BDF8]',
+    icon: () => (
+      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="#38BDF8">
+        <path d="M12 3L1 21h7.5l3.5-6 3.5 6H23L12 3zm0 5.2L16.4 16h-2.3l-2.1-3.6-2.1 3.6H7.6L12 8.2z" />
+      </svg>
+    ),
+  },
 ];
 
 export const DistroBadges: React.FC<DistroBadgesProps> = ({ lang, showLabels = true }) => {

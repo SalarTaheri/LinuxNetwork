@@ -104,7 +104,7 @@ export const SetupScriptTool: React.FC<SetupScriptToolProps> = ({ lang }) => {
 
 # 1. Verification & Safety:
 #   - Verifies root (EUID == 0)
-#   - Confirms OS distribution (Debian 11/12, Ubuntu 20.04+, or RHEL/Rocky/AlmaLinux/CentOS 8/9, Fedora)
+#   - Confirms OS distribution (Debian, Ubuntu, RHEL/Rocky/AlmaLinux/CentOS, Fedora, or Alpine Linux)
 #   - Creates automatic timestamped backups in /var/backups/linuxnetwork-*/
 
 # 2. Kernel & Network Tuning:
@@ -116,10 +116,10 @@ ${settings.enableSysctlOpt ? '#   [✔] Optimized TCP buffers: rmem_max=64MB, wm
 ${settings.enableCustomSshPort ? `#   [✔] Custom SSH Port: ${settings.sshPort} (sshd syntax checked before reload)` : '#   [ ] SSH Port default (22)'}
 ${settings.disablePasswordAuth ? '#   [✔] Password authentication disabled (PubkeyAuthentication only)' : '#   [ ] Password authentication retained'}
 ${settings.enableFail2ban ? '#   [✔] Fail2ban installed and guarding SSH (3 retries = 24h ban)' : '#   [ ] Fail2ban skipped'}
-${settings.enableUfw ? '#   [✔] Firewall enabled (UFW on Debian/Ubuntu, Firewalld on Red Hat; allows SSH, 80, 443)' : '#   [ ] Firewall skipped'}
+${settings.enableUfw ? '#   [✔] Firewall enabled (UFW on Debian/Ubuntu, Firewalld on Red Hat, Iptables on Alpine; allows SSH, 80, 443)' : '#   [ ] Firewall skipped'}
 
 # 4. Container Infrastructure:
-${settings.enableDocker ? '#   [✔] Docker CE & Docker Compose plugin installed from official repository (APT / DNF)' : '#   [ ] Docker skipped'}
+${settings.enableDocker ? '#   [✔] Docker CE & Docker Compose plugin installed (APT / DNF / APK)' : '#   [ ] Docker skipped'}
 ${settings.enableDocker && settings.enableDockerMirror ? '#   [✔] Iranian registry mirrors (dockerir.com, docker.arvancloud.ir) configured in /etc/docker/daemon.json' : '#   [ ] Docker registry mirrors skipped'}
 
 # 5. Diagnostics & Utilities:

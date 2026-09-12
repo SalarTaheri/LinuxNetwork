@@ -5,8 +5,8 @@
 # Website:    https://linuxnetwork.ir
 # License:    MIT
 # Description: Automated, idempotent server hardening, BBR tuning, Docker setup,
-#              and modern developer tools installation for Debian/Ubuntu and
-#              Red Hat-based (RHEL, Rocky, AlmaLinux, CentOS, Fedora) servers.
+#              and modern developer tools installation for Debian/Ubuntu,
+#              Red Hat-based (RHEL, Rocky, AlmaLinux, CentOS, Fedora), and Alpine Linux.
 # ==============================================================================
 
 set -euo pipefail
@@ -68,6 +68,7 @@ OS_VERSION="unknown"
 OS_VERSION_MAJOR="unknown"
 OS_CODENAME="unknown"
 PKG_MANAGER="unknown"
+INIT_SYSTEM="systemd"
 
 BACKUP_DIR="/var/backups/linuxnetwork-$(date +%Y%m%d_%H%M%S)"
 
@@ -106,7 +107,7 @@ Server Hardening:
   --ssh-port <PORT>       Change default SSH listen port (e.g. 2222)
   --disable-pwd-auth      Disable SSH password authentication (Key-Only auth)
   --fail2ban              Install and configure Fail2ban protection for SSH
-  --ufw, --firewall       Configure firewall (UFW on Debian/Ubuntu, Firewalld on Red Hat)
+  --ufw, --firewall       Configure firewall (UFW on Debian/Ubuntu, Firewalld on Red Hat, Iptables on Alpine)
 
 Containers & Infrastructure:
   --docker                Install Docker CE & Docker Compose plugin
@@ -211,6 +212,12 @@ detect_os() {
                     ;;
             esac
             ;;
+        alpine)
+            OS_FAMILY="alpine"
+            PKG_MANAGER="apk"
+            INIT_SYSTEM="openrc"
+            log_success "Detected supported OS: Alpine Linux ${OS_VERSION} (${INIT_SYSTEM}/${PKG_MANAGER})"
+            ;;
         *)
             # Check ID_LIKE fallback for other Red Hat derivatives
             if [[ "$id_like" =~ (rhel|fedora|centos) ]]; then
@@ -226,11 +233,47 @@ detect_os() {
                 PKG_MANAGER="apt"
                 log_success "Detected Debian-compatible OS: ${OS_ID} ${OS_VERSION} (${PKG_MANAGER})"
             else
-                log_error "Unsupported Linux distribution: ${OS_ID}. This script targets Debian, Ubuntu, and Red Hat family (RHEL, Rocky, AlmaLinux, CentOS, Fedora)."
+                log_error "Unsupported Linux distribution: ${OS_ID}. This script targets Debian, Ubuntu, Red Hat family (RHEL, Rocky, AlmaLinux, CentOS, Fedora), and Alpine Linux."
                 exit 1
             fi
             ;;
     esac
+}
+
+service_enable() {
+    local svc="$1"
+    if [[ "$INIT_SYSTEM" == "systemd" ]]; then
+        systemctl enable "$svc" > /dev/null 2>&1 || true
+    elif [[ "$INIT_SYSTEM" == "openrc" ]]; then
+        rc-update add "$svc" default > /dev/null 2>&1 || true
+    fi
+}
+
+service_start() {
+    local svc="$1"
+    if [[ "$INIT_SYSTEM" == "systemd" ]]; then
+        systemctl start "$svc" > /dev/null 2>&1 || true
+    elif [[ "$INIT_SYSTEM" == "openrc" ]]; then
+        rc-service "$svc" start > /dev/null 2>&1 || true
+    fi
+}
+
+service_restart() {
+    local svc="$1"
+    if [[ "$INIT_SYSTEM" == "systemd" ]]; then
+        systemctl restart "$svc" > /dev/null 2>&1 || true
+    elif [[ "$INIT_SYSTEM" == "openrc" ]]; then
+        rc-service "$svc" restart > /dev/null 2>&1 || true
+    fi
+}
+
+service_reload() {
+    local svc="$1"
+    if [[ "$INIT_SYSTEM" == "systemd" ]]; then
+        systemctl reload "$svc" 2>/dev/null || systemctl restart "$svc" 2>/dev/null || true
+    elif [[ "$INIT_SYSTEM" == "openrc" ]]; then
+        rc-service "$svc" reload 2>/dev/null || rc-service "$svc" restart 2>/dev/null || true
+    fi
 }
 
 ensure_epel_repo() {
@@ -262,6 +305,8 @@ pkg_update() {
         else
             yum makecache -q > /dev/null 2>&1 || true
         fi
+    elif [[ "$OS_FAMILY" == "alpine" ]]; then
+        apk update -q > /dev/null 2>&1 || true
     fi
 }
 
@@ -275,6 +320,8 @@ pkg_install() {
         else
             yum install -y -q "$@" > /dev/null
         fi
+    elif [[ "$OS_FAMILY" == "alpine" ]]; then
+        apk add -q "$@" > /dev/null
     fi
 }
 
@@ -355,6 +402,8 @@ EOF
     # Apply sysctl safely
     if sysctl --system > /dev/null 2>&1; then
         log_success "Kernel parameters applied successfully via ${sysctl_conf}"
+    elif sysctl -p "$sysctl_conf" > /dev/null 2>&1; then
+        log_success "Kernel parameters applied successfully via ${sysctl_conf}"
     else
         log_warn "Some sysctl keys might not be supported on this kernel release. Checking BBR status..."
     fi
@@ -418,7 +467,7 @@ apply_hardening() {
 
         # Test sshd syntax before restart
         if sshd -t 2>/dev/null; then
-            systemctl reload sshd 2>/dev/null || systemctl reload ssh 2>/dev/null || systemctl restart sshd 2>/dev/null || service ssh restart 2>/dev/null || service sshd restart 2>/dev/null || true
+            service_reload sshd || service_reload ssh || true
             log_success "SSH configuration validated and reloaded safely."
         else
             log_error "SSH configuration test failed! Reverting changes..."
@@ -445,6 +494,9 @@ apply_hardening() {
             elif command -v ufw >/dev/null 2>&1; then
                 banaction="ufw"
             fi
+        elif [[ "$OS_FAMILY" == "alpine" ]]; then
+            pkg_install fail2ban
+            banaction="iptables-multiport"
         fi
 
         local jail_local="/etc/fail2ban/jail.local"
@@ -465,12 +517,12 @@ maxretry = 3
 bantime = 24h
 EOF
 
-        systemctl enable fail2ban > /dev/null 2>&1
-        systemctl restart fail2ban
+        service_enable fail2ban
+        service_restart fail2ban
         log_success "Fail2ban is active and monitoring SSH on port ${ssh_effective_port} (banaction: ${banaction})."
     fi
 
-    # Firewall Setup (UFW on Debian/Ubuntu, Firewalld on Red Hat)
+    # Firewall Setup (UFW on Debian/Ubuntu, Firewalld on Red Hat, Iptables on Alpine)
     if [[ "$FLAG_UFW" == true ]]; then
         local ssh_effective_port="${FLAG_SSH_PORT:-22}"
 
@@ -492,14 +544,31 @@ EOF
         elif [[ "$OS_FAMILY" == "redhat" ]]; then
             log_info "Configuring Firewalld..."
             pkg_install firewalld
-            systemctl enable firewalld > /dev/null 2>&1
-            systemctl start firewalld > /dev/null 2>&1
+            service_enable firewalld
+            service_start firewalld
 
             firewall-cmd --permanent --add-port="${ssh_effective_port}/tcp" > /dev/null
             firewall-cmd --permanent --add-service=http > /dev/null
             firewall-cmd --permanent --add-service=https > /dev/null
             firewall-cmd --reload > /dev/null
             log_success "Firewalld enabled with active rules for Port ${ssh_effective_port}, 80, and 443."
+        elif [[ "$OS_FAMILY" == "alpine" ]]; then
+            log_info "Configuring Iptables Firewall for Alpine..."
+            pkg_install iptables
+            iptables -F
+            iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+            iptables -A INPUT -p tcp --dport "${ssh_effective_port}" -j ACCEPT
+            iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+            iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+            iptables -A INPUT -p icmp -j ACCEPT
+            iptables -A INPUT -i lo -j ACCEPT
+            iptables -P INPUT DROP
+            service_enable iptables
+            if [[ -f /etc/init.d/iptables ]]; then
+                /etc/init.d/iptables save > /dev/null 2>&1 || true
+            fi
+            service_restart iptables
+            log_success "Iptables firewall enabled with active rules for Port ${ssh_effective_port}, 80, and 443."
         fi
     fi
 }
@@ -546,10 +615,15 @@ install_docker() {
         else
             yum install -y -q docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin > /dev/null
         fi
+    elif [[ "$OS_FAMILY" == "alpine" ]]; then
+        log_info "Enabling Alpine Community repository for Docker..."
+        sed -i '/^#.*\/community/s/^#//' /etc/apk/repositories 2>/dev/null || true
+        pkg_update
+        pkg_install docker docker-cli-compose
     fi
 
-    systemctl enable docker > /dev/null 2>&1
-    systemctl start docker
+    service_enable docker
+    service_start docker
 
     log_success "Docker CE and Docker Compose installed successfully."
 
@@ -573,7 +647,7 @@ install_docker() {
   }
 }
 EOF
-        systemctl restart docker
+        service_restart docker
         log_success "Docker registry mirrors configured in /etc/docker/daemon.json"
     fi
 }
@@ -629,6 +703,40 @@ install_tools() {
             git
             net-tools
             bind-utils
+            iperf3
+            htop
+            iotop
+            iftop
+            tmux
+            jq
+            mtr
+            traceroute
+            unzip
+            ca-certificates
+        )
+
+        pkg_install "${packages[@]}"
+        log_success "Essential utilities installed: ${packages[*]}"
+
+        # Fastfetch installation (clean fallback)
+        if ! command -v fastfetch &> /dev/null; then
+            pkg_install fastfetch 2>/dev/null || true
+        fi
+
+        if [[ "$FLAG_ZSH" == true ]]; then
+            log_info "Installing ZSH shell..."
+            pkg_install zsh
+            log_success "Zsh shell installed. You can set it as default via: chsh -s \$(which zsh)"
+        fi
+    elif [[ "$OS_FAMILY" == "alpine" ]]; then
+        pkg_update
+
+        local packages=(
+            curl
+            wget
+            git
+            net-tools
+            bind-tools
             iperf3
             htop
             iotop

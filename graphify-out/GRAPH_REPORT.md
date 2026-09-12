@@ -1,16 +1,16 @@
 # Graph Report - LinuxNetwork  (2026-09-12)
 
 ## Corpus Check
-- 52 files · ~48,184 words
+- 52 files · ~48,824 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 346 nodes · 489 edges · 33 communities (24 shown, 9 thin omitted)
+- 350 nodes · 502 edges · 33 communities (24 shown, 9 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fd63f566`
+- Built from commit: `063c9f96`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -50,18 +50,16 @@
 ## God Nodes (most connected - your core abstractions)
 1. `Language` - 21 edges
 2. `compilerOptions` - 15 edges
-3. `What You Must Do When Invoked` - 12 edges
+3. `apply_hardening()` - 13 edges
 4. `What You Must Do When Invoked` - 12 edges
-5. `main()` - 11 edges
-6. `calculateSubnet()` - 11 edges
-7. `/graphify` - 10 edges
-8. `/graphify` - 10 edges
-9. `scripts` - 9 edges
-10. `apply_hardening()` - 9 edges
+5. `What You Must Do When Invoked` - 12 edges
+6. `install_docker()` - 11 edges
+7. `main()` - 11 edges
+8. `calculateSubnet()` - 11 edges
+9. `/graphify` - 10 edges
+10. `/graphify` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `WireGuardToolProps` --references--> `Language`  [EXTRACTED]
-  src/components/WireGuardTool.tsx → src/types.ts
 - `CodeOutputPanelProps` --references--> `Language`  [EXTRACTED]
   src/components/CodeOutputPanel.tsx → src/types.ts
 - `DistroBadgesProps` --references--> `Language`  [EXTRACTED]
@@ -70,6 +68,8 @@
   src/components/Header.tsx → src/types.ts
 - `NginxToolProps` --references--> `Language`  [EXTRACTED]
   src/components/NginxTool.tsx → src/types.ts
+- `SetupScriptToolProps` --references--> `Language`  [EXTRACTED]
+  src/components/SetupScriptTool.tsx → src/types.ts
 
 ## Import Cycles
 - None detected.
@@ -93,20 +93,20 @@ Cohesion: 0.11
 Nodes (18): DOM, DOM.Iterable, ES2022, compilerOptions, allowImportingTsExtensions, allowJs, experimentalDecorators, isolatedModules (+10 more)
 
 ### Community 4 - "WireGuardTool.tsx"
-Cohesion: 0.19
-Nodes (16): RFC-7748, WireGuardTool(), WireGuardToolProps, WireGuardSettings, decodeLittleEndian(), encodeLittleEndian(), generateWireGuardKeyPair(), modInverse() (+8 more)
+Cohesion: 0.21
+Nodes (15): RFC-7748, WireGuardTool(), WireGuardSettings, decodeLittleEndian(), encodeLittleEndian(), generateWireGuardKeyPair(), modInverse(), modPow() (+7 more)
 
 ### Community 5 - "setup.sh"
-Cohesion: 0.28
-Nodes (20): apply_hardening(), apply_kernel_tuning(), backup_file(), check_root(), detect_os(), ensure_epel_repo(), install_docker(), install_tools() (+12 more)
+Cohesion: 0.24
+Nodes (24): apply_hardening(), apply_kernel_tuning(), backup_file(), check_root(), detect_os(), ensure_epel_repo(), install_docker(), install_tools() (+16 more)
 
 ### Community 6 - "scripts"
 Cohesion: 0.12
 Nodes (15): engines, node, name, private, scripts, build, clean, deploy (+7 more)
 
 ### Community 7 - "subnetCalculator.ts"
-Cohesion: 0.36
-Nodes (11): RFC-3021, SubnetTool(), calculateSubnet(), cidrToNetmaskInt(), getIpClass(), getIpScope(), intToBinary(), intToIp() (+3 more)
+Cohesion: 0.33
+Nodes (12): RFC-3021, SubnetTool(), SubnetCalculation, calculateSubnet(), cidrToNetmaskInt(), getIpClass(), getIpScope(), intToBinary() (+4 more)
 
 ### Community 8 - "What You Must Do When Invoked"
 Cohesion: 0.08
@@ -176,12 +176,12 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `devDependencies` to `scripts`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Why does `Language` connect `types.ts` to `WireGuardTool.tsx`, `subnetCalculator.ts`?**
+- **Why does `Language` connect `types.ts` to `WireGuardTool.tsx`?**
   _High betweenness centrality (0.011) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
   _167 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `types.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.0899854862119013 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09224318658280922 - nodes in this community are weakly interconnected._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**

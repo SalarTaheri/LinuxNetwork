@@ -50,10 +50,10 @@ export function generateWireGuardServerOneLiner(settings: WireGuardSettings): st
   const serverConfig = generateWireGuardServerConfig(settings);
   const iface = settings.serverInterface || 'eth0';
 
-  return `sudo bash -c 'if command -v dnf &>/dev/null; then dnf install -y -q epel-release 2>/dev/null || true; dnf install -y -q wireguard-tools iptables qrencode; elif command -v yum &>/dev/null; then yum install -y -q epel-release 2>/dev/null || true; yum install -y -q wireguard-tools iptables qrencode; elif command -v apt-get &>/dev/null; then export DEBIAN_FRONTEND=noninteractive; apt-get update -qq && apt-get install -y -qq wireguard iptables qrencode; fi
+  return `sudo bash -c 'if command -v apk &>/dev/null; then apk add -q wireguard-tools iptables qrencode; elif command -v dnf &>/dev/null; then dnf install -y -q epel-release 2>/dev/null || true; dnf install -y -q wireguard-tools iptables qrencode; elif command -v yum &>/dev/null; then yum install -y -q epel-release 2>/dev/null || true; yum install -y -q wireguard-tools iptables qrencode; elif command -v apt-get &>/dev/null; then export DEBIAN_FRONTEND=noninteractive; apt-get update -qq && apt-get install -y -qq wireguard iptables qrencode; fi
 sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward = 1" > /etc/sysctl.d/99-wireguard-forward.conf
-sysctl --system
+sysctl --system 2>/dev/null || sysctl -p /etc/sysctl.d/99-wireguard-forward.conf 2>/dev/null || true
 
 mkdir -p /etc/wireguard
 chmod 700 /etc/wireguard
@@ -63,7 +63,6 @@ ${serverConfig.trim()}
 EOF
 
 chmod 600 /etc/wireguard/wg0.conf
-systemctl enable wg-quick@wg0
-systemctl restart wg-quick@wg0
+if command -v rc-service &>/dev/null; then rc-update add wg-quick.wg0 default 2>/dev/null || true; rc-service wg-quick.wg0 restart 2>/dev/null || wg-quick up wg0; else systemctl enable wg-quick@wg0 2>/dev/null || true; systemctl restart wg-quick@wg0 2>/dev/null || wg-quick up wg0; fi
 wg show'`;
 }

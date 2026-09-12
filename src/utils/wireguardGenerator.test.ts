@@ -42,12 +42,14 @@ describe('WireGuard Generator', () => {
     assert.match(config, /MTU = 1420/);
   });
 
-  it('generates multi-distro server one-liner supporting dnf, yum, and apt-get', () => {
+  it('generates multi-distro server one-liner supporting apk, dnf, yum, and apt-get', () => {
     const oneLiner = generateWireGuardServerOneLiner(dummySettings);
+    assert.ok(oneLiner.includes('command -v apk'), 'should check for apk');
     assert.ok(oneLiner.includes('command -v dnf'), 'should check for dnf');
-    assert.ok(oneLiner.includes('wireguard-tools'), 'should install wireguard-tools on Red Hat');
+    assert.ok(oneLiner.includes('wireguard-tools'), 'should install wireguard-tools');
     assert.ok(oneLiner.includes('command -v yum'), 'should check for yum');
     assert.ok(oneLiner.includes('command -v apt-get'), 'should check for apt-get');
-    assert.ok(oneLiner.includes('systemctl enable wg-quick@wg0'), 'should enable systemd service');
+    assert.ok(oneLiner.includes('rc-service'), 'should support OpenRC');
+    assert.ok(oneLiner.includes('systemctl enable wg-quick@wg0'), 'should support systemd service');
   });
 });

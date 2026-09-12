@@ -6,15 +6,15 @@
     "semantic_hash": "ca2ef6b9bf9097fcc8d727257df74d85"
   },
   "package.json": {
-    "mtime": 1789217917.9011137,
-    "seen": 1789218656.0395422,
-    "ast_hash": "ebb420e44fbc14305a73ad8bae14e195",
+    "mtime": 1789219899.63237,
+    "seen": 1789221080.024366,
+    "ast_hash": "7e1fb9e0729210cb92a07a97bbf3117c",
     "semantic_hash": ""
   },
   "public/setup.sh": {
-    "mtime": 1789218406.2198625,
-    "seen": 1789218656.0395443,
-    "ast_hash": "2f18a3ffdad1b356f54213096eec7d03",
+    "mtime": 1789220821.8475704,
+    "seen": 1789221080.0243678,
+    "ast_hash": "05301eccb0accf724bfdba58ea2925c3",
     "semantic_hash": ""
   },
   "src/App.tsx": {
@@ -48,9 +48,9 @@
     "semantic_hash": "76ba500ef5c72fb957f85769fef681dd"
   },
   "src/components/SetupScriptTool.tsx": {
-    "mtime": 1789219722.8067122,
-    "seen": 1789219776.0031965,
-    "ast_hash": "6e663b492369f14b76bd7fc715331b21",
+    "mtime": 1789221015.6346674,
+    "seen": 1789221080.0243802,
+    "ast_hash": "fa172f82ef38776540048699a60dc593",
     "semantic_hash": ""
   },
   "src/components/SubnetTool.tsx": {
@@ -72,15 +72,15 @@
     "semantic_hash": "4a3e32f0cc67ae62cc192459f5143cc5"
   },
   "src/data/seoConfig.ts": {
-    "mtime": 1789218546.6376982,
-    "seen": 1789218656.0395617,
-    "ast_hash": "b183e9163a19cb5ff823ca66b97c2478",
+    "mtime": 1789221029.0908794,
+    "seen": 1789221080.0243878,
+    "ast_hash": "6614faeaa731a7733afdf3c22b493f43",
     "semantic_hash": ""
   },
   "src/i18n/translations.ts": {
-    "mtime": 1789218514.0509362,
-    "seen": 1789218656.0395634,
-    "ast_hash": "287c9774e5ffc0cb661d077a42f7ad29",
+    "mtime": 1789220996.214361,
+    "seen": 1789221080.0243897,
+    "ast_hash": "f7966596d953503e60cb1760c7510eaf",
     "semantic_hash": ""
   },
   "src/main.tsx": {
@@ -132,9 +132,9 @@
     "semantic_hash": "0bdb6c6cc9313df09c0abbbd8cefb5d4"
   },
   "src/utils/wireguardGenerator.ts": {
-    "mtime": 1789218438.1662605,
-    "seen": 1789218656.0395794,
-    "ast_hash": "ce1290c006329b418c7cb26c6593f05b",
+    "mtime": 1789220851.3240473,
+    "seen": 1789221080.0244055,
+    "ast_hash": "6772e567b2a43a2e7096be22b9856431",
     "semantic_hash": ""
   },
   "tsconfig.json": {
@@ -156,9 +156,9 @@
     "semantic_hash": "12025cbcd108df2239e6d4fc7b9f4272"
   },
   "src/utils/wireguardGenerator.test.ts": {
-    "mtime": 1789218612.9274933,
-    "seen": 1789218656.039578,
-    "ast_hash": "e6af778dc727d99b14d407da41e399d0",
+    "mtime": 1789220863.760248,
+    "seen": 1789221080.0244043,
+    "ast_hash": "b024782de32106403d64dabbee198d2a",
     "semantic_hash": ""
   },
   "src/vite-env.d.ts": {
@@ -300,9 +300,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789218575.4766893,
-    "seen": 1789218656.0396152,
-    "ast_hash": "b48d0f0c8a38b0326566369398b6abc7",
+    "mtime": 1789221047.5431695,
+    "seen": 1789221080.0244477,
+    "ast_hash": "67988eb6982169e81379eba45523c879",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
@@ -318,9 +318,9 @@
     "semantic_hash": ""
   },
   "public/standalone.html": {
-    "mtime": 1789219746.9509225,
-    "seen": 1789219776.0032713,
-    "ast_hash": "7ffdb393fb09f054ffab7305e7e4da7d",
+    "mtime": 1789220929.0572946,
+    "seen": 1789221080.0244524,
+    "ast_hash": "13cb289a133b39e99321be2b6ef50734",
     "semantic_hash": ""
   },
   "public/og-image.svg": {
@@ -330,9 +330,9 @@
     "semantic_hash": ""
   },
   "src/components/DistroBadges.tsx": {
-    "mtime": 1789219693.706466,
-    "seen": 1789219776.0031872,
-    "ast_hash": "5276833eb0ae304aecf924aac7b723ff",
+    "mtime": 1789220878.8724911,
+    "seen": 1789221080.0243733,
+    "ast_hash": "cb79f7b481b836a576357dc379bf5c4c",
     "semantic_hash": ""
   }
 }

@@ -28,10 +28,14 @@
 
 ## ⚡ Quick Server Setup (One-Liner)
 
-Hardening, BBR congestion control tuning, UFW/Firewalld, Docker with high-speed mirrors, and modern monitoring tools in a single command on **Ubuntu / Debian / RHEL / Rocky / AlmaLinux / CentOS / Fedora**:
+Hardening, BBR congestion control tuning, UFW/Firewalld/Iptables, Docker with high-speed mirrors, and modern monitoring tools in a single command on **Ubuntu / Debian / RHEL / Rocky / AlmaLinux / CentOS / Fedora / Alpine Linux**:
 
 ```bash
+# Debian / Ubuntu / RHEL / Rocky / AlmaLinux / CentOS / Fedora:
 curl -fsSL https://linuxnetwork.ir/setup.sh | sudo bash -s -- --bbr --sysctl-opt --tools
+
+# Alpine Linux (OpenRC):
+apk add --no-cache bash curl && curl -fsSL https://linuxnetwork.ir/setup.sh | bash -s -- --bbr --sysctl-opt --tools
 ```
 
 Or run interactively with full UI at [https://linuxnetwork.ir](https://linuxnetwork.ir).
@@ -41,10 +45,11 @@ Or run interactively with full UI at [https://linuxnetwork.ir](https://linuxnetw
 ## ✨ Features
 
 - 🛠️ **Automated `setup.sh` Generator**:
-  - Multi-distribution support (Debian, Ubuntu, RHEL, Rocky Linux, AlmaLinux, CentOS Stream, Fedora)
+  - Multi-distribution support (Debian, Ubuntu, RHEL, Rocky Linux, AlmaLinux, CentOS Stream, Fedora, Alpine Linux)
+  - Full support for both systemd and OpenRC init systems
   - TCP BBR congestion control (v1 & v3) configuration
   - SSH hardening (custom port, password auth disable, public key enforce, SELinux policy)
-  - Fail2ban intrusion prevention & UFW / Firewalld firewall setup
+  - Fail2ban intrusion prevention & UFW / Firewalld / Iptables firewall setup
   - Automated Docker Engine installation with domestic mirror endpoints
   - Modern CLI toolchain (`btop`, `htop`, `iftop`, `zsh`, `ncdu`, `fastfetch`)
 - 🚀 **Kernel & TCP/IP Tuning (`sysctl.conf`)**:
@@ -160,7 +165,7 @@ npm run deploy
 **LinuxNetwork.ir** یک جعبه‌ابزار رایگان، متن‌باز و مدرن برای مهندسان لینوکس، دواپس (DevOps)، سیس‌ادمین‌ها و توسعه‌دهندگان زیرساخت است. تمام پردازش‌ها، کلیدسازی‌ها و محاسبات به صورت محلی درون مرورگر (Client-Side) با Web Crypto API انجام می‌شوند و هیچ دیتایی سمت سرور ارسال نمی‌شود.
 
 ### امکانات برجسته:
-1. **اسکریپت وان‌لاینر ستاپ سرور (`setup.sh`):** راه‌اندازی، امن‌سازی SSH، کانفیگ فایروال (UFW / Firewalld)، نصب Fail2ban، فعال‌سازی الگوریتم ازدحام شبکه BBR و نصب خودکار داکر به همراه میرورهای پرسرعت ایرانی روی اوبونتو، دبیان و خانواده ردهت (RHEL, Rocky, AlmaLinux, CentOS, Fedora).
+1. **اسکریپت وان‌لاینر ستاپ سرور (`setup.sh`):** راه‌اندازی، امن‌سازی SSH، کانفیگ فایروال (UFW / Firewalld / Iptables)، نصب Fail2ban، فعال‌سازی الگوریتم ازدحام شبکه BBR و نصب خودکار داکر به همراه میرورهای پرسرعت ایرانی روی اوبونتو، دبیان، خانواده ردهت (RHEL, Rocky, AlmaLinux, CentOS, Fedora) و آلپاین لینوکس (Alpine Linux بر پایه OpenRC).
 2. **بهینه‌ساز کرنل (`sysctl.conf`):** تیونینگ پشته TCP/IP و پارامترهای شبکه لینوکس با الگوهای آماده (کانکشن بالا، تاخیر بسیار کم، پهنای‌باند بالا).
 3. **پیکربندی حرفه‌ای Nginx:** تولید کانفیگ ریورس پروکسی همراه با SSL/TLS سخت‌گیرانه، HTTP/2 و HTTP/3، سوکت وب و ریت‌لیمیتینگ.
 4. **کانفیگوراتور WireGuard:** تولید فوری جفت‌کلید، کانفیگ سرور و کلاینت به همراه تولید بارکد QR برای گوشی‌های هوشمند.

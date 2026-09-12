@@ -121,6 +121,19 @@
       "source_location": "L8"
     },
     {
+      "id": "src_components_wireguardtool_wireguardtoolprops",
+      "label": "WireGuardToolProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "types.ts",
+      "file_type": "code",
+      "norm_label": "wireguardtoolprops",
+      "source_file": "src/components/WireGuardTool.tsx",
+      "source_location": "L13"
+    },
+    {
       "id": "src_data_seoconfig_toolseodata",
       "label": "ToolSEOData",
       "_callable": true,
@@ -212,19 +225,6 @@
       "source_location": "L5"
     },
     {
-      "id": "src_types_subnetcalculation",
-      "label": "SubnetCalculation",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "subnetcalculation",
-      "source_file": "src/types.ts",
-      "source_location": "L78"
-    },
-    {
       "id": "src_types_sysctlsettings",
       "label": "SysctlSettings",
       "_callable": true,
@@ -251,19 +251,6 @@
       "source_location": "L3"
     },
     {
-      "id": "src_components_wireguardtool_wireguardtoolprops",
-      "label": "WireGuardToolProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "WireGuardTool.tsx",
-      "file_type": "code",
-      "norm_label": "wireguardtoolprops",
-      "source_file": "src/components/WireGuardTool.tsx",
-      "source_location": "L13"
-    },
-    {
       "id": "src_types_wireguardsettings",
       "label": "WireGuardSettings",
       "_callable": true,
@@ -288,6 +275,19 @@
       "norm_label": "wireguardkeypair",
       "source_file": "src/utils/crypto.ts",
       "source_location": "L131"
+    },
+    {
+      "id": "src_types_subnetcalculation",
+      "label": "SubnetCalculation",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "subnetCalculator.ts",
+      "file_type": "code",
+      "norm_label": "subnetcalculation",
+      "source_file": "src/types.ts",
+      "source_location": "L78"
     },
     {
       "id": "src_app_app",
@@ -323,7 +323,7 @@
       "file_type": "code",
       "norm_label": "distrobadges()",
       "source_file": "src/components/DistroBadges.tsx",
-      "source_location": "L129"
+      "source_location": "L143"
     },
     {
       "id": "src_components_header_header",
@@ -806,6 +806,17 @@
       "file_type": "code",
       "norm_label": "setupscripttool.tsx",
       "source_file": "src/components/SetupScriptTool.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_subnettool",
+      "label": "SubnetTool.tsx",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "types.ts",
+      "file_type": "code",
+      "norm_label": "subnettool.tsx",
+      "source_file": "src/components/SubnetTool.tsx",
       "source_location": "L1"
     },
     {
@@ -1508,7 +1519,7 @@
       "node_kind": "heading",
       "norm_label": "build & production test",
       "source_file": "README.md",
-      "source_location": "L125"
+      "source_location": "L130"
     },
     {
       "id": "readme_cloudflare_direct_deployment",
@@ -1520,7 +1531,7 @@
       "node_kind": "heading",
       "norm_label": "cloudflare direct deployment",
       "source_file": "README.md",
-      "source_location": "L149"
+      "source_location": "L154"
     },
     {
       "id": "readme_contributing",
@@ -1532,7 +1543,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83e\udd1d contributing",
       "source_file": "README.md",
-      "source_location": "L172"
+      "source_location": "L177"
     },
     {
       "id": "readme_features",
@@ -1544,7 +1555,7 @@
       "node_kind": "heading",
       "norm_label": "\u2728 features",
       "source_file": "README.md",
-      "source_location": "L41"
+      "source_location": "L45"
     },
     {
       "id": "readme_license",
@@ -1556,7 +1567,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udcc4 license",
       "source_file": "README.md",
-      "source_location": "L184"
+      "source_location": "L189"
     },
     {
       "id": "readme_linuxnetwork_ir",
@@ -1580,7 +1591,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 local development",
       "source_file": "README.md",
-      "source_location": "L102"
+      "source_location": "L107"
     },
     {
       "id": "readme_prerequisites",
@@ -1592,7 +1603,7 @@
       "node_kind": "heading",
       "norm_label": "prerequisites",
       "source_file": "README.md",
-      "source_location": "L104"
+      "source_location": "L109"
     },
     {
       "id": "readme_quick_server_setup_one_liner",
@@ -1616,7 +1627,7 @@
       "node_kind": "heading",
       "norm_label": "setup instructions",
       "source_file": "README.md",
-      "source_location": "L109"
+      "source_location": "L114"
     },
     {
       "id": "readme_tech_stack",
@@ -1628,7 +1639,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udcbb tech stack",
       "source_file": "README.md",
-      "source_location": "L91"
+      "source_location": "L96"
     },
     {
       "id": "readme_tools_overview",
@@ -1640,7 +1651,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83e\uddf0 tools overview",
       "source_file": "README.md",
-      "source_location": "L79"
+      "source_location": "L84"
     },
     {
       "id": "readme_versioning_releases",
@@ -1652,7 +1663,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83c\udff7\ufe0f versioning & releases",
       "source_file": "README.md",
-      "source_location": "L135"
+      "source_location": "L140"
     },
     {
       "id": "readme_\u0627\u0645\u06a9\u0627\u0646\u0627\u062a_\u0628\u0631\u062c\u0633\u062a\u0647",
@@ -1664,7 +1675,7 @@
       "node_kind": "heading",
       "norm_label": "\u0627\u0645\u06a9\u0627\u0646\u0627\u062a \u0628\u0631\u062c\u0633\u062a\u0647:",
       "source_file": "README.md",
-      "source_location": "L162"
+      "source_location": "L167"
     },
     {
       "id": "readme_\u062a\u0648\u0636\u06cc\u062d\u0627\u062a_\u0641\u0627\u0631\u0633\u06cc",
@@ -1676,7 +1687,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83c\uddee\ud83c\uddf7 \u062a\u0648\u0636\u06cc\u062d\u0627\u062a \u0641\u0627\u0631\u0633\u06cc",
       "source_file": "README.md",
-      "source_location": "L158"
+      "source_location": "L163"
     },
     {
       "id": "versioning",
@@ -3317,7 +3328,7 @@
       },
       "norm_label": "apply_hardening()",
       "source_file": "public/setup.sh",
-      "source_location": "L375"
+      "source_location": "L424"
     },
     {
       "id": "public_setup_apply_kernel_tuning",
@@ -3332,7 +3343,7 @@
       },
       "norm_label": "apply_kernel_tuning()",
       "source_file": "public/setup.sh",
-      "source_location": "L294"
+      "source_location": "L341"
     },
     {
       "id": "public_setup_backup_file",
@@ -3347,7 +3358,7 @@
       },
       "norm_label": "backup_file()",
       "source_file": "public/setup.sh",
-      "source_location": "L281"
+      "source_location": "L328"
     },
     {
       "id": "public_setup_check_root",
@@ -3362,7 +3373,7 @@
       },
       "norm_label": "check_root()",
       "source_file": "public/setup.sh",
-      "source_location": "L130"
+      "source_location": "L131"
     },
     {
       "id": "public_setup_detect_os",
@@ -3377,7 +3388,7 @@
       },
       "norm_label": "detect_os()",
       "source_file": "public/setup.sh",
-      "source_location": "L138"
+      "source_location": "L139"
     },
     {
       "id": "public_setup_ensure_epel_repo",
@@ -3392,7 +3403,7 @@
       },
       "norm_label": "ensure_epel_repo()",
       "source_file": "public/setup.sh",
-      "source_location": "L236"
+      "source_location": "L279"
     },
     {
       "id": "public_setup_install_docker",
@@ -3407,7 +3418,7 @@
       },
       "norm_label": "install_docker()",
       "source_file": "public/setup.sh",
-      "source_location": "L510"
+      "source_location": "L579"
     },
     {
       "id": "public_setup_install_tools",
@@ -3422,7 +3433,7 @@
       },
       "norm_label": "install_tools()",
       "source_file": "public/setup.sh",
-      "source_location": "L584"
+      "source_location": "L658"
     },
     {
       "id": "public_setup_log_error",
@@ -3512,7 +3523,7 @@
       },
       "norm_label": "main()",
       "source_file": "public/setup.sh",
-      "source_location": "L752"
+      "source_location": "L860"
     },
     {
       "id": "public_setup_parse_arguments",
@@ -3527,7 +3538,7 @@
       },
       "norm_label": "parse_arguments()",
       "source_file": "public/setup.sh",
-      "source_location": "L663"
+      "source_location": "L771"
     },
     {
       "id": "public_setup_pkg_install",
@@ -3542,7 +3553,7 @@
       },
       "norm_label": "pkg_install()",
       "source_file": "public/setup.sh",
-      "source_location": "L268"
+      "source_location": "L313"
     },
     {
       "id": "public_setup_pkg_update",
@@ -3557,7 +3568,7 @@
       },
       "norm_label": "pkg_update()",
       "source_file": "public/setup.sh",
-      "source_location": "L255"
+      "source_location": "L298"
     },
     {
       "id": "public_setup_print_banner",
@@ -3572,7 +3583,67 @@
       },
       "norm_label": "print_banner()",
       "source_file": "public/setup.sh",
-      "source_location": "L77"
+      "source_location": "L78"
+    },
+    {
+      "id": "public_setup_service_enable",
+      "label": "service_enable()",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "setup.sh",
+      "file_type": "code",
+      "metadata": {
+        "language": "bash",
+        "kind": "bash_function"
+      },
+      "norm_label": "service_enable()",
+      "source_file": "public/setup.sh",
+      "source_location": "L243"
+    },
+    {
+      "id": "public_setup_service_reload",
+      "label": "service_reload()",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "setup.sh",
+      "file_type": "code",
+      "metadata": {
+        "language": "bash",
+        "kind": "bash_function"
+      },
+      "norm_label": "service_reload()",
+      "source_file": "public/setup.sh",
+      "source_location": "L270"
+    },
+    {
+      "id": "public_setup_service_restart",
+      "label": "service_restart()",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "setup.sh",
+      "file_type": "code",
+      "metadata": {
+        "language": "bash",
+        "kind": "bash_function"
+      },
+      "norm_label": "service_restart()",
+      "source_file": "public/setup.sh",
+      "source_location": "L261"
+    },
+    {
+      "id": "public_setup_service_start",
+      "label": "service_start()",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "setup.sh",
+      "file_type": "code",
+      "metadata": {
+        "language": "bash",
+        "kind": "bash_function"
+      },
+      "norm_label": "service_start()",
+      "source_file": "public/setup.sh",
+      "source_location": "L252"
     },
     {
       "id": "public_setup_sh__entry",
@@ -3602,7 +3673,7 @@
       },
       "norm_label": "show_help()",
       "source_file": "public/setup.sh",
-      "source_location": "L95"
+      "source_location": "L96"
     },
     {
       "id": "package",
@@ -3779,17 +3850,6 @@
       "norm_label": "version",
       "source_file": "package.json",
       "source_location": "L4"
-    },
-    {
-      "id": "src_components_subnettool",
-      "label": "SubnetTool.tsx",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "subnetCalculator.ts",
-      "file_type": "code",
-      "norm_label": "subnettool.tsx",
-      "source_file": "src/components/SubnetTool.tsx",
-      "source_location": "L1"
     },
     {
       "id": "src_utils_subnetcalculator",
@@ -4150,7 +4210,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L376",
+      "source_location": "L425",
       "weight": 1.0
     },
     {
@@ -4162,7 +4222,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L384",
+      "source_location": "L433",
       "weight": 1.0
     },
     {
@@ -4174,7 +4234,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L395",
+      "source_location": "L444",
       "weight": 1.0
     },
     {
@@ -4186,7 +4246,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L401",
+      "source_location": "L450",
       "weight": 1.0
     },
     {
@@ -4198,7 +4258,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L406",
+      "source_location": "L455",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup_apply_hardening",
+      "target": "public_setup_service_reload",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "public/setup.sh",
+      "source_location": "L470",
       "weight": 1.0
     },
     {
@@ -4210,7 +4282,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L424",
+      "source_location": "L473",
       "weight": 1.0
     },
     {
@@ -4222,7 +4294,43 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L441",
+      "source_location": "L490",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup_apply_hardening",
+      "target": "public_setup_service_enable",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "public/setup.sh",
+      "source_location": "L520",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup_apply_hardening",
+      "target": "public_setup_service_restart",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "public/setup.sh",
+      "source_location": "L521",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup_apply_hardening",
+      "target": "public_setup_service_start",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "public/setup.sh",
+      "source_location": "L548",
       "weight": 1.0
     },
     {
@@ -4234,7 +4342,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L295",
+      "source_location": "L342",
       "weight": 1.0
     },
     {
@@ -4246,7 +4354,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L298",
+      "source_location": "L345",
       "weight": 1.0
     },
     {
@@ -4258,7 +4366,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L357",
+      "source_location": "L404",
       "weight": 1.0
     },
     {
@@ -4270,7 +4378,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L359",
+      "source_location": "L408",
       "weight": 1.0
     },
     {
@@ -4282,7 +4390,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L287",
+      "source_location": "L334",
       "weight": 1.0
     },
     {
@@ -4294,7 +4402,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L132",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -4306,7 +4414,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L140",
+      "source_location": "L141",
       "weight": 1.0
     },
     {
@@ -4318,7 +4426,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L160",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -4330,7 +4438,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L163",
+      "source_location": "L164",
       "weight": 1.0
     },
     {
@@ -4342,7 +4450,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L242",
+      "source_location": "L285",
       "weight": 1.0
     },
     {
@@ -4354,7 +4462,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L511",
+      "source_location": "L580",
       "weight": 1.0
     },
     {
@@ -4366,7 +4474,55 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L538",
+      "source_location": "L607",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup_install_docker",
+      "target": "public_setup_pkg_update",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "public/setup.sh",
+      "source_location": "L621",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup_install_docker",
+      "target": "public_setup_pkg_install",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "public/setup.sh",
+      "source_location": "L622",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup_install_docker",
+      "target": "public_setup_service_enable",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "public/setup.sh",
+      "source_location": "L625",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup_install_docker",
+      "target": "public_setup_service_start",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "public/setup.sh",
+      "source_location": "L626",
       "weight": 1.0
     },
     {
@@ -4378,7 +4534,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L554",
+      "source_location": "L628",
       "weight": 1.0
     },
     {
@@ -4390,7 +4546,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L560",
+      "source_location": "L634",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup_install_docker",
+      "target": "public_setup_service_restart",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "public/setup.sh",
+      "source_location": "L650",
       "weight": 1.0
     },
     {
@@ -4402,7 +4570,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L585",
+      "source_location": "L659",
       "weight": 1.0
     },
     {
@@ -4414,7 +4582,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L610",
+      "source_location": "L684",
       "weight": 1.0
     },
     {
@@ -4426,7 +4594,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L618",
+      "source_location": "L692",
       "weight": 1.0
     },
     {
@@ -4438,7 +4606,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L623",
+      "source_location": "L697",
       "weight": 1.0
     },
     {
@@ -4450,7 +4618,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L624",
+      "source_location": "L698",
       "weight": 1.0
     },
     {
@@ -4462,7 +4630,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L644",
+      "source_location": "L718",
       "weight": 1.0
     },
     {
@@ -4474,7 +4642,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L753",
+      "source_location": "L861",
       "weight": 1.0
     },
     {
@@ -4486,7 +4654,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L754",
+      "source_location": "L862",
       "weight": 1.0
     },
     {
@@ -4498,7 +4666,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L755",
+      "source_location": "L863",
       "weight": 1.0
     },
     {
@@ -4510,7 +4678,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L756",
+      "source_location": "L864",
       "weight": 1.0
     },
     {
@@ -4522,7 +4690,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L759",
+      "source_location": "L867",
       "weight": 1.0
     },
     {
@@ -4534,7 +4702,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L763",
+      "source_location": "L871",
       "weight": 1.0
     },
     {
@@ -4546,7 +4714,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L767",
+      "source_location": "L875",
       "weight": 1.0
     },
     {
@@ -4558,7 +4726,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L771",
+      "source_location": "L879",
       "weight": 1.0
     },
     {
@@ -4570,7 +4738,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L774",
+      "source_location": "L882",
       "weight": 1.0
     },
     {
@@ -4582,7 +4750,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L665",
+      "source_location": "L773",
       "weight": 1.0
     },
     {
@@ -4594,7 +4762,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L690",
+      "source_location": "L798",
       "weight": 1.0
     },
     {
@@ -4606,7 +4774,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "public/setup.sh",
-      "source_location": "L782",
+      "source_location": "L890",
       "weight": 1.0
     },
     {
@@ -8377,7 +8545,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L102",
+      "source_location": "L107",
       "weight": 1.0
     },
     {
@@ -8388,7 +8556,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L158",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -8399,7 +8567,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L172",
+      "source_location": "L177",
       "weight": 1.0
     },
     {
@@ -8410,7 +8578,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L184",
+      "source_location": "L189",
       "weight": 1.0
     },
     {
@@ -8432,7 +8600,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L41",
+      "source_location": "L45",
       "weight": 1.0
     },
     {
@@ -8443,7 +8611,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L79",
+      "source_location": "L84",
       "weight": 1.0
     },
     {
@@ -8454,7 +8622,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L91",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -8465,7 +8633,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L104",
+      "source_location": "L109",
       "weight": 1.0
     },
     {
@@ -8476,7 +8644,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L109",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -8487,7 +8655,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L125",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
@@ -8498,7 +8666,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L135",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -8509,7 +8677,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L149",
+      "source_location": "L154",
       "weight": 1.0
     },
     {
@@ -8520,7 +8688,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L162",
+      "source_location": "L167",
       "weight": 1.0
     },
     {
@@ -8575,7 +8743,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/DistroBadges.tsx",
-      "source_location": "L129",
+      "source_location": "L143",
       "weight": 1.0
     },
     {
@@ -9521,7 +9689,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
-      "source_location": "L130",
+      "source_location": "L131",
       "weight": 1.0
     },
     {
@@ -9532,7 +9700,51 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
-      "source_location": "L138",
+      "source_location": "L139",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup",
+      "target": "public_setup_service_enable",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "public/setup.sh",
+      "source_location": "L243",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup",
+      "target": "public_setup_service_start",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "public/setup.sh",
+      "source_location": "L252",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup",
+      "target": "public_setup_service_restart",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "public/setup.sh",
+      "source_location": "L261",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup",
+      "target": "public_setup_service_reload",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "public/setup.sh",
+      "source_location": "L270",
       "weight": 1.0
     },
     {
@@ -9543,7 +9755,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
-      "source_location": "L236",
+      "source_location": "L279",
       "weight": 1.0
     },
     {
@@ -9554,7 +9766,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
-      "source_location": "L255",
+      "source_location": "L298",
       "weight": 1.0
     },
     {
@@ -9565,7 +9777,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
-      "source_location": "L268",
+      "source_location": "L313",
       "weight": 1.0
     },
     {
@@ -9576,7 +9788,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
-      "source_location": "L281",
+      "source_location": "L328",
       "weight": 1.0
     },
     {
@@ -9587,18 +9799,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
-      "source_location": "L294",
-      "weight": 1.0
-    },
-    {
-      "source": "public_setup",
-      "target": "public_setup_apply_hardening",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "public/setup.sh",
-      "source_location": "L375",
+      "source_location": "L341",
       "weight": 1.0
     },
     {
@@ -9610,6 +9811,17 @@
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
       "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup",
+      "target": "public_setup_apply_hardening",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "public/setup.sh",
+      "source_location": "L424",
       "weight": 1.0
     },
     {
@@ -9664,7 +9876,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
-      "source_location": "L510",
+      "source_location": "L579",
       "weight": 1.0
     },
     {
@@ -9675,7 +9887,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
-      "source_location": "L584",
+      "source_location": "L658",
       "weight": 1.0
     },
     {
@@ -9686,18 +9898,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
-      "source_location": "L663",
-      "weight": 1.0
-    },
-    {
-      "source": "public_setup",
-      "target": "public_setup_main",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "public/setup.sh",
-      "source_location": "L752",
+      "source_location": "L771",
       "weight": 1.0
     },
     {
@@ -9708,7 +9909,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
-      "source_location": "L77",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "public_setup",
+      "target": "public_setup_main",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "public/setup.sh",
+      "source_location": "L860",
       "weight": 1.0
     },
     {
@@ -9719,7 +9931,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "public/setup.sh",
-      "source_location": "L95",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -9730,10 +9942,10 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L147",
+      "source_location": "L152",
       "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "fd63f566fc2b4c8b4dd79fd6dd919efe1c0476e8"
+  "built_at_commit": "063c9f9621d5a77eef4131e5e7e568766b72034c"
 }

@@ -25,7 +25,7 @@ export const translations = {
       liveOneLiner: 'دستور وان‌لاینر اجرایی در سرور (Live One-Liner)',
       copyCommand: 'کپی دستور اجرایی',
       copied: 'دستور کپی شد!',
-      osSupport: 'پشتیبانی از دبیان، اوبونتو و خانواده ردهت (RHEL، راکی، آلمالینوکس، CentOS، فدورا)',
+      osSupport: 'پشتیبانی از دبیان، اوبونتو، خانواده ردهت (RHEL، راکی، آلمالینوکس، CentOS، فدورا) و آلپاین لینوکس',
       
       moduleA: 'الف) بهینه‌سازی کرنل و استک شبکه',
       moduleADesc: 'فعالسازی کنترل ازدحام BBR، زمان‌بند fq/cake و تنظیم بافرهای سوکت',
@@ -45,12 +45,12 @@ export const translations = {
       fail2ban: 'نصب و فعالسازی Fail2ban (--fail2ban)',
       fail2banDesc: 'بستن خودکار IPهای مشکوک با بیش از ۳ بار تلاش ناموفق برای ۲۴ ساعت',
       ufw: 'پیکربندی فایروال (--ufw)',
-      ufwDesc: 'پیکربندی خودکار فایروال (UFW در دبیان/اوبونتو و Firewalld در خانواده ردهت) برای پورت‌های ضروری (SSH، 80، 443)',
+      ufwDesc: 'پیکربندی خودکار فایروال (UFW در دبیان/اوبونتو، Firewalld در ردهت و Iptables در آلپاین) برای پورت‌های ضروری (SSH، 80، 443)',
 
       moduleC: 'ج) موتور کانتینر داکر و میرورهای ایرانی',
       moduleCDesc: 'نصب رسمی Docker CE + Compose به همراه حل مشکل تحریم رجیستری',
       docker: 'نصب Docker CE و پلاگین Docker Compose (--docker)',
-      dockerDesc: 'نصب جدیدترین نسخه رسمی از مخازن معتبر داکر به همراه فعالسازی سرویس سیستم‌دی',
+      dockerDesc: 'نصب جدیدترین نسخه رسمی از مخازن معتبر داکر به همراه فعالسازی سرویس‌های سیستمی',
       dockerMirror: 'تنظیم خودکار میرورهای رجیستری داکر (--docker-mirror)',
       dockerMirrorDesc: 'تزریق میرورهای dockerir.com و docker.arvancloud.ir در daemon.json برای دور زدن تحریم داکر هاب',
 
@@ -258,7 +258,7 @@ export const translations = {
       liveOneLiner: 'Live Execution Command (Bash One-Liner)',
       copyCommand: 'Copy Command',
       copied: 'Command Copied!',
-      osSupport: 'Supports Debian, Ubuntu & Red Hat Family (RHEL, Rocky, AlmaLinux, CentOS, Fedora)',
+      osSupport: 'Supports Debian, Ubuntu, Red Hat Family (RHEL, Rocky, AlmaLinux, CentOS, Fedora) & Alpine Linux',
 
       moduleA: 'a) Kernel Network & Congestion Tuning',
       moduleADesc: 'Enable Google BBR, tune fq/cake packet schedulers, and expand TCP socket buffers',
@@ -278,7 +278,7 @@ export const translations = {
       fail2ban: 'Install Fail2ban Daemon (--fail2ban)',
       fail2banDesc: 'Automatically block malicious IPs after 3 failed attempts for 24 hours.',
       ufw: 'Firewall Configuration (--ufw)',
-      ufwDesc: 'Automated firewall setup (UFW on Debian/Ubuntu, Firewalld on Red Hat) allowing SSH, 80, 443.',
+      ufwDesc: 'Automated firewall setup (UFW on Debian/Ubuntu, Firewalld on Red Hat, Iptables on Alpine) allowing SSH, 80, 443.',
 
       moduleC: 'c) Docker Engine & Registry Mirrors',
       moduleCDesc: 'Install official Docker CE + Compose plugin with high-speed mirrors for Iran',

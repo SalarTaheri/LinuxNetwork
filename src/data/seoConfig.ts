@@ -25,7 +25,7 @@ export const SEO_CONFIG: Record<ToolTab, Record<Language, ToolSEOData>> = {
   setup: {
     fa: {
       title: 'اسکریپت ستاپ سرور لینوکس (setup.sh) | LinuxNetwork.ir',
-      metaDescription: 'ژنراتور خودکار اسکریپت setup.sh لینوکس برای اوبونتو، دبیان و خانواده ردهت (RHEL، راکی، آلمالینوکس، سِنت‌او‌اس): فعال‌سازی BBR، ارتقای امنیتی SSH، فایروال، فیل۲بن، نصب داکر به همراه میرورهای سریع ایرانی.',
+      metaDescription: 'ژنراتور خودکار اسکریپت setup.sh لینوکس برای اوبونتو، دبیان، خانواده ردهت (RHEL، راکی، آلمالینوکس، سِنت‌او‌اس) و آلپاین لینوکس: فعال‌سازی BBR، ارتقای امنیتی SSH، فایروال، فیل۲بن، نصب داکر به همراه میرورهای سریع ایرانی.',
       ogTitle: 'اسکریپت خودکار ستاپ و ایمن‌سازی سرور لینوکس (setup.sh)',
       ogDescription: 'یک خط فرمان آماده برای راه‌اندازی، بهینه‌سازی شبکه BBR، نصب داکر و ابزارهای مانیتورینگ روی سرورهای ابری لینوکس.',
       keywords: [
@@ -33,6 +33,8 @@ export const SEO_CONFIG: Record<ToolTab, Record<Language, ToolSEOData>> = {
         'اسکریپت ستاپ سرور',
         'کانفیگ سرور اوبونتو',
         'کانفیگ سرور ردهت',
+        'alpine linux setup',
+        'کانفیگ آلپاین لینوکس',
         'rocky linux setup',
         'almalinux hardening',
         'بهینه سازی لینوکس',
@@ -49,13 +51,13 @@ export const SEO_CONFIG: Record<ToolTab, Record<Language, ToolSEOData>> = {
         'فعال‌سازی BBR v1 / BBR v3 و الگوریتم‌های کنترل ازدحام TCP',
         'تغییر پورت SSH، غیرفعال‌سازی پسورد و فعال‌سازی کلید عمومی',
         'نصب داکر با رجیستری میرورهای پرسرعت ایرانی',
-        'پیکربندی Fail2ban و فایروال UFW / Firewalld',
+        'پیکربندی Fail2ban و فایروال UFW / Firewalld / Iptables',
         'نصب ابزارهای مدرن ترمینال: htop, btop, iftop, zsh',
       ],
     },
     en: {
       title: 'Linux Server Setup Script Generator (setup.sh) | LinuxNetwork.ir',
-      metaDescription: 'Production-ready one-liner Bash script generator for Ubuntu, Debian & Red Hat family (RHEL, Rocky, AlmaLinux, CentOS, Fedora): BBR congestion tuning, SSH hardening, Fail2ban, Firewall, Docker with high-speed Iranian mirrors, and modern CLI tools.',
+      metaDescription: 'Production-ready one-liner Bash script generator for Ubuntu, Debian, Red Hat family (RHEL, Rocky, AlmaLinux, CentOS, Fedora), and Alpine Linux: BBR congestion tuning, SSH hardening, Fail2ban, Firewall, Docker with high-speed Iranian mirrors, and modern CLI tools.',
       ogTitle: 'Automated Linux Server Setup Script (setup.sh)',
       ogDescription: 'Instant one-liner bash script to configure, harden, and optimize your Linux cloud servers and networking.',
       keywords: [
@@ -63,6 +65,8 @@ export const SEO_CONFIG: Record<ToolTab, Record<Language, ToolSEOData>> = {
         'linux server setup',
         'ubuntu server hardening',
         'rhel server setup',
+        'alpine linux setup',
+        'openrc server hardening',
         'rocky linux tuning',
         'almalinux server',
         'bbr congestion control',
@@ -78,7 +82,7 @@ export const SEO_CONFIG: Record<ToolTab, Record<Language, ToolSEOData>> = {
         'Automated BBR / BBRv3 TCP congestion control enablement',
         'SSH hardening with custom port & password auth lockdown',
         'Docker engine install with high-speed domestic mirror fallbacks',
-        'Automated Fail2ban & UFW firewall setup',
+        'Automated Fail2ban & UFW / Firewalld / Iptables firewall setup',
         'Modern CLI diagnostics suite (btop, iftop, ncdu, zsh)',
       ],
     },
