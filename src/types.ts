@@ -1,5 +1,7 @@
 export type Language = 'fa' | 'en';
 
+export type PageView = 'landing' | 'toolbox';
+
 export type ToolTab = 'setup' | 'sysctl' | 'nginx' | 'wireguard' | 'subnet';
 
 export interface SetupScriptSettings {

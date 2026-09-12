@@ -1,16 +1,16 @@
 # Graph Report - LinuxNetwork  (2026-09-12)
 
 ## Corpus Check
-- 53 files · ~50,638 words
+- 52 files · ~48,824 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 354 nodes · 507 edges · 34 communities (25 shown, 9 thin omitted)
+- 350 nodes · 502 edges · 33 communities (24 shown, 9 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `66a4f9ae`
+- Built from commit: `063c9f96`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -46,7 +46,6 @@
 - CLAUDE.md
 - .claude/CLAUDE.md
 - .claude/skills/graphify/references/extraction-spec.md
-- NetworkBackground.tsx
 
 ## God Nodes (most connected - your core abstractions)
 1. `Language` - 21 edges
@@ -75,11 +74,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (34 total, 9 thin omitted)
+## Communities (33 total, 9 thin omitted)
 
 ### Community 0 - "types.ts"
 Cohesion: 0.09
-Nodes (40): App(), VALID_TABS, CodeOutputPanel(), CodeOutputPanelProps, DistroBadges(), DistroBadgesProps, DistroInfo, DISTROS (+32 more)
+Nodes (39): App(), VALID_TABS, CodeOutputPanel(), CodeOutputPanelProps, DistroBadges(), DistroBadgesProps, DistroInfo, DISTROS (+31 more)
 
 ### Community 1 - "devDependencies"
 Cohesion: 0.11
@@ -106,8 +105,8 @@ Cohesion: 0.12
 Nodes (15): engines, node, name, private, scripts, build, clean, deploy (+7 more)
 
 ### Community 7 - "subnetCalculator.ts"
-Cohesion: 0.36
-Nodes (11): RFC-3021, SubnetTool(), calculateSubnet(), cidrToNetmaskInt(), getIpClass(), getIpScope(), intToBinary(), intToIp() (+3 more)
+Cohesion: 0.33
+Nodes (12): RFC-3021, SubnetTool(), SubnetCalculation, calculateSubnet(), cidrToNetmaskInt(), getIpClass(), getIpScope(), intToBinary() (+4 more)
 
 ### Community 8 - "What You Must Do When Invoked"
 Cohesion: 0.08
@@ -165,12 +164,8 @@ Nodes (3): For git commit hook, For native CLAUDE.md integration, graphify refer
 Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
 
-### Community 33 - "NetworkBackground.tsx"
-Cohesion: 0.50
-Nodes (3): NetworkBackground(), Node, Packet
-
 ## Knowledge Gaps
-- **169 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+164 more)
+- **167 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+162 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -178,15 +173,15 @@ Nodes (3): NetworkBackground(), Node, Packet
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `dependencies` connect `dependencies` to `scripts`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `devDependencies` to `scripts`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
-- **Why does `Language` connect `types.ts` to `WireGuardTool.tsx`, `subnetCalculator.ts`?**
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **Why does `Language` connect `types.ts` to `WireGuardTool.tsx`?**
   _High betweenness centrality (0.011) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _169 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _167 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `types.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08735150244584207 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09224318658280922 - nodes in this community are weakly interconnected._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**

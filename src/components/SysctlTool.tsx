@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { Cpu, Server, Wifi, ShieldAlert, Zap, Layers, Activity, HardDrive, CheckCircle2 } from 'lucide-react';
 import { Language, SysctlSettings, ServerProfile, RamSize, BandwidthTier } from '../types';
 import { translations } from '../i18n/translations';
@@ -69,10 +70,18 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
       rmem = '16 MB';
       somax = '16,384';
       fileMax = '524,288';
-    } else if (settings.ram === '8GB' || settings.ram === '16GB' || settings.ram === '32GB' || settings.ram === '64GB') {
+    } else if (settings.ram === '8GB') {
       rmem = '64 MB';
-      somax = '65,535';
+      somax = '65,536';
       fileMax = '2,097,152';
+    } else if (settings.ram === '16GB') {
+      rmem = '128 MB';
+      somax = '131,072';
+      fileMax = '4,194,304';
+    } else if (settings.ram === '32GB+') {
+      rmem = '256 MB';
+      somax = '262,144';
+      fileMax = '8,388,608';
     }
     return { rmem, somax, fileMax };
   };
@@ -109,21 +118,30 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
             {SERVER_PROFILES.map((prof) => {
               const active = settings.profile === prof;
               return (
-                <button
+                <motion.button
                   key={prof}
                   type="button"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => handleProfileChange(prof)}
-                  className={`p-3 rounded-lg text-start transition-all border cursor-pointer ${
+                  className={`relative p-3 rounded-lg text-start transition-colors border cursor-pointer ${
                     active
                       ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-200 shadow-md shadow-emerald-950/30'
                       : 'bg-slate-800/40 border-slate-800 hover:border-slate-700 text-slate-300 hover:bg-slate-800/70'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
+                  {active && (
+                    <motion.div
+                      layoutId="activeProfileGlow"
+                      className="absolute inset-0 border-2 border-emerald-400/50 rounded-lg pointer-events-none"
+                      transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                    />
+                  )}
+                  <div className="flex items-center justify-between relative z-10">
                     <span className="text-xs font-semibold">{t.sysctl.profiles[prof]}</span>
                     {active && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
                   </div>
-                </button>
+                </motion.button>
               );
             })}
           </div>
@@ -142,18 +160,20 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
                 const ramVal = r === '32GB+' ? '32GB' : (r as RamSize);
                 const active = settings.ram === ramVal;
                 return (
-                  <button
+                  <motion.button
                     key={r}
                     type="button"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => setSettings({ ...settings, ram: ramVal as RamSize })}
-                    className={`py-1.5 px-2 rounded font-medium border text-center transition-all cursor-pointer ${
+                    className={`py-1.5 px-2 rounded font-medium border text-center transition-colors cursor-pointer ${
                       active
-                        ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                        ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-bold'
                         : 'bg-slate-800/50 border-slate-700/60 text-slate-400 hover:text-slate-200'
                     }`}
                   >
                     {r}
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
@@ -169,18 +189,20 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
               {BANDWIDTH_TIERS.map((bw) => {
                 const active = settings.bandwidth === bw;
                 return (
-                  <button
+                  <motion.button
                     key={bw}
                     type="button"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => setSettings({ ...settings, bandwidth: bw })}
-                    className={`py-1.5 px-2 rounded font-medium border text-center transition-all cursor-pointer ${
+                    className={`py-1.5 px-2 rounded font-medium border text-center transition-colors cursor-pointer ${
                       active
-                        ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300'
+                        ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300 font-bold'
                         : 'bg-slate-800/50 border-slate-700/60 text-slate-400 hover:text-slate-200'
                     }`}
                   >
                     {bw}bps
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>

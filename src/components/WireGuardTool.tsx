@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { Shield, Key, RefreshCw, Smartphone, Server, Network, Sliders, CheckCircle2, QrCode } from 'lucide-react';
 import { Language, WireGuardSettings } from '../types';
 import { translations } from '../i18n/translations';
@@ -18,6 +19,8 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = ({ lang }) => {
   const t = translations[lang];
 
   const [activeOutputConfig, setActiveOutputConfig] = useState<'server' | 'client'>('server');
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const [keyFlash, setKeyFlash] = useState(false);
 
   const [settings, setSettings] = useState<WireGuardSettings>({
     serverEndpoint: '203.0.113.10',
@@ -55,6 +58,8 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = ({ lang }) => {
   }, []);
 
   const handleRegenerateKeys = () => {
+    setIsRegenerating(true);
+    setKeyFlash(true);
     const sKeys = generateWireGuardKeyPair();
     const cKeys = generateWireGuardKeyPair();
     setSettings((prev) => ({
@@ -64,6 +69,8 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = ({ lang }) => {
       clientPrivateKey: cKeys.privateKey,
       clientPublicKey: cKeys.publicKey,
     }));
+    setTimeout(() => setIsRegenerating(false), 500);
+    setTimeout(() => setKeyFlash(false), 800);
   };
 
   const serverConfig = generateWireGuardServerConfig(settings);
@@ -105,20 +112,27 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = ({ lang }) => {
               <Key className="w-4 h-4 text-amber-400" />
               <span>{t.wireguard.keysSection}</span>
             </h3>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               id="regen-keys-btn"
               type="button"
               onClick={handleRegenerateKeys}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono transition-colors cursor-pointer"
             >
-              <RefreshCw className="w-3 h-3 text-amber-400" />
+              <motion.div
+                animate={isRegenerating ? { rotate: 360 } : { rotate: 0 }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
+              >
+                <RefreshCw className="w-3 h-3 text-amber-400" />
+              </motion.div>
               <span>{t.wireguard.regenerateKeys}</span>
-            </button>
+            </motion.button>
           </div>
 
           <div className="grid grid-cols-1 gap-3 text-xs font-mono" dir="ltr">
             {/* Server Keys */}
-            <div className="bg-slate-950/60 p-3 rounded-lg border border-slate-800/80 space-y-1.5">
+            <div className={`bg-slate-950/60 p-3 rounded-lg border transition-all duration-300 space-y-1.5 ${keyFlash ? 'border-cyan-400 shadow-lg shadow-cyan-950/50' : 'border-slate-800/80'}`}>
               <div className="text-[11px] text-cyan-400 font-semibold flex items-center gap-1">
                 <Server className="w-3 h-3" />
                 <span>{t.wireguard.serverKeys}</span>
@@ -132,7 +146,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = ({ lang }) => {
             </div>
 
             {/* Client Keys */}
-            <div className="bg-slate-950/60 p-3 rounded-lg border border-slate-800/80 space-y-1.5">
+            <div className={`bg-slate-950/60 p-3 rounded-lg border transition-all duration-300 space-y-1.5 ${keyFlash ? 'border-emerald-400 shadow-lg shadow-emerald-950/50' : 'border-slate-800/80'}`}>
               <div className="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
                 <Smartphone className="w-3 h-3" />
                 <span>{t.wireguard.clientKeys}</span>
@@ -322,27 +336,41 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = ({ lang }) => {
           <button
             type="button"
             onClick={() => setActiveOutputConfig('server')}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+            className={`relative flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer ${
               activeOutputConfig === 'server'
-                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-950/40'
+                ? 'text-white'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Server className="w-4 h-4" />
-            <span>{t.wireguard.serverConfigTab}</span>
+            {activeOutputConfig === 'server' && (
+              <motion.div
+                layoutId="wireguardTabIndicator"
+                className="absolute inset-0 bg-emerald-600 rounded-lg shadow-md shadow-emerald-950/40 border border-emerald-400/30"
+                transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+              />
+            )}
+            <Server className="w-4 h-4 relative z-10" />
+            <span className="relative z-10">{t.wireguard.serverConfigTab}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveOutputConfig('client')}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+            className={`relative flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer ${
               activeOutputConfig === 'client'
-                ? 'bg-cyan-600 text-white shadow-md shadow-cyan-950/40'
+                ? 'text-white'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Smartphone className="w-4 h-4" />
-            <span>{t.wireguard.clientConfigTab}</span>
+            {activeOutputConfig === 'client' && (
+              <motion.div
+                layoutId="wireguardTabIndicator"
+                className="absolute inset-0 bg-cyan-600 rounded-lg shadow-md shadow-cyan-950/40 border border-cyan-400/30"
+                transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+              />
+            )}
+            <Smartphone className="w-4 h-4 relative z-10" />
+            <span className="relative z-10">{t.wireguard.clientConfigTab}</span>
           </button>
         </div>
 

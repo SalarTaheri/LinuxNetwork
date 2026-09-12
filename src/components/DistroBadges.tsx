@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Language } from '../types';
 
 interface DistroBadgesProps {
@@ -153,12 +154,15 @@ export const DistroBadges: React.FC<DistroBadgesProps> = ({ lang, showLabels = t
         return (
           <div
             key={distro.id}
-            className="relative group cursor-pointer"
+            className="relative cursor-pointer"
             onMouseEnter={() => setActiveTooltip(distro.id)}
             onMouseLeave={() => setActiveTooltip(null)}
           >
-            <div
-              className={`flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800 text-[11px] font-mono transition-all duration-200 ${distro.badgeBorder} ${distro.badgeBg}`}
+            <motion.div
+              whileHover={{ scale: 1.06, y: -1.5 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+              className={`flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800 text-[11px] font-mono transition-colors duration-200 ${distro.badgeBorder} ${distro.badgeBg}`}
             >
               {distro.icon(distro.brandColor)}
               {showLabels && (
@@ -166,22 +170,28 @@ export const DistroBadges: React.FC<DistroBadgesProps> = ({ lang, showLabels = t
                   {distro.name}
                 </span>
               )}
-            </div>
+            </motion.div>
 
             {/* Floating Tooltip */}
-            {isHovered && (
-              <div
-                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 text-[10px] font-mono whitespace-nowrap shadow-xl z-50 pointer-events-none animate-in fade-in zoom-in-95 duration-150"
-              >
-                <div className="font-bold text-white flex items-center gap-1">
-                  <span>{distro.name}</span>
-                  <span className="text-emerald-400 text-[9px]">✔ Verified</span>
-                </div>
-                <div className="text-slate-400 text-[10px]">{distro.versions}</div>
-                {/* Arrow */}
-                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-700" />
-              </div>
-            )}
+            <AnimatePresence>
+              {isHovered && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 2, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 text-[10px] font-mono whitespace-nowrap shadow-xl z-50 pointer-events-none"
+                >
+                  <div className="font-bold text-white flex items-center gap-1">
+                    <span>{distro.name}</span>
+                    <span className="text-emerald-400 text-[9px]">✔ Verified</span>
+                  </div>
+                  <div className="text-slate-400 text-[10px]">{distro.versions}</div>
+                  {/* Arrow */}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-700" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         );
       })}

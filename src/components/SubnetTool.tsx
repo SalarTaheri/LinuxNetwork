@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { motion } from 'motion/react';
 import { Calculator, Network, Globe, Layers, ArrowUpDown, Terminal, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Language } from '../types';
 import { translations } from '../i18n/translations';
@@ -91,7 +92,7 @@ ip route get ${result.firstUsableIp}
                   value={ipInput}
                   onChange={(e) => setIpInput(e.target.value.trim())}
                   placeholder={t.subnet.ipPlaceholder}
-                  className={`w-full bg-slate-950/80 border rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none ${
+                  className={`w-full bg-slate-950/80 border rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none transition-colors ${
                     isValid
                       ? 'border-slate-700/80 focus:border-emerald-500'
                       : 'border-rose-500/80 text-rose-300 focus:border-rose-500'
@@ -115,7 +116,7 @@ ip route get ${result.firstUsableIp}
               <select
                 value={cidr}
                 onChange={(e) => setCidr(parseInt(e.target.value, 10))}
-                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-2 text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500 cursor-pointer"
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-2 text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500 cursor-pointer transition-colors"
                 dir="ltr"
               >
                 {Array.from({ length: 25 }, (_, i) => i + 8).map((mask) => (
@@ -134,18 +135,20 @@ ip route get ${result.firstUsableIp}
             </div>
             <div className="flex flex-wrap gap-1.5 font-mono text-xs" dir="ltr">
               {[8, 16, 22, 24, 26, 28, 29, 30, 32].map((m) => (
-                <button
+                <motion.button
                   key={m}
+                  whileHover={{ scale: 1.06 }}
+                  whileTap={{ scale: 0.94 }}
                   type="button"
                   onClick={() => setCidr(m)}
-                  className={`px-2.5 py-1 rounded text-xs border transition-all cursor-pointer ${
+                  className={`px-2.5 py-1 rounded text-xs border transition-colors cursor-pointer ${
                     cidr === m
                       ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold'
                       : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-slate-200'
                   }`}
                 >
                   /{m}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
@@ -181,15 +184,53 @@ ip route get ${result.firstUsableIp}
 
         {/* Calculated Breakdown Results Table */}
         {result && (
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-3">
-            <h3 className="text-xs font-semibold text-slate-300 flex items-center gap-2">
-              <Network className="w-4 h-4 text-emerald-400" />
-              <span>{t.subnet.resultsTitle}</span>
-            </h3>
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                <Network className="w-4 h-4 text-emerald-400" />
+                <span>{t.subnet.resultsTitle}</span>
+              </h3>
+              <span className="text-[11px] font-mono text-emerald-400 font-semibold">
+                /{result.cidr} Subnet
+              </span>
+            </div>
+
+            {/* Visual Network vs Host Bit Allocation Bar */}
+            <div className="bg-slate-950/80 p-3 rounded-lg border border-slate-800 space-y-2">
+              <div className="flex items-center justify-between text-[11px] font-mono">
+                <span className="flex items-center gap-1.5 text-emerald-300">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  Network: {result.cidr} bits
+                </span>
+                <span className="flex items-center gap-1.5 text-cyan-300">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
+                  Hosts: {32 - result.cidr} bits
+                </span>
+              </div>
+              <div className="h-2.5 w-full bg-slate-900 rounded-full overflow-hidden flex p-0.5 border border-slate-800">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-l-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(result.cidr / 32) * 100}%` }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+                />
+                <motion.div
+                  className="h-full bg-gradient-to-r from-cyan-500 to-sky-400 rounded-r-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${((32 - result.cidr) / 32) * 100}%` }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+                />
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono" dir="ltr">
               {/* Network Address */}
-              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5">
+              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5 hover:border-emerald-500/30 transition-colors">
                 <span className="text-[10px] text-slate-500 block uppercase tracking-wider">
                   {t.subnet.netAddress}
                 </span>
@@ -199,7 +240,7 @@ ip route get ${result.firstUsableIp}
               </div>
 
               {/* Broadcast Address */}
-              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5">
+              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5 hover:border-emerald-500/30 transition-colors">
                 <span className="text-[10px] text-slate-500 block uppercase tracking-wider">
                   {t.subnet.broadcast}
                 </span>
@@ -209,7 +250,7 @@ ip route get ${result.firstUsableIp}
               </div>
 
               {/* Usable Range */}
-              <div className="sm:col-span-2 bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5">
+              <div className="sm:col-span-2 bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5 hover:border-cyan-500/30 transition-colors">
                 <span className="text-[10px] text-slate-500 block uppercase tracking-wider">
                   {t.subnet.usableRange}
                 </span>
@@ -219,7 +260,7 @@ ip route get ${result.firstUsableIp}
               </div>
 
               {/* Usable Hosts */}
-              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5">
+              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5 hover:border-amber-500/30 transition-colors">
                 <span className="text-[10px] text-slate-500 block uppercase tracking-wider">
                   {t.subnet.usableHosts}
                 </span>
@@ -232,7 +273,7 @@ ip route get ${result.firstUsableIp}
               </div>
 
               {/* Subnet Mask */}
-              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5">
+              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5 hover:border-slate-700 transition-colors">
                 <span className="text-[10px] text-slate-500 block uppercase tracking-wider">
                   {t.subnet.netmask}
                 </span>
@@ -242,7 +283,7 @@ ip route get ${result.firstUsableIp}
               </div>
 
               {/* Wildcard Mask */}
-              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5">
+              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5 hover:border-slate-700 transition-colors">
                 <span className="text-[10px] text-slate-500 block uppercase tracking-wider">
                   {t.subnet.wildcard}
                 </span>
@@ -252,7 +293,7 @@ ip route get ${result.firstUsableIp}
               </div>
 
               {/* Scope & Class */}
-              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5">
+              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-0.5 hover:border-slate-700 transition-colors">
                 <span className="text-[10px] text-slate-500 block uppercase tracking-wider">
                   {t.subnet.ipClass} / {t.subnet.ipScope}
                 </span>
@@ -262,7 +303,7 @@ ip route get ${result.firstUsableIp}
               </div>
 
               {/* Binary Representation */}
-              <div className="sm:col-span-2 bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-1">
+              <div className="sm:col-span-2 bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-1 hover:border-slate-700 transition-colors">
                 <span className="text-[10px] text-slate-500 block uppercase tracking-wider">
                   {t.subnet.binaryIp}
                 </span>
@@ -276,7 +317,7 @@ ip route get ${result.firstUsableIp}
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
 

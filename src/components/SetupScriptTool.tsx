@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Terminal, Shield, Cpu, Layers, Copy, Check, ExternalLink, Download, AlertTriangle } from 'lucide-react';
 import { Language, SetupScriptSettings } from '../types';
 import { translations } from '../i18n/translations';
@@ -153,18 +154,45 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
           <code className="whitespace-nowrap flex-1 font-semibold text-slate-100 select-all" dir="ltr">
             {oneLinerCommand}
           </code>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             type="button"
             onClick={handleCopyOneLiner}
-            className={`ml-3 shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer ${
+            className={`ml-3 shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer ${
               copiedOneLiner
-                ? 'bg-emerald-500 text-slate-950 font-bold'
+                ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/30'
                 : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40'
             }`}
           >
-            {copiedOneLiner ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{copiedOneLiner ? t.setup.copied : t.setup.copyCommand}</span>
-          </button>
+            <AnimatePresence mode="wait" initial={false}>
+              {copiedOneLiner ? (
+                <motion.span
+                  key="check"
+                  initial={{ scale: 0.6, rotate: -20, opacity: 0 }}
+                  animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                  exit={{ scale: 0.6, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                  className="flex items-center gap-1.5"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span>{t.setup.copied}</span>
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="copy"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex items-center gap-1.5"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{t.setup.copyCommand}</span>
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
         </div>
 
         {/* Standalone HTML Link and info */}

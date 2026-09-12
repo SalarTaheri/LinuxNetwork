@@ -8,6 +8,16 @@ export const translations = {
     github: 'گیت‌هاب',
     docs: 'مستندات',
     
+    // Navigation
+    nav: {
+      home: 'صفحه اصلی',
+      toolbox: 'جعبه‌ابزار',
+      launchToolbox: 'ورود به جعبه‌ابزار',
+      tools: 'ابزارها',
+      whyUs: 'امنیت و معماری',
+      faq: 'سوالات متداول',
+    },
+    
     // Tabs
     tabs: {
       setup: 'اسکریپت ستاپ سرور (setup.sh)',
@@ -227,6 +237,106 @@ export const translations = {
       invalidIpError: 'آدرس آی‌پی وارد شده معتبر نمی‌باشد (فرمت استاندارد: x.x.x.x با بازه ۰ تا ۲۵۵)',
     },
 
+    landing: {
+      hero: {
+        badge: 'v1.2.0 • کاملاً کلاینت‌ساید و متن‌باز',
+        titlePrefix: 'پلتفرم مهندسی شبکه، ',
+        titleHighlight: 'تیونینگ کرنل و کانفیگ لینوکس',
+        subtitle: 'مجموعه ابزارهای تخصصی برای فعال‌سازی BBR، ایمن‌سازی سرور، ساخت کانفیگ‌های استاندارد Nginx و WireGuard، و محاسبات پیشرفته شبکه — کاملاً در مرورگر، امن و بدون لاگ.',
+        ctaLaunch: 'ورود به جعبه‌ابزار',
+        ctaGithub: 'مشاهده در گیت‌هاب',
+        terminalTitle: 'وان‌لاینر ستاپ سریع سرور (setup.sh)',
+        terminalDesc: 'اجرای ایمن‌سازی، فعال‌سازی BBR، داکر با میرور ایرانی و ابزارهای مانیتورینگ با یک دستور:',
+        distrosLabel: 'توزیع‌های پشتیبانی‌شده:',
+        copied: 'دستور با موفقیت کپی شد!',
+        copyCmd: 'کپی دستور',
+      },
+      toolsSection: {
+        badge: 'ماژول‌های تخصصی',
+        title: 'جعبه‌ابزاری کامل برای مدیران سرور و مهندسین دوآپس',
+        subtitle: 'هر ابزار به صورت مستقل، امن و بلادرنگ کانفیگ‌های بهینه‌سازی‌شده و منطبق بر استانداردهای مهندسی تولید می‌کند.',
+        openTool: 'باز کردن ابزار',
+        items: {
+          setup: {
+            title: 'اسکریپت ستاپ سرور (setup.sh)',
+            desc: 'تولید اسکریپت شل جامع برای پیکربندی اولیه سرور، تغییر پورت SSH، فعال‌سازی Fail2ban، فایروال، و نصب داکر با میرورهای پرسرعت ایرانی.',
+            badge: 'Bash Automation',
+          },
+          sysctl: {
+            title: 'بهینه‌ساز کرنل و استک TCP/IP',
+            desc: 'تیونینگ دقیق پارامترهای sysctl.conf متناسب با رم و پهنای باند، کنترل ازدحام BBR، کاهش بافربلوت و تنظیم بهینه بافرهای شبکه.',
+            badge: 'sysctl.conf',
+          },
+          nginx: {
+            title: 'سازنده کانفیگ امن انجین‌ایکس',
+            desc: 'تولید کانفیگ ماژولار Reverse Proxy با پروفایل‌های مدرن موزیلا (TLS 1.3)، HTTP/2 و HTTP/3 (QUIC)، ارتقای WebSocket و هدرهای امنیتی.',
+            badge: 'Reverse Proxy',
+          },
+          wireguard: {
+            title: 'کانفیگوریشن تانل وایرگارد',
+            desc: 'تولید جفت‌کلیدهای رمزنگاری Curve25519 با Web Crypto API داخل مرورگر، ساخت کانفیگ سرور و کلاینت همراه با کیو‌آرکد اختصاصی موبایل.',
+            badge: 'Web Crypto / QR Code',
+          },
+          subnet: {
+            title: 'محاسبه‌گر ساب‌نت و روتینگ',
+            desc: 'تفکیک دقیق رنج شبکه، ماسک و وایلدکارت، ظرفیت هاست‌ها، و تولید مستقیم دستورات ip route و iptables لینوکس.',
+            badge: 'CIDR & Routing',
+          },
+        },
+      },
+      securitySection: {
+        badge: 'معماری و حریم خصوصی',
+        title: 'چرا LinuxNetwork.ir امن‌ترین انتخاب شماست؟',
+        subtitle: 'اطلاعات زیرساخت، کلیدهای خصوصی و پارامترهای شبکه شما نباید دست هیچ سرور واسطی برسد.',
+        pillars: [
+          {
+            title: '۱۰۰٪ سمت مرورگر (Client-Side Only)',
+            desc: 'تمامی محاسبات، ژنراتورها و تولید کلیدهای رمزنگاری با Web Crypto API مستقیماً در مرورگر شما انجام می‌شوند. هیچ سرور بک‌اندی برای ثبت یا لاگین وجود ندارد.',
+          },
+          {
+            title: 'منطبق بر استانداردهای جهانی',
+            desc: 'کانفیگ‌های خروجی بر مبنای راهنماهای امنیتی رسمی موزیلا، اسناد رسمی هسته لینوکس و تجربیات عملیاتی مهندسی DevOps توسعه یافته‌اند.',
+          },
+          {
+            title: 'متن‌باز و بدون نیاز به ثبت‌نام',
+            desc: 'بدون ثبت ایمیل، بدون کوکی رهگیری و بدون تبلیغات. پروژه کاملاً متن‌باز تحت مجوز MIT روی گیت‌هاب در دسترس همگان است.',
+          },
+        ],
+      },
+      distrosSection: {
+        badge: 'سازگاری گسترده',
+        title: 'پشتیبانی از تمامی توزیع‌های معتبر لینوکس',
+        subtitle: 'اسکریپت‌ها و دستورات تولیدی به صورت خودکار پکیج‌منیجر و سیستم Init سرور را تشخیص می‌دهند.',
+      },
+      faqSection: {
+        badge: 'پرسش‌های متداول',
+        title: 'پاسخ به سوالات پرتکرار',
+        items: [
+          {
+            q: 'آیا اجرای اسکریپت setup.sh روی سرور تازه امن است؟',
+            a: 'بله، اسکریپت به‌صورت ماژولار و شفاف نوشته شده و تنها بسته‌های رسمی را نصب می‌کند. تمامی مراحل قبل از اعمال توسط شما در پنل پیش‌نمایش قابل مشاهده و ممیزی است.',
+          },
+          {
+            q: 'کلیدهای رمزنگاری WireGuard چگونه تولید می‌شوند؟',
+            a: 'با استفاده از Web Crypto API مرورگر، محاسبات منحنی Curve25519 مستقیماً روی دستگاه شما انجام می‌شود و هیچ اطلاعات حساسی به اینترنت ارسال نخواهد شد.',
+          },
+          {
+            q: 'آیا تنظیمات BBR و sysctl بر روی سرورهای ابری ایرانی و خارجی کار می‌کند؟',
+            a: 'بله، پروفایل‌های ارائه‌شده برای انواع مجازی‌سازهای KVM و سرورهای اختصاصی تست شده و سبب بهبود چشمگیر پهنای باند و کاهش لیتنسی می‌شوند.',
+          },
+          {
+            q: 'چگونه می‌توانم در بهبود این پروژه مشارکت کنم؟',
+            a: 'پروژه به صورت کامل روی گیت‌هاب متن‌باز است. شما می‌توانید با گزارش باگ، ثبت PR یا پیشنهاد قابلیت‌های جدید به جمع توسعه‌دهندگان آن بپیوندید.',
+          },
+        ],
+      },
+      ctaSection: {
+        title: 'آماده بهینه‌سازی سرورهای لینوکس خود هستید؟',
+        subtitle: 'بدون نیاز به ثبت‌نام، همین حالا وارد جعبه‌ابزار شوید و سرور خود را در چند کلیک پیکربندی کنید.',
+        button: 'ورود مستقیم به جعبه‌ابزار',
+      },
+    },
+
     footer: {
       rights: 'تمامی حقوق متعلق به جامعه متخصصین شبکه و لینوکس ایران است.',
       openSource: 'متن‌باز و رایگان با حفظ کامل حریم خصوصی کلاینت.',
@@ -241,6 +351,16 @@ export const translations = {
     switchLang: 'فارسی',
     github: 'GitHub',
     docs: 'Documentation',
+
+    // Navigation
+    nav: {
+      home: 'Home',
+      toolbox: 'Toolbox',
+      launchToolbox: 'Launch Toolbox',
+      tools: 'Tools',
+      whyUs: 'Security & Architecture',
+      faq: 'FAQ',
+    },
 
     tabs: {
       setup: 'Setup Script Generator',
@@ -453,6 +573,106 @@ export const translations = {
       natIptablesCmd: 'NAT Masquerade with iptables:',
       checkRouteCmd: 'Verify Destination Route Lookup:',
       invalidIpError: 'Invalid IPv4 address format (expected standard x.x.x.x with octets 0-255)',
+    },
+
+    landing: {
+      hero: {
+        badge: 'v1.2.0 • 100% Client-Side & Open Source',
+        titlePrefix: 'Modern Linux Network & ',
+        titleHighlight: 'Kernel Optimization Suite',
+        subtitle: 'Production-grade BBR congestion tuning, automated server setup, Nginx reverse proxy generator, WireGuard configurator, and CIDR subnet calculator — 100% client-side, zero-logging, and blazing fast.',
+        ctaLaunch: 'Launch Toolbox',
+        ctaGithub: 'Star on GitHub',
+        terminalTitle: 'Quick Server Setup (One-Liner)',
+        terminalDesc: 'Execute hardening, Google BBR tuning, and devops toolchain in a single command:',
+        distrosLabel: 'Supported Distributions:',
+        copied: 'Command copied to clipboard!',
+        copyCmd: 'Copy Command',
+      },
+      toolsSection: {
+        badge: 'Core Modules',
+        title: 'Built for Sysadmins, DevOps & Network Engineers',
+        subtitle: 'Each tool generates production-ready, security-audited configurations in real time with zero backend dependencies.',
+        openTool: 'Open Tool',
+        items: {
+          setup: {
+            title: 'Server Setup Script (setup.sh)',
+            desc: 'Generate custom Bash scripts for SSH hardening, Fail2ban, UFW/Firewalld/Iptables, BBRv3, and Docker Engine with local mirror endpoints.',
+            badge: 'Bash Automation',
+          },
+          sysctl: {
+            title: 'Kernel & TCP/IP Tuning',
+            desc: 'Fine-tune Linux sysctl parameters based on RAM and bandwidth for high concurrency, ultra-low latency, or proxy transit.',
+            badge: 'sysctl.conf',
+          },
+          nginx: {
+            title: 'Production Nginx Builder',
+            desc: 'Generate production-ready Nginx server blocks with Mozilla SSL TLS 1.3 profiles, HTTP/2 & HTTP/3, WebSockets, and security headers.',
+            badge: 'Reverse Proxy',
+          },
+          wireguard: {
+            title: 'WireGuard VPN Configurator',
+            desc: 'Instant server and client configs with Curve25519 cryptographic keypairs generated inside your browser and instant QR codes.',
+            badge: 'Web Crypto / QR Code',
+          },
+          subnet: {
+            title: 'CIDR & Routing Calculator',
+            desc: 'Visual IPv4 network breakdown, netmask, usable IP range, binary address masks, and ready-to-run Linux iproute2 commands.',
+            badge: 'CIDR & Routing',
+          },
+        },
+      },
+      securitySection: {
+        badge: 'Security Architecture',
+        title: 'Why LinuxNetwork.ir is 100% Secure & Private',
+        subtitle: 'Your infrastructure configs and cryptographic keys should never touch a third-party server.',
+        pillars: [
+          {
+            title: '100% Client-Side Computing',
+            desc: 'All scripts, subnet masks, and cryptographic key generation execute entirely in your browser using the Web Crypto API. Zero telemetry.',
+          },
+          {
+            title: 'Industry Standard Best Practices',
+            desc: 'Configurations follow Mozilla Modern SSL guidelines, Linux kernel documentation, and CIS server hardening practices.',
+          },
+          {
+            title: 'Frictionless, Free & Open Source',
+            desc: 'No account creation, no cookies, no tracking. Completely free and open-source under the MIT license on GitHub.',
+          },
+        ],
+      },
+      distrosSection: {
+        badge: 'Broad Compatibility',
+        title: 'Runs on Every Major Linux Distribution',
+        subtitle: 'Auto-detects distribution package managers and systemd or OpenRC init systems.',
+      },
+      faqSection: {
+        badge: 'FAQ',
+        title: 'Frequently Asked Questions',
+        items: [
+          {
+            q: 'Is executing setup.sh safe on a production or fresh VPS?',
+            a: 'Yes. The script is modular, transparent, and only pulls official upstream packages. You can preview, inspect, and customize every flag before running.',
+          },
+          {
+            q: 'How are WireGuard private and public keys generated?',
+            a: 'Keys are computed locally in your browser using the native Web Crypto API (Curve25519). Nothing is ever sent to any remote server.',
+          },
+          {
+            q: 'Does BBR and sysctl optimization work on cloud VMs?',
+            a: 'Yes, our presets are tested on KVM virtualization and bare-metal servers, providing significant throughput gains and latency reductions.',
+          },
+          {
+            q: 'Can I contribute or suggest new tools?',
+            a: 'Absolutely! The project is 100% open source on GitHub. Issues, feature requests, and pull requests are warmly welcomed.',
+          },
+        ],
+      },
+      ctaSection: {
+        title: 'Ready to Optimize Your Linux Infrastructure?',
+        subtitle: 'Jump right into the toolbox and configure your server in seconds.',
+        button: 'Launch Linux Toolbox',
+      },
     },
 
     footer: {

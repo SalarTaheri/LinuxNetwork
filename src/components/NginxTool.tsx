@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { Globe2, Server, ArrowRightLeft, Lock, Sliders } from 'lucide-react';
 import { Language, NginxSettings } from '../types';
 import { translations } from '../i18n/translations';
@@ -95,28 +96,42 @@ export const NginxTool: React.FC<NginxToolProps> = ({ lang }) => {
                 <ArrowRightLeft className="w-3.5 h-3.5 text-cyan-400" />
                 <span>{t.nginx.upstreamTypeLabel}</span>
               </label>
-              <div className="flex items-center gap-2 text-xs font-mono" dir="ltr">
+              <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-lg border border-slate-800 text-xs font-mono" dir="ltr">
                 <button
                   type="button"
                   onClick={() => setSettings({ ...settings, upstreamType: 'http', upstreamAddress: '127.0.0.1:8080' })}
-                  className={`px-2.5 py-1 rounded text-xs transition-all cursor-pointer ${
+                  className={`relative px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
                     settings.upstreamType === 'http'
-                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                      ? 'text-cyan-200 font-bold'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  TCP / HTTP
+                  {settings.upstreamType === 'http' && (
+                    <motion.div
+                      layoutId="nginxUpstreamType"
+                      className="absolute inset-0 bg-cyan-500/20 border border-cyan-500/40 rounded"
+                      transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                    />
+                  )}
+                  <span className="relative z-10">TCP / HTTP</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setSettings({ ...settings, upstreamType: 'unix', upstreamAddress: '/run/gunicorn.sock' })}
-                  className={`px-2.5 py-1 rounded text-xs transition-all cursor-pointer ${
+                  className={`relative px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
                     settings.upstreamType === 'unix'
-                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                      ? 'text-cyan-200 font-bold'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  Unix Socket
+                  {settings.upstreamType === 'unix' && (
+                    <motion.div
+                      layoutId="nginxUpstreamType"
+                      className="absolute inset-0 bg-cyan-500/20 border border-cyan-500/40 rounded"
+                      transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                    />
+                  )}
+                  <span className="relative z-10">Unix Socket</span>
                 </button>
               </div>
             </div>

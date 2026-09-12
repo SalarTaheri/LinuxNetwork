@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Copy, Check, Download, Terminal, FileCode, Play, RefreshCw } from 'lucide-react';
 import { Language } from '../types';
 import { translations } from '../i18n/translations';
@@ -96,51 +97,73 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
           <div className="flex items-center gap-1.5 text-xs text-slate-300 font-mono" dir="ltr">
             <FileCode className="w-3.5 h-3.5 text-cyan-400" />
             <span className="font-semibold text-slate-200">{filename}</span>
+            <span className="relative flex h-1.5 w-1.5 ml-1">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
+            </span>
           </div>
         </div>
 
-        {/* View Switcher Tabs */}
+        {/* View Switcher Tabs with Animated Sliding Pill */}
         <div className="flex items-center gap-1 bg-slate-900/80 p-1 rounded-lg border border-slate-800 text-xs font-mono">
           <button
             id="tab-view-config"
+            type="button"
             onClick={() => setActiveTab('config')}
-            className={`px-2.5 py-1 rounded transition-all flex items-center gap-1.5 cursor-pointer ${
-              activeTab === 'config'
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-slate-200'
+            className={`relative px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+              activeTab === 'config' ? 'text-emerald-200 font-semibold' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <FileCode className="w-3 h-3" />
-            <span>{t.output.activeTabConfig}</span>
+            {activeTab === 'config' && (
+              <motion.div
+                layoutId="codeViewTabPill"
+                className="absolute inset-0 bg-emerald-500/20 rounded border border-emerald-500/40"
+                transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+              />
+            )}
+            <FileCode className="w-3 h-3 relative z-10" />
+            <span className="relative z-10">{t.output.activeTabConfig}</span>
           </button>
 
           {oneLinerBash && (
             <button
               id="tab-view-bash"
+              type="button"
               onClick={() => setActiveTab('bash')}
-              className={`px-2.5 py-1 rounded transition-all flex items-center gap-1.5 cursor-pointer ${
-                activeTab === 'bash'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                  : 'text-slate-400 hover:text-slate-200'
+              className={`relative px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'bash' ? 'text-cyan-200 font-semibold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Terminal className="w-3 h-3" />
-              <span>{t.output.activeTabBash}</span>
+              {activeTab === 'bash' && (
+                <motion.div
+                  layoutId="codeViewTabPill"
+                  className="absolute inset-0 bg-cyan-500/20 rounded border border-cyan-500/40"
+                  transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                />
+              )}
+              <Terminal className="w-3 h-3 relative z-10" />
+              <span className="relative z-10">{t.output.activeTabBash}</span>
             </button>
           )}
 
           {reloadCommand && (
             <button
               id="tab-view-reload"
+              type="button"
               onClick={() => setActiveTab('reload')}
-              className={`px-2.5 py-1 rounded transition-all flex items-center gap-1.5 cursor-pointer ${
-                activeTab === 'reload'
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                  : 'text-slate-400 hover:text-slate-200'
+              className={`relative px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'reload' ? 'text-amber-200 font-semibold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <RefreshCw className="w-3 h-3" />
-              <span>{t.output.activeTabReload}</span>
+              {activeTab === 'reload' && (
+                <motion.div
+                  layoutId="codeViewTabPill"
+                  className="absolute inset-0 bg-amber-500/20 rounded border border-amber-500/40"
+                  transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                />
+              )}
+              <RefreshCw className="w-3 h-3 relative z-10" />
+              <span className="relative z-10">{t.output.activeTabReload}</span>
             </button>
           )}
         </div>
@@ -148,7 +171,9 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
         {/* Action Buttons */}
         <div className="flex items-center gap-2">
           {/* Copy Current / Config */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.96 }}
             id="copy-config-btn"
             onClick={activeTab === 'bash' ? handleCopyBash : activeTab === 'reload' ? handleCopyReload : handleCopyConfig}
             aria-label={
@@ -158,36 +183,54 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
                 ? t.output.copyBash
                 : t.output.copyConfig
             }
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm ${
               copiedConfig || copiedBash || copiedReload
-                ? 'bg-emerald-600 text-white border border-emerald-500'
+                ? 'bg-emerald-600 text-white border border-emerald-500 shadow-emerald-900/50 shadow-md'
                 : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30'
             }`}
           >
-            {copiedConfig || copiedBash || copiedReload ? (
-              <>
-                <Check className="w-3.5 h-3.5" />
-                <span>{t.output.copied}</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5" />
-                <span>{activeTab === 'bash' ? t.output.copyBash : t.output.copyConfig}</span>
-              </>
-            )}
-          </button>
+            <AnimatePresence mode="wait" initial={false}>
+              {copiedConfig || copiedBash || copiedReload ? (
+                <motion.span
+                  key="check"
+                  initial={{ scale: 0.6, rotate: -20, opacity: 0 }}
+                  animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                  exit={{ scale: 0.6, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                  className="flex items-center gap-1.5"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span>{t.output.copied}</span>
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="copy"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex items-center gap-1.5"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{activeTab === 'bash' ? t.output.copyBash : t.output.copyConfig}</span>
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
 
           {/* Download button for config */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             id="download-conf-btn"
             onClick={handleDownload}
             aria-label={`${t.output.download} ${filename}`}
-            className="px-2.5 py-1.5 rounded-lg text-xs font-mono text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-2.5 py-1.5 rounded-lg text-xs font-mono text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 transition-colors flex items-center gap-1.5 cursor-pointer"
             title={t.output.download}
           >
             <Download className="w-3.5 h-3.5 text-cyan-400" />
             <span className="hidden sm:inline">{t.output.download}</span>
-          </button>
+          </motion.button>
         </div>
       </div>
 
@@ -204,40 +247,49 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
 
       {/* Code Editor Body - ALWAYS dir="ltr" and font-mono */}
       <div className="relative flex-1 overflow-auto bg-[#070b14] p-4 text-xs font-mono text-slate-200 leading-relaxed" dir="ltr">
-        <div className="flex gap-3 min-w-max">
-          {/* Line Numbers */}
-          <div className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0">
-            {lines.map((_, i) => (
-              <div key={i} className="leading-6">
-                {i + 1}
-              </div>
-            ))}
-          </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0.3 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0.3 }}
+            transition={{ duration: 0.15 }}
+            className="flex gap-3 min-w-max"
+          >
+            {/* Line Numbers */}
+            <div className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0">
+              {lines.map((_, i) => (
+                <div key={i} className="leading-6">
+                  {i + 1}
+                </div>
+              ))}
+            </div>
 
-          {/* Code Lines with Syntax Coloring */}
-          <pre className="font-mono flex-1 leading-6 focus:outline-none">
-            <code>
-              {lines.map((line, i) => {
-                const isComment = line.trim().startsWith('#') || line.trim().startsWith('//');
-                const isSectionHeader = line.trim().startsWith('[') && line.trim().endsWith(']');
-                const isDirective = /^(listen|server_name|proxy_|ssl_|add_header|client_|net\.|fs\.)/.test(line.trim());
-                const isCommand = line.trim().startsWith('sudo') || line.trim().startsWith('sysctl') || line.trim().startsWith('nginx');
+            {/* Code Lines with Syntax Coloring */}
+            <pre className="font-mono flex-1 leading-6 focus:outline-none">
+              <code>
+                {lines.map((line, i) => {
+                  const isComment = line.trim().startsWith('#') || line.trim().startsWith('//');
+                  const isSectionHeader = line.trim().startsWith('[') && line.trim().endsWith(']');
+                  const isDirective = /^(listen|server_name|proxy_|ssl_|add_header|client_|net\.|fs\.)/.test(line.trim());
+                  const isCommand = line.trim().startsWith('sudo') || line.trim().startsWith('sysctl') || line.trim().startsWith('nginx');
 
-                let lineClass = 'text-slate-200';
-                if (isComment) lineClass = 'text-slate-500 italic';
-                else if (isSectionHeader) lineClass = 'text-amber-400 font-bold';
-                else if (isDirective) lineClass = 'text-emerald-300';
-                else if (isCommand) lineClass = 'text-cyan-300 font-semibold';
+                  let lineClass = 'text-slate-200';
+                  if (isComment) lineClass = 'text-slate-500 italic';
+                  else if (isSectionHeader) lineClass = 'text-amber-400 font-bold';
+                  else if (isDirective) lineClass = 'text-emerald-300';
+                  else if (isCommand) lineClass = 'text-cyan-300 font-semibold';
 
-                return (
-                  <div key={i} className={`${lineClass} whitespace-pre`}>
-                    {line || ' '}
-                  </div>
-                );
-              })}
-            </code>
-          </pre>
-        </div>
+                  return (
+                    <div key={i} className={`${lineClass} whitespace-pre`}>
+                      {line || ' '}
+                    </div>
+                  );
+                })}
+              </code>
+            </pre>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Quick One-Liner Bash Footer Bar */}
@@ -247,14 +299,16 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
             <Play className="w-3.5 h-3.5 text-emerald-400" />
             <span className="text-xs">{t.output.copyBash}:</span>
           </div>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             id="quick-copy-bash-btn"
             onClick={handleCopyBash}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-mono transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-mono transition-colors cursor-pointer"
           >
             {copiedBash ? <Check className="w-3 h-3 text-emerald-400" /> : <Terminal className="w-3 h-3 text-cyan-400" />}
             <span>{copiedBash ? t.output.copied : 'sudo bash -c ...'}</span>
-          </button>
+          </motion.button>
         </div>
       )}
     </div>

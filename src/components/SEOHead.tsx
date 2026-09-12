@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Share2, Check, Copy, ExternalLink, Eye, Code, Globe, ShieldCheck, X } from 'lucide-react';
-import { Language, ToolTab } from '../types';
-import { SEO_CONFIG, SITE_CONFIG, ToolSEOData } from '../data/seoConfig';
+import { Language, ToolTab, PageView } from '../types';
+import { SEO_CONFIG, LANDING_SEO_CONFIG, SITE_CONFIG, ToolSEOData } from '../data/seoConfig';
 
 interface SEOHeadProps {
+  view?: PageView;
   activeTab: ToolTab;
   lang: Language;
 }
 
-export const SEOHead: React.FC<SEOHeadProps> = ({ activeTab, lang }) => {
+export const SEOHead: React.FC<SEOHeadProps> = ({ view = 'toolbox', activeTab, lang }) => {
   const [copied, setCopied] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [activePreviewTab, setActivePreviewTab] = useState<'card' | 'meta' | 'jsonld'>('card');
 
-  const currentSEO: ToolSEOData = SEO_CONFIG[activeTab][lang];
-  const shareUrl = `${SITE_CONFIG.siteUrl}/?tool=${activeTab}`;
+  const isLanding = view === 'landing';
+  const currentSEO: ToolSEOData = isLanding ? LANDING_SEO_CONFIG[lang] : SEO_CONFIG[activeTab][lang];
+  const shareUrl = isLanding ? SITE_CONFIG.siteUrl : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}`;
 
   // Dynamically update document title, meta tags, and structured JSON-LD data
   useEffect(() => {
@@ -41,7 +43,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ activeTab, lang }) => {
     // 3. Open Graph (Facebook, Telegram, LinkedIn, Discord)
     setMetaTag('property', 'og:title', currentSEO.ogTitle);
     setMetaTag('property', 'og:description', currentSEO.ogDescription);
-    setMetaTag('property', 'og:url', `${SITE_CONFIG.siteUrl}/?tool=${activeTab}&lang=${lang}`);
+    setMetaTag('property', 'og:url', isLanding ? `${SITE_CONFIG.siteUrl}/?lang=${lang}` : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}&lang=${lang}`);
     setMetaTag('property', 'og:type', 'website');
     setMetaTag('property', 'og:site_name', SITE_CONFIG.siteName);
     setMetaTag('property', 'og:locale', lang === 'fa' ? 'fa_IR' : 'en_US');
@@ -67,7 +69,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ activeTab, lang }) => {
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', `${SITE_CONFIG.siteUrl}/?tool=${activeTab}`);
+    canonical.setAttribute('href', isLanding ? SITE_CONFIG.siteUrl : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}`);
 
     // 6. Schema.org JSON-LD Structured Data
     let schemaScript = document.getElementById('seo-structured-data') as HTMLScriptElement | null;
@@ -83,7 +85,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ activeTab, lang }) => {
       '@type': 'WebApplication',
       name: currentSEO.title,
       headline: currentSEO.headline,
-      url: `${SITE_CONFIG.siteUrl}/?tool=${activeTab}`,
+      url: isLanding ? SITE_CONFIG.siteUrl : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}`,
       applicationCategory: 'NetworkingApplication',
       operatingSystem: 'Linux (Ubuntu, Debian, CentOS, RHEL, AlmaLinux)',
       browserRequirements: 'Requires JavaScript. 100% Client-Side Private Processing.',
@@ -108,13 +110,23 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ activeTab, lang }) => {
 
     // 7. Update browser address bar without reload
     try {
-      const currentUrl = new URL(window.location.href);
-      currentUrl.searchParams.set('tool', activeTab);
-      window.history.replaceState(null, '', currentUrl.toString());
+      if (isLanding) {
+        // Keep root or clean url when in landing view
+        const currentUrl = new URL(window.location.href);
+        if (currentUrl.searchParams.has('tool')) {
+          currentUrl.searchParams.delete('tool');
+          const target = currentUrl.search ? `${currentUrl.pathname}?${currentUrl.searchParams.toString()}` : currentUrl.pathname;
+          window.history.replaceState(null, '', target === '/app' ? '/' : target);
+        }
+      } else {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('tool', activeTab);
+        window.history.replaceState(null, '', currentUrl.toString());
+      }
     } catch {
       // In sandboxed environments if URL manipulation is restricted, fail gracefully
     }
-  }, [activeTab, lang, currentSEO]);
+  }, [activeTab, lang, currentSEO, isLanding]);
 
   const copyShareLink = async () => {
     try {
@@ -152,6 +164,10 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ activeTab, lang }) => {
   };
 
   const isFa = lang === 'fa';
+
+  if (isLanding) {
+    return null;
+  }
 
   return (
     <>

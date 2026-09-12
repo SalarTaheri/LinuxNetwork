@@ -1,0 +1,251 @@
+import React, { useEffect, useRef } from 'react';
+
+interface Node {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  radius: number;
+  pulsePhase: number;
+}
+
+interface Packet {
+  sourceIndex: number;
+  targetIndex: number;
+  progress: number;
+  speed: number;
+  color: string;
+}
+
+export const NetworkBackground: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+
+    // Check prefers-reduced-motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      ctx.fillStyle = '#090d16';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+
+    let animationFrameId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Mouse coordinates
+    const mouse = { x: -1000, y: -1000, active: false };
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      mouse.active = true;
+    };
+    const handleMouseLeave = () => {
+      mouse.active = false;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    document.addEventListener('mouseleave', handleMouseLeave);
+
+    // Create network nodes (scaled conservatively to maintain 60 FPS on any hardware)
+    const nodeCount = Math.min(Math.floor((width * height) / 28000), 50);
+    const nodes: Node[] = [];
+
+    for (let i = 0; i < nodeCount; i++) {
+      nodes.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        radius: Math.random() * 1.5 + 1.2,
+        pulsePhase: Math.random() * Math.PI * 2,
+      });
+    }
+
+    // Network packets travelling between nodes
+    const packets: Packet[] = [];
+    const maxPackets = 12;
+    const packetColors = ['#10b981', '#06b6d4', '#38bdf8', '#34d399'];
+
+    const spawnPacket = (fromIdx: number, toIdx: number) => {
+      if (packets.length >= maxPackets) return;
+      packets.push({
+        sourceIndex: fromIdx,
+        targetIndex: toIdx,
+        progress: 0,
+        speed: 0.008 + Math.random() * 0.012,
+        color: packetColors[Math.floor(Math.random() * packetColors.length)],
+      });
+    };
+
+    let lastTime = performance.now();
+    let isVisible = true;
+
+    const handleVisibilityChange = () => {
+      isVisible = !document.hidden;
+      if (isVisible) {
+        lastTime = performance.now();
+        loop(lastTime);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    const maxDistance = 145;
+
+    const loop = (currentTime: number) => {
+      if (!isVisible) return;
+      animationFrameId = requestAnimationFrame(loop);
+
+      const dt = Math.min((currentTime - lastTime) / 1000, 0.1);
+      lastTime = currentTime;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Update and draw nodes
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+
+        node.x += node.vx;
+        node.y += node.vy;
+        node.pulsePhase += dt * 1.5;
+
+        // Bounce on borders with padding
+        if (node.x < 10) {
+          node.x = 10;
+          node.vx *= -1;
+        } else if (node.x > width - 10) {
+          node.x = width - 10;
+          node.vx *= -1;
+        }
+        if (node.y < 10) {
+          node.y = 10;
+          node.vy *= -1;
+        } else if (node.y > height - 10) {
+          node.y = height - 10;
+          node.vy *= -1;
+        }
+
+        // Slight mouse repulsion/interaction
+        if (mouse.active) {
+          const dx = node.x - mouse.x;
+          const dy = node.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120 && dist > 0) {
+            const force = (120 - dist) / 120;
+            node.x += (dx / dist) * force * 0.8;
+            node.y += (dy / dist) * force * 0.8;
+          }
+        }
+      }
+
+      // Draw connection edges
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const n1 = nodes[i];
+          const n2 = nodes[j];
+          const dx = n1.x - n2.x;
+          const dy = n1.y - n2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < maxDistance) {
+            const alpha = (1 - dist / maxDistance) * 0.2;
+            ctx.beginPath();
+            ctx.moveTo(n1.x, n1.y);
+            ctx.lineTo(n2.x, n2.y);
+            ctx.strokeStyle = `rgba(16, 185, 129, ${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+
+            // Randomly trigger a packet across active edge
+            if (Math.random() < 0.0006 && packets.length < maxPackets) {
+              spawnPacket(i, j);
+            }
+          }
+        }
+      }
+
+      // Draw packets
+      for (let k = packets.length - 1; k >= 0; k--) {
+        const p = packets[k];
+        const s = nodes[p.sourceIndex];
+        const t = nodes[p.targetIndex];
+
+        if (!s || !t) {
+          packets.splice(k, 1);
+          continue;
+        }
+
+        p.progress += p.speed;
+
+        if (p.progress >= 1) {
+          packets.splice(k, 1);
+          continue;
+        }
+
+        const px = s.x + (t.x - s.x) * p.progress;
+        const py = s.y + (t.y - s.y) * p.progress;
+
+        // Packet glow dot
+        ctx.beginPath();
+        ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 6;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+
+      // Draw nodes on top
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+        const pulse = Math.sin(node.pulsePhase) * 0.35 + 0.65;
+
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(52, 211, 153, ${0.45 * pulse})`;
+        ctx.fill();
+
+        // Subtle node glow aura
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius * 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(16, 185, 129, ${0.08 * pulse})`;
+        ctx.fill();
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(loop);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      className="fixed inset-0 pointer-events-none z-0 opacity-60 transition-opacity duration-1000"
+    />
+  );
+};
