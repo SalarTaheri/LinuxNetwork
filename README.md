@@ -17,6 +17,7 @@
   <a href="#-quick-server-setup-one-liner">Quick Setup</a> •
   <a href="#-tools-overview">Tools Overview</a> •
   <a href="#-local-development">Development</a> •
+  <a href="#-versioning--releases">Versioning</a> •
   <a href="#-توضیحات-فارسی">راهنمای فارسی</a> •
   <a href="#-license">License</a>
 </p>
@@ -130,10 +131,24 @@ npm run build
 npm run preview
 ```
 
-### Cloudflare Deployment
+### 🏷️ Versioning & Releases
+
+This project follows automated semantic versioning with a single source of truth in `package.json`. Deployments to Cloudflare Workers are automated via GitHub Actions on Git tag push:
 
 ```bash
-# Deploy via Cloudflare Workers
+# 1. Bump version and generate git tag (e.g. 2.4.0 -> 2.4.1)
+npm version patch   # or minor / major
+
+# 2. Push commit and tag to GitHub to trigger automated deployment
+git push origin main --tags
+```
+
+📖 For full details and rollback guides, see the [Versioning Guide](VERSIONING.md).
+
+### Cloudflare Direct Deployment
+
+```bash
+# Deploy directly via Cloudflare Workers CLI
 npm run deploy
 ```
 
@@ -149,6 +164,7 @@ npm run deploy
 3. **پیکربندی حرفه‌ای Nginx:** تولید کانفیگ ریورس پروکسی همراه با SSL/TLS سخت‌گیرانه، HTTP/2 و HTTP/3، سوکت وب و ریت‌لیمیتینگ.
 4. **کانفیگوراتور WireGuard:** تولید فوری جفت‌کلید، کانفیگ سرور و کلاینت به همراه تولید بارکد QR برای گوشی‌های هوشمند.
 5. **ماشین‌حساب ساب‌نت (CIDR):** محاسبه محدوده IPهای قابل استفاده، نت‌ماسک، وایلدکارت و نمایش باینری.
+6. **مدیریت یکپارچه نسخه‌ها و دیپلوی خودکار (CI/CD):** نسخه‌بندی خودکار با `npm version`، تزریق داینامیک نسخه به رابط کاربری، و استقرار آنی روی Cloudflare Workers با گیت‌هاب اکشن (مشاهده مستندات: [VERSIONING.md](VERSIONING.md)).
 
 ---
 

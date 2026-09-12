@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({ lang, onToggleLang }) => {
                 LinuxNetwork<span className="text-emerald-400">.ir</span>
               </span>
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono">
-                v2.4 LTS
+                v{__APP_VERSION__}
               </span>
             </div>
             <p className="text-xs text-slate-400 font-medium">
