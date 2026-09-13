@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Shield, Key, RefreshCw, Smartphone, Server, Network, Sliders, CheckCircle2, QrCode } from 'lucide-react';
+import { Shield, Key, RefreshCw, Smartphone, Server } from 'lucide-react';
 import { Language, WireGuardSettings } from '../types';
 import { translations } from '../i18n/translations';
 import { generateWireGuardKeyPair } from '../utils/crypto';
