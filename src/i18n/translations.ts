@@ -25,6 +25,32 @@ export const translations = {
       nginx: 'سازنده کانفیگ انجین‌ایکس',
       wireguard: 'سازنده کانفیگ وایرگارد',
       subnet: 'محاسبه‌گر سابنت و روتینگ',
+      routing: 'مسیریابی و فایروال (NAT & Route)',
+    },
+
+    // Toolbox Navigation & Command Bar
+    toolboxNav: {
+      categories: {
+        all: 'همه ابزارها',
+        server: 'سرور و کرنل',
+        network: 'شبکه و روتینگ',
+        security: 'امنیت و پروکسی',
+      },
+      searchBtn: 'جستجوی ابزارها',
+      searchPlaceholder: 'جستجوی ابزار، قابلیت یا کلیدواژه (BBR، NAT، Docker، Nginx، CIDR)...',
+      searchHint: 'میانبر صفحه کلید: ⌘K یا Ctrl+K',
+      noResults: 'هیچ ابزاری با این عبارت پیدا نشد.',
+      toolsCount: 'ابزار تخصصی',
+      categoryCount: 'دسته‌بندی',
+      allToolsDropdown: 'انتخاب سریع ابزار',
+      compactTabs: {
+        setup: 'setup.sh',
+        sysctl: 'Sysctl / BBR',
+        nginx: 'Nginx Proxy',
+        wireguard: 'WireGuard',
+        subnet: 'CIDR Subnet',
+        routing: 'NAT & Route',
+      },
     },
 
     // Setup script tool
@@ -237,6 +263,72 @@ export const translations = {
       invalidIpError: 'آدرس آی‌پی وارد شده معتبر نمی‌باشد (فرمت استاندارد: x.x.x.x با بازه ۰ تا ۲۵۵)',
     },
 
+    // Routing & NAT tool
+    routing: {
+      badge: 'Iptables, Nftables & NAT',
+      title: 'استودیو مسیریابی، فایروال و NAT لینوکس',
+      subtitle: 'پیکربندی هوشمند و بدون خطای اشتراک اینترنت، پورت فورواردینگ (DNAT)، ایمن‌سازی داکر و پالیسی روتینگ لینوکس',
+      scenarioSelect: 'انتخاب سناریوی شبکه',
+      scenarios: {
+        nat_gateway: {
+          title: 'اشتراک اینترنت (NAT Gateway)',
+          desc: 'تبدیل سرور به گیت‌وی اینترنت برای ماشین‌های مجازی یا کلاینت‌های شبکه محلی (MASQUERADE / SNAT)',
+        },
+        port_forward: {
+          title: 'پورت فورواردینگ (DNAT)',
+          desc: 'هدایت پورت ورودی اینترنت به سرویس داخلی به همراه رفع باگ فیلتر و Hairpin NAT',
+        },
+        docker_shield: {
+          title: 'ایمن‌سازی پورت داکر (DOCKER-USER)',
+          desc: 'مهار دسترسی پابلیک به پورت کانتینرها و محدودسازی به IP یا VPN مجاز',
+        },
+        pbr_multiwan: {
+          title: 'مسیریابی چند خط (Multi-WAN & PBR)',
+          desc: 'مسیریابی بر اساس پالیسی جهت بازگشت ترافیک از همان اینترفیس ورودی بدون قطعی',
+        },
+        rate_limit: {
+          title: 'محدودسازی نرخ اتصالات (Rate Limiting)',
+          desc: 'دفاع در لایه کرنل لینوکس (xt_recent) در برابر حملات Brute-Force به پورت‌های حساس مثل SSH',
+        },
+      },
+      wanIfLabel: 'اینترفیس اینترنت / عمومی (WAN Interface):',
+      lanIfLabel: 'اینترفیس شبکه داخلی (LAN Interface):',
+      lanSubnetLabel: 'ساب‌نت شبکه داخلی (CIDR):',
+      natModeLabel: 'نوع ترجمه آدرس شبکه (NAT Mode):',
+      natModeMasq: 'دینامیک (MASQUERADE - ابری / DHCP)',
+      natModeSnat: 'استاتیک (SNAT - آی‌پی ثابت)',
+      staticIpLabel: 'آدرس IP پابلیک استاتیک سرور:',
+      dnsFwdLabel: 'اجازه ارسال درخواست‌های DNS به این سرور (Port 53)',
+      mssClampLabel: 'فعال‌سازی MSS Clamping (حل مشکل باز نشدن سایت‌ها در تانل‌ها و PPPoE)',
+      protoLabel: 'پروتکل ارتباطی (Protocol):',
+      extPortLabel: 'پورت ورودی روی سرور گیت‌وی (External Port):',
+      intIpLabel: 'آدرس IP سرور داخلی مقصد (Target Internal IP):',
+      intPortLabel: 'پورت سرویس روی سرور داخلی (Target Internal Port):',
+      hairpinNatLabel: 'فعال‌سازی Hairpin NAT (NAT Reflection)',
+      hairpinNatTooltip: 'این گزینه بسیار حیاتی است: اگر کلاینت‌های درون شبکه محلی بخواهند با IP پابلیک به همین پورت فوروارد شده وصل شوند، بدون Hairpin NAT ارتباط تایم‌اوت می‌شود.',
+      dockerPortLabel: 'پورت کانتینر داکر برای محدودسازی:',
+      dockerSubnetLabel: 'آی‌پی یا ساب‌نت مجاز برای دسترسی (Allowed CIDR):',
+      dockerActionLabel: 'سیاست برخورد با سایر آی‌پی‌ها:',
+      dockerExpl: 'داکر مستقیماً زنجیره‌های FORWARD و PREROUTING را دستکاری می‌کند و فایروال‌های سنتی مثل UFW یا رول‌های INPUT را دور می‌زند. این کانفیگ با استفاده از زنجیره رسمی DOCKER-USER امنیت کانتینر شما را تضمین می‌کند.',
+      secIfLabel: 'اینترفیس خط دوم یا تانل (Secondary Interface):',
+      secIpLabel: 'آدرس IP اینترفیس دوم:',
+      secGwLabel: 'گیت‌وی اینترفیس دوم (Secondary Gateway):',
+      pbrTableLabel: 'شماره جدول مسیریابی (Table ID):',
+      pbrTableNameLabel: 'نام جدول مسیریابی (Table Name):',
+      rpFilterLabel: 'تنظیم فیلتر مسیر معکوس به حالت Loose (rp_filter = 2)',
+      rpFilterTooltip: 'جلوگیری از دراپ شدن بی‌صدای بسته‌های بازگشتی ناشی از مسیریابی نامتقارن (Asymmetric Routing) توسط کرنل لینوکس.',
+      rateLimitPortLabel: 'پورت هدف برای ریت لیمیتینگ:',
+      rateLimitHitsLabel: 'حداکثر اتصالات جدید مجاز در پنجره زمانی:',
+      rateLimitWindowLabel: 'بازه ارزیابی اتصالات (ثانیه):',
+      rateLimitBlockLabel: 'مدت زمان مسدودسازی آی‌پی متخلف (ثانیه):',
+      outputTabs: {
+        iptables: 'دستورات مستقیم iptables',
+        nftables: 'فایل مدرن nftables.conf',
+        oneLiner: 'وان‌لاینر نصب با ماندگاری',
+        diagnostics: 'تست زنده، مانیتورینگ و رول‌بک',
+      },
+    },
+
     landing: {
       hero: {
         badge: 'کاملاً کلاینت‌ساید و متن‌باز',
@@ -281,6 +373,11 @@ export const translations = {
             title: 'محاسبه‌گر ساب‌نت و روتینگ',
             desc: 'تفکیک دقیق رنج شبکه، ماسک و وایلدکارت، ظرفیت هاست‌ها، و تولید مستقیم دستورات ip route و iptables لینوکس.',
             badge: 'CIDR & Routing',
+          },
+          routing: {
+            title: 'استودیو روتینگ و فایروال (NAT & Route)',
+            desc: 'پیکربندی خودکار NAT Gateway، پورت فورواردینگ، حل تداخل فایروال داکر و پالیسی روتینگ چند خط اینترنت با تولید همزمان iptables و nftables.',
+            badge: 'NAT / Iptables / Route',
           },
         },
       },
@@ -368,6 +465,32 @@ export const translations = {
       nginx: 'Nginx Reverse Proxy Builder',
       wireguard: 'WireGuard Quick Peer Config',
       subnet: 'CIDR & Subnet Calculator',
+      routing: 'Routing & NAT Studio',
+    },
+
+    // Toolbox Navigation & Command Bar
+    toolboxNav: {
+      categories: {
+        all: 'All Tools',
+        server: 'Server & Kernel',
+        network: 'Network & Routing',
+        security: 'Security & Proxy',
+      },
+      searchBtn: 'Search tools',
+      searchPlaceholder: 'Search tools, features, or keywords (BBR, NAT, Docker, Nginx, CIDR)...',
+      searchHint: 'Keyboard shortcut: ⌘K or Ctrl+K',
+      noResults: 'No tools matching your query.',
+      toolsCount: 'Tools',
+      categoryCount: 'Categories',
+      allToolsDropdown: 'Quick Switch Tool',
+      compactTabs: {
+        setup: 'setup.sh',
+        sysctl: 'Sysctl / BBR',
+        nginx: 'Nginx Proxy',
+        wireguard: 'WireGuard',
+        subnet: 'CIDR Subnet',
+        routing: 'NAT & Route',
+      },
     },
 
     // Setup script tool
@@ -575,6 +698,72 @@ export const translations = {
       invalidIpError: 'Invalid IPv4 address format (expected standard x.x.x.x with octets 0-255)',
     },
 
+    // Routing & NAT tool
+    routing: {
+      badge: 'Iptables, Nftables & NAT',
+      title: 'Linux Routing, NAT & Firewall Studio',
+      subtitle: 'Production-ready iptables & nftables generator for NAT gateways, port forwarding, Docker isolation, and multi-WAN routing',
+      scenarioSelect: 'Select Network Scenario',
+      scenarios: {
+        nat_gateway: {
+          title: 'NAT Gateway & Internet Sharing',
+          desc: 'Share host internet connection with internal VMs or private LAN hosts (MASQUERADE / SNAT)',
+        },
+        port_forward: {
+          title: 'Port Forwarding (DNAT)',
+          desc: 'Redirect external traffic to internal IP:Port with automatic filter rules and Hairpin NAT',
+        },
+        docker_shield: {
+          title: 'Docker Port Shield (DOCKER-USER)',
+          desc: 'Lock down exposed container ports to trusted subnets via the official DOCKER-USER chain',
+        },
+        pbr_multiwan: {
+          title: 'Policy Routing (Multi-WAN & PBR)',
+          desc: 'Prevent asymmetric routing drops across multiple ISPs, interfaces, or VPN tunnels',
+        },
+        rate_limit: {
+          title: 'Connection Rate Limiting (xt_recent)',
+          desc: 'Kernel-level connection throttling and temporary IP banning against SSH/API brute-force',
+        },
+      },
+      wanIfLabel: 'Public / Inbound Interface (WAN):',
+      lanIfLabel: 'Internal / Private Interface (LAN):',
+      lanSubnetLabel: 'Internal Subnet (CIDR):',
+      natModeLabel: 'NAT Address Translation Mode:',
+      natModeMasq: 'Dynamic (MASQUERADE - DHCP / Cloud)',
+      natModeSnat: 'Static (SNAT - Fixed Public IP)',
+      staticIpLabel: 'Static Public IP Address:',
+      dnsFwdLabel: 'Allow LAN clients to query DNS resolver on Gateway (Port 53)',
+      mssClampLabel: 'Enable TCP MSS Clamping (Prevents PMTU blackholes on PPPoE/Tunnels)',
+      protoLabel: 'Transport Protocol:',
+      extPortLabel: 'External Port on Gateway:',
+      intIpLabel: 'Internal Target IP Address:',
+      intPortLabel: 'Internal Target Service Port:',
+      hairpinNatLabel: 'Enable Hairpin NAT (NAT Reflection)',
+      hairpinNatTooltip: 'Crucial if internal LAN machines need to access the forwarded service using the external public IP without connection timeouts.',
+      dockerPortLabel: 'Exposed Docker Port to Restrict:',
+      dockerSubnetLabel: 'Allowed Client IP or Subnet (CIDR):',
+      dockerActionLabel: 'Action for Non-Whitelisted Public Traffic:',
+      dockerExpl: 'Docker manipulates PREROUTING and FORWARD chains directly, bypassing UFW and standard INPUT rules. This configuration uses the official DOCKER-USER chain to enforce security.',
+      secIfLabel: 'Secondary / Tunnel Interface:',
+      secIpLabel: 'IP Address on Secondary Interface:',
+      secGwLabel: 'Gateway for Secondary Interface:',
+      pbrTableLabel: 'Routing Table ID:',
+      pbrTableNameLabel: 'Routing Table Name:',
+      rpFilterLabel: 'Enable Loose Reverse Path Filtering (rp_filter = 2)',
+      rpFilterTooltip: 'Prevents the Linux kernel from silently dropping valid asymmetric return packets across multiple network interfaces.',
+      rateLimitPortLabel: 'Target Port to Throttle:',
+      rateLimitHitsLabel: 'Max Allowed New Connections in Window:',
+      rateLimitWindowLabel: 'Evaluation Window (Seconds):',
+      rateLimitBlockLabel: 'Temporary Ban Duration (Seconds):',
+      outputTabs: {
+        iptables: 'Classic iptables CLI',
+        nftables: 'Modern /etc/nftables.conf',
+        oneLiner: 'Persistent One-Liner Script',
+        diagnostics: 'Diagnostics & Rollback',
+      },
+    },
+
     landing: {
       hero: {
         badge: '100% Client-Side & Open Source',
@@ -619,6 +808,11 @@ export const translations = {
             title: 'CIDR & Routing Calculator',
             desc: 'Visual IPv4 network breakdown, netmask, usable IP range, binary address masks, and ready-to-run Linux iproute2 commands.',
             badge: 'CIDR & Routing',
+          },
+          routing: {
+            title: 'Routing & NAT Studio',
+            desc: 'Production-ready iptables & nftables generator for NAT gateways, port forwarding with reflection NAT, Docker isolation, and multi-WAN routing.',
+            badge: 'NAT / Iptables / Route',
           },
         },
       },

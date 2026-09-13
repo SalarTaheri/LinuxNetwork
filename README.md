@@ -90,6 +90,7 @@ Or run interactively with full UI at [https://linuxnetwork.ir](https://linuxnetw
 | **Nginx Proxy** | `/?tool=nginx` | Clean, modular Nginx server block configs with SSL, cache, and proxy rules. |
 | **WireGuard** | `/?tool=wireguard` | Fast WireGuard tunnel configs with client QR codes and interface routing. |
 | **Subnet Calculator** | `/?tool=subnet` | Visual IPv4 CIDR network planner and host range calculator. |
+| **Routing & NAT Studio** | `/?tool=routing` | Production-ready Iptables & Nftables generator for NAT gateways, port forwarding, and Docker. |
 
 ---
 
@@ -170,7 +171,8 @@ npm run deploy
 3. **پیکربندی حرفه‌ای Nginx:** تولید کانفیگ ریورس پروکسی همراه با SSL/TLS سخت‌گیرانه، HTTP/2 و HTTP/3، سوکت وب و ریت‌لیمیتینگ.
 4. **کانفیگوراتور WireGuard:** تولید فوری جفت‌کلید، کانفیگ سرور و کلاینت به همراه تولید بارکد QR برای گوشی‌های هوشمند.
 5. **ماشین‌حساب ساب‌نت (CIDR):** محاسبه محدوده IPهای قابل استفاده، نت‌ماسک، وایلدکارت و نمایش باینری.
-6. **مدیریت یکپارچه نسخه‌ها و دیپلوی خودکار (CI/CD):** نسخه‌بندی خودکار با `npm version`، تزریق داینامیک نسخه به رابط کاربری، و استقرار آنی روی Cloudflare Workers با گیت‌هاب اکشن (مشاهده مستندات: [VERSIONING.md](VERSIONING.md)).
+6. **استودیو مسیریابی و فایروال (Routing & NAT Studio):** تولید قوانین بدون خطای Iptables و Nftables برای راه‌اندازی NAT Gateway، پورت فورواردینگ با رفع مشکل Hairpin NAT، ایمن‌سازی پورت کانتینرهای داکر (DOCKER-USER) و پالیسی روتینگ چند خط اینترنت (Multi-WAN).
+7. **مدیریت یکپارچه نسخه‌ها و دیپلوی خودکار (CI/CD):** نسخه‌بندی خودکار با `npm version`، تزریق داینامیک نسخه به رابط کاربری، و استقرار آنی روی Cloudflare Workers با گیت‌هاب اکشن (مشاهده مستندات: [VERSIONING.md](VERSIONING.md)).
 
 ---
 

@@ -2,7 +2,9 @@ export type Language = 'fa' | 'en';
 
 export type PageView = 'landing' | 'toolbox';
 
-export type ToolTab = 'setup' | 'sysctl' | 'nginx' | 'wireguard' | 'subnet';
+export type ToolTab = 'setup' | 'sysctl' | 'nginx' | 'wireguard' | 'subnet' | 'routing';
+
+export type ToolCategory = 'all' | 'server' | 'network' | 'security';
 
 export interface SetupScriptSettings {
   enableBbr: boolean;
@@ -94,4 +96,52 @@ export interface SubnetCalculation {
   ipScope: string;
   binaryIp: string;
   ptrRecord: string;
+}
+
+export type RoutingScenario =
+  | 'nat_gateway'
+  | 'port_forward'
+  | 'docker_shield'
+  | 'pbr_multiwan'
+  | 'rate_limit';
+
+export type NatMode = 'masquerade' | 'snat';
+export type Protocol = 'tcp' | 'udp' | 'both';
+
+export interface RoutingSettings {
+  scenario: RoutingScenario;
+  // NAT Gateway settings
+  wanInterface: string;
+  lanInterface: string;
+  lanSubnet: string;
+  natMode: NatMode;
+  staticPublicIp: string;
+  enableDnsForwarding: boolean;
+  enableMssClamping: boolean;
+
+  // Port Forwarding settings
+  protocol: Protocol;
+  externalPort: string;
+  internalIp: string;
+  internalPort: string;
+  enableHairpinNat: boolean;
+
+  // Docker Shield settings
+  dockerPort: string;
+  dockerAllowedSubnet: string;
+  dockerAction: 'DROP' | 'REJECT';
+
+  // Policy-Based Routing (Multi-WAN) settings
+  secondaryInterface: string;
+  secondaryIp: string;
+  secondaryGateway: string;
+  pbrTableNumber: number;
+  pbrTableName: string;
+  enableLooseRpFilter: boolean;
+
+  // Rate Limiting settings
+  rateLimitPort: string;
+  rateLimitMaxHits: number;
+  rateLimitWindowSeconds: number;
+  rateLimitBlockSeconds: number;
 }

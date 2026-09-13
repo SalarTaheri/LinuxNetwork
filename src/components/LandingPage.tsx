@@ -6,6 +6,7 @@ import {
   Globe2,
   Shield,
   Calculator,
+  Route,
   ArrowRight,
   ArrowLeft,
   Copy,
@@ -151,6 +152,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ lang, onLaunchToolbox 
       highlights: isFa
         ? ['تفکیک شبکه و آدرس Broadcast', 'محاسبه دقیق هاست‌های مفید', 'نمایش وایلدکارت و باینری', 'دستورات آماده ip route و iptables']
         : ['Network & Broadcast IPs', 'Usable Host Capacity', 'Wildcard & Binary Masks', 'Ready iproute2 & iptables CLI'],
+    },
+    {
+      id: 'routing',
+      title: l.toolsSection.items.routing.title,
+      desc: l.toolsSection.items.routing.desc,
+      badge: l.toolsSection.items.routing.badge,
+      icon: <Route className="w-5 h-5" />,
+      colorClasses: {
+        glow: 'group-hover:border-emerald-500/50 group-hover:shadow-emerald-950/40',
+        badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+        iconBg: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+        button: 'bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border-emerald-500/30',
+      },
+      highlights: isFa
+        ? ['اشتراک اینترنت NAT Gateway', 'پورت فورواردینگ و Hairpin NAT', 'ایمن‌سازی پورت‌های داکر (DOCKER-USER)', 'پالیسی روتینگ و سینتکس nftables']
+        : ['NAT Gateway & Masquerade', 'Port Forwarding & Hairpin NAT', 'Docker Protection (DOCKER-USER)', 'Policy Routing & Modern nftables'],
     },
   ];
 
