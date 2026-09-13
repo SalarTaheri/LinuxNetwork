@@ -275,10 +275,11 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
             <pre className="font-mono flex-1 leading-6 focus:outline-none">
               <code>
                 {lines.map((line, i) => {
-                  const isComment = line.trim().startsWith('#') || line.trim().startsWith('//');
-                  const isSectionHeader = line.trim().startsWith('[') && line.trim().endsWith(']');
-                  const isDirective = /^(listen|server_name|proxy_|ssl_|add_header|client_|net\.|fs\.)/.test(line.trim());
-                  const isCommand = line.trim().startsWith('sudo') || line.trim().startsWith('sysctl') || line.trim().startsWith('nginx');
+                  const trimmed = line.trim();
+                  const isComment = trimmed.startsWith('#') || trimmed.startsWith('//');
+                  const isSectionHeader = trimmed.startsWith('[') && trimmed.endsWith(']');
+                  const isDirective = /^(listen|server_name|proxy_|ssl_|add_header|client_|net\.|fs\.)/.test(trimmed);
+                  const isCommand = trimmed.startsWith('sudo') || trimmed.startsWith('sysctl') || trimmed.startsWith('nginx');
 
                   let lineClass = 'text-slate-200';
                   if (isComment) lineClass = 'text-slate-500 italic';
