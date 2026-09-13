@@ -295,10 +295,39 @@ ensure_epel_repo() {
     fi
 }
 
+get_docker_os() {
+    if [[ "$OS_ID" == "ubuntu" ]] || [[ "${ID_LIKE:-}" =~ ubuntu ]]; then
+        echo "ubuntu"
+    else
+        echo "debian"
+    fi
+}
+
+sanitize_apt_sources() {
+    if [[ "$OS_FAMILY" == "debian" ]]; then
+        local docker_os
+        docker_os=$(get_docker_os)
+        local wrong_os="ubuntu"
+        if [[ "$docker_os" == "ubuntu" ]]; then
+            wrong_os="debian"
+        fi
+
+        local file
+        for file in /etc/apt/sources.list /etc/apt/sources.list.d/*.list; do
+            if [[ -f "$file" ]] && grep -q "download.docker.com/linux/${wrong_os}" "$file" 2>/dev/null; then
+                backup_file "$file"
+                sed -i "s|download.docker.com/linux/${wrong_os}|download.docker.com/linux/${docker_os}|g" "$file"
+                log_info "Corrected Docker repository URL in ${file} (${wrong_os} -> ${docker_os})"
+            fi
+        done
+    fi
+}
+
 pkg_update() {
     if [[ "$OS_FAMILY" == "debian" ]]; then
         export DEBIAN_FRONTEND=noninteractive
-        apt-get update -qq
+        sanitize_apt_sources
+        apt-get update -qq || log_warn "apt-get update encountered warnings or non-fatal repository errors."
     elif [[ "$OS_FAMILY" == "redhat" ]]; then
         if [[ "$PKG_MANAGER" == "dnf" ]]; then
             dnf makecache -q > /dev/null 2>&1 || true
@@ -484,7 +513,8 @@ apply_hardening() {
 
         if [[ "$OS_FAMILY" == "debian" ]]; then
             export DEBIAN_FRONTEND=noninteractive
-            apt-get update -qq && apt-get install -y -qq fail2ban > /dev/null
+            pkg_update
+            apt-get install -y -qq fail2ban > /dev/null
             banaction="ufw"
         elif [[ "$OS_FAMILY" == "redhat" ]]; then
             ensure_epel_repo
@@ -529,7 +559,8 @@ EOF
         if [[ "$OS_FAMILY" == "debian" ]]; then
             log_info "Configuring UFW (Uncomplicated Firewall)..."
             export DEBIAN_FRONTEND=noninteractive
-            apt-get update -qq && apt-get install -y -qq ufw > /dev/null
+            pkg_update
+            apt-get install -y -qq ufw > /dev/null
 
             ufw --force reset > /dev/null 2>&1
             ufw default deny incoming > /dev/null
@@ -580,21 +611,24 @@ install_docker() {
     log_step "Installing Docker Engine & Container Tools..."
 
     if [[ "$OS_FAMILY" == "debian" ]]; then
+        local docker_os
+        docker_os=$(get_docker_os)
+
         export DEBIAN_FRONTEND=noninteractive
-        apt-get update -qq
+        pkg_update
         apt-get install -y -qq ca-certificates curl gnupg lsb-release > /dev/null
 
         install -m 0755 -d /etc/apt/keyrings
         if [[ ! -f /etc/apt/keyrings/docker.gpg ]]; then
-            curl -fsSL "https://download.docker.com/linux/${OS_ID}/gpg" | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+            curl -fsSL "https://download.docker.com/linux/${docker_os}/gpg" | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
             chmod a+r /etc/apt/keyrings/docker.gpg
         fi
 
         echo \
-          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${OS_ID} \
+          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${docker_os} \
           ${OS_CODENAME} stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-        apt-get update -qq
+        pkg_update
         apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin > /dev/null
     elif [[ "$OS_FAMILY" == "redhat" ]]; then
         local docker_repo_name="centos"
@@ -660,7 +694,7 @@ install_tools() {
 
     if [[ "$OS_FAMILY" == "debian" ]]; then
         export DEBIAN_FRONTEND=noninteractive
-        apt-get update -qq
+        pkg_update
 
         local packages=(
             curl
