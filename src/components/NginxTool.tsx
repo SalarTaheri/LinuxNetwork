@@ -248,16 +248,20 @@ export const NginxTool: React.FC<NginxToolProps> = ({ lang }) => {
           {/* Client Max Body Size */}
           <div className="pt-2 border-t border-slate-800/80 space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-300 font-semibold">{t.nginx.clientMaxBodySize}:</span>
+              <label htmlFor="nginx-client-max-body-size" className="text-slate-300 font-semibold cursor-pointer">
+                {t.nginx.clientMaxBodySize}:
+              </label>
               <span className="font-mono text-cyan-400 font-bold">{settings.clientMaxBodySize} MB</span>
             </div>
             <input
+              id="nginx-client-max-body-size"
               type="range"
               min="1"
               max="500"
               step="5"
               value={settings.clientMaxBodySize}
               onChange={(e) => setSettings({ ...settings, clientMaxBodySize: parseInt(e.target.value, 10) })}
+              aria-valuetext={`${settings.clientMaxBodySize} MB`}
               className="w-full accent-cyan-400 cursor-pointer"
             />
           </div>

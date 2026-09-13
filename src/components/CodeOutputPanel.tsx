@@ -246,7 +246,13 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
       </div>
 
       {/* Code Editor Body - ALWAYS dir="ltr" and font-mono */}
-      <div className="relative flex-1 overflow-auto bg-[#070b14] p-4 text-xs font-mono text-slate-200 leading-relaxed" dir="ltr">
+      <div
+        className="relative flex-1 overflow-auto bg-[#070b14] p-4 text-xs font-mono text-slate-200 leading-relaxed focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+        tabIndex={0}
+        role="region"
+        aria-label={`${filename} - ${t.output.title}`}
+        dir="ltr"
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
