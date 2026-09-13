@@ -214,16 +214,97 @@ describe('getIpClass', () => {
 });
 
 describe('getIpScope', () => {
-  it('identifies RFC defined scope of IPv4 addresses', () => {
-    assert.strictEqual(getIpScope('10.0.0.1'), 'RFC 1918 Private (10.0.0.0/8)');
-    assert.strictEqual(getIpScope('172.16.0.1'), 'RFC 1918 Private (172.16.0.0/12)');
-    assert.strictEqual(getIpScope('192.168.1.1'), 'RFC 1918 Private (192.168.0.0/16)');
-    assert.strictEqual(getIpScope('127.0.0.1'), 'RFC 1122 Loopback (127.0.0.0/8)');
-    assert.strictEqual(getIpScope('169.254.1.1'), 'RFC 3927 Link-Local (APIPA)');
-    assert.strictEqual(getIpScope('100.64.0.1'), 'RFC 6598 Carrier-Grade NAT (CGNAT)');
-    assert.strictEqual(getIpScope('224.0.0.1'), 'Multicast');
-    assert.strictEqual(getIpScope('240.0.0.1'), 'Reserved / Experimental');
-    assert.strictEqual(getIpScope('8.8.8.8'), 'Global Public Unicast');
+  describe('RFC 1918 Private addresses', () => {
+    it('identifies 10.0.0.0/8 private block', () => {
+      assert.strictEqual(getIpScope('10.0.0.0'), 'RFC 1918 Private (10.0.0.0/8)');
+      assert.strictEqual(getIpScope('10.0.0.1'), 'RFC 1918 Private (10.0.0.0/8)');
+      assert.strictEqual(getIpScope('10.123.45.67'), 'RFC 1918 Private (10.0.0.0/8)');
+      assert.strictEqual(getIpScope('10.255.255.255'), 'RFC 1918 Private (10.0.0.0/8)');
+    });
+
+    it('identifies 172.16.0.0/12 private block boundaries', () => {
+      assert.strictEqual(getIpScope('172.16.0.0'), 'RFC 1918 Private (172.16.0.0/12)');
+      assert.strictEqual(getIpScope('172.16.0.1'), 'RFC 1918 Private (172.16.0.0/12)');
+      assert.strictEqual(getIpScope('172.20.100.1'), 'RFC 1918 Private (172.16.0.0/12)');
+      assert.strictEqual(getIpScope('172.31.255.255'), 'RFC 1918 Private (172.16.0.0/12)');
+    });
+
+    it('identifies 172.16.0.0/12 out-of-bounds addresses as public', () => {
+      assert.strictEqual(getIpScope('172.15.255.255'), 'Global Public Unicast');
+      assert.strictEqual(getIpScope('172.32.0.0'), 'Global Public Unicast');
+      assert.strictEqual(getIpScope('172.0.0.1'), 'Global Public Unicast');
+    });
+
+    it('identifies 192.168.0.0/16 private block', () => {
+      assert.strictEqual(getIpScope('192.168.0.0'), 'RFC 1918 Private (192.168.0.0/16)');
+      assert.strictEqual(getIpScope('192.168.1.1'), 'RFC 1918 Private (192.168.0.0/16)');
+      assert.strictEqual(getIpScope('192.168.255.255'), 'RFC 1918 Private (192.168.0.0/16)');
+    });
+
+    it('identifies non-private 192.x addresses as public', () => {
+      assert.strictEqual(getIpScope('192.167.1.1'), 'Global Public Unicast');
+      assert.strictEqual(getIpScope('192.169.1.1'), 'Global Public Unicast');
+      assert.strictEqual(getIpScope('192.0.2.1'), 'Global Public Unicast');
+    });
+  });
+
+  describe('RFC 1122 Loopback addresses', () => {
+    it('identifies 127.0.0.0/8 loopback block', () => {
+      assert.strictEqual(getIpScope('127.0.0.1'), 'RFC 1122 Loopback (127.0.0.0/8)');
+      assert.strictEqual(getIpScope('127.0.0.0'), 'RFC 1122 Loopback (127.0.0.0/8)');
+      assert.strictEqual(getIpScope('127.255.255.255'), 'RFC 1122 Loopback (127.0.0.0/8)');
+    });
+  });
+
+  describe('RFC 3927 Link-Local (APIPA) addresses', () => {
+    it('identifies 169.254.0.0/16 link-local block', () => {
+      assert.strictEqual(getIpScope('169.254.0.0'), 'RFC 3927 Link-Local (APIPA)');
+      assert.strictEqual(getIpScope('169.254.1.1'), 'RFC 3927 Link-Local (APIPA)');
+      assert.strictEqual(getIpScope('169.254.255.255'), 'RFC 3927 Link-Local (APIPA)');
+    });
+
+    it('identifies non-link-local 169.x addresses as public', () => {
+      assert.strictEqual(getIpScope('169.253.255.255'), 'Global Public Unicast');
+      assert.strictEqual(getIpScope('169.255.0.0'), 'Global Public Unicast');
+    });
+  });
+
+  describe('RFC 6598 Carrier-Grade NAT (CGNAT) addresses', () => {
+    it('identifies 100.64.0.0/10 CGNAT block boundaries', () => {
+      assert.strictEqual(getIpScope('100.64.0.0'), 'RFC 6598 Carrier-Grade NAT (CGNAT)');
+      assert.strictEqual(getIpScope('100.64.0.1'), 'RFC 6598 Carrier-Grade NAT (CGNAT)');
+      assert.strictEqual(getIpScope('100.100.0.1'), 'RFC 6598 Carrier-Grade NAT (CGNAT)');
+      assert.strictEqual(getIpScope('100.127.255.255'), 'RFC 6598 Carrier-Grade NAT (CGNAT)');
+    });
+
+    it('identifies 100.64.0.0/10 out-of-bounds addresses as public', () => {
+      assert.strictEqual(getIpScope('100.63.255.255'), 'Global Public Unicast');
+      assert.strictEqual(getIpScope('100.128.0.0'), 'Global Public Unicast');
+    });
+  });
+
+  describe('Multicast and Reserved addresses', () => {
+    it('identifies 224.0.0.0 - 239.255.255.255 Multicast addresses', () => {
+      assert.strictEqual(getIpScope('224.0.0.0'), 'Multicast');
+      assert.strictEqual(getIpScope('224.0.0.1'), 'Multicast');
+      assert.strictEqual(getIpScope('230.1.2.3'), 'Multicast');
+      assert.strictEqual(getIpScope('239.255.255.255'), 'Multicast');
+    });
+
+    it('identifies 240.0.0.0+ Reserved / Experimental addresses', () => {
+      assert.strictEqual(getIpScope('240.0.0.0'), 'Reserved / Experimental');
+      assert.strictEqual(getIpScope('240.0.0.1'), 'Reserved / Experimental');
+      assert.strictEqual(getIpScope('255.255.255.255'), 'Reserved / Experimental');
+    });
+  });
+
+  describe('Global Public Unicast addresses', () => {
+    it('identifies various global public IP addresses', () => {
+      assert.strictEqual(getIpScope('1.1.1.1'), 'Global Public Unicast');
+      assert.strictEqual(getIpScope('8.8.8.8'), 'Global Public Unicast');
+      assert.strictEqual(getIpScope('11.0.0.1'), 'Global Public Unicast');
+      assert.strictEqual(getIpScope('223.255.255.255'), 'Global Public Unicast');
+    });
   });
 });
 
