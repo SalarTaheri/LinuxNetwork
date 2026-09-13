@@ -451,3 +451,34 @@ describe('calculateSubnet', () => {
     assert.strictEqual(result.lastUsableIp, '10.0.0.1');
   });
 });
+
+describe('CIDR options benchmark', () => {
+  it('measures inline array allocation vs static array reference', () => {
+    const iterations = 100000;
+
+    const startInline = performance.now();
+    for (let i = 0; i < iterations; i++) {
+      const arr = Array.from({ length: 25 }, (_, idx) => idx + 8);
+      // simulate map / access
+      arr.forEach((m) => m);
+    }
+    const inlineTime = performance.now() - startInline;
+
+    const STATIC_CIDR_OPTIONS = Array.from({ length: 25 }, (_, idx) => idx + 8);
+    const startStatic = performance.now();
+    for (let i = 0; i < iterations; i++) {
+      const arr = STATIC_CIDR_OPTIONS;
+      arr.forEach((m) => m);
+    }
+    const staticTime = performance.now() - startStatic;
+
+    console.log(`\n--- BENCHMARK RESULTS (${iterations} iterations) ---`);
+    console.log(`Inline Array Creation: ${inlineTime.toFixed(3)} ms`);
+    console.log(`Static Array Reference: ${staticTime.toFixed(3)} ms`);
+    const speedup = (inlineTime / staticTime).toFixed(2);
+    console.log(`Speedup: ${speedup}x faster`);
+    console.log(`--------------------------------------------------\n`);
+
+    assert.ok(staticTime < inlineTime, 'Static array reference should be faster than inline creation');
+  });
+});

@@ -10,6 +10,8 @@ interface SubnetToolProps {
   lang: Language;
 }
 
+const CIDR_OPTIONS = Array.from({ length: 25 }, (_, i) => i + 8);
+
 export const SubnetTool: React.FC<SubnetToolProps> = ({ lang }) => {
   const t = translations[lang];
 
@@ -121,7 +123,7 @@ ip route get ${result.firstUsableIp}
                 className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-2 text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500 cursor-pointer transition-colors"
                 dir="ltr"
               >
-                {Array.from({ length: 25 }, (_, i) => i + 8).map((mask) => (
+                {CIDR_OPTIONS.map((mask) => (
                   <option key={mask} value={mask}>
                     /{mask}
                   </option>
