@@ -83,11 +83,12 @@ ip route get ${result.firstUsableIp}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* IP Address */}
             <div className="sm:col-span-2 space-y-1">
-              <label className="text-xs font-semibold text-slate-300">
+              <label htmlFor="subnet-ip-input" className="text-xs font-semibold text-slate-300 cursor-pointer">
                 {t.subnet.ipLabel}
               </label>
               <div className="relative">
                 <input
+                  id="subnet-ip-input"
                   type="text"
                   value={ipInput}
                   onChange={(e) => setIpInput(e.target.value.trim())}
@@ -110,10 +111,11 @@ ip route get ${result.firstUsableIp}
 
             {/* CIDR Dropdown */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-300">
+              <label htmlFor="subnet-cidr-select" className="text-xs font-semibold text-slate-300 cursor-pointer">
                 {t.subnet.cidrLabel}
               </label>
               <select
+                id="subnet-cidr-select"
                 value={cidr}
                 onChange={(e) => setCidr(parseInt(e.target.value, 10))}
                 className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-2 text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500 cursor-pointer transition-colors"
