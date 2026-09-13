@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Cpu, Server, Wifi, ShieldAlert, Zap, Layers, Activity, HardDrive, CheckCircle2 } from 'lucide-react';
+import { Cpu, Server, Wifi, Zap, Activity, HardDrive, CheckCircle2 } from 'lucide-react';
 import { Language, SysctlSettings, ServerProfile, RamSize, BandwidthTier } from '../types';
 import { translations } from '../i18n/translations';
 import { generateSysctlConfig, generateSysctlOneLiner } from '../utils/sysctlGenerator';
