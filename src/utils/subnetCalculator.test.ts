@@ -406,49 +406,188 @@ describe('getIpScope', () => {
 });
 
 describe('calculateSubnet', () => {
-  it('returns null for invalid IP or CIDR', () => {
-    assert.strictEqual(calculateSubnet('invalid-ip', 24), null);
-    assert.strictEqual(calculateSubnet('192.168.1.1', -1), null);
-    assert.strictEqual(calculateSubnet('192.168.1.1', 33), null);
+  describe('invalid inputs', () => {
+    it('returns null for malformed IPv4 strings', () => {
+      assert.strictEqual(calculateSubnet('invalid-ip', 24), null);
+      assert.strictEqual(calculateSubnet('256.0.0.1', 24), null);
+      assert.strictEqual(calculateSubnet('192.168.1', 24), null);
+      assert.strictEqual(calculateSubnet('', 24), null);
+      assert.strictEqual(calculateSubnet('192.168.01.1', 24), null);
+      assert.strictEqual(calculateSubnet('1.2.3.4.5', 24), null);
+    });
+
+    it('returns null for out-of-range CIDR values', () => {
+      assert.strictEqual(calculateSubnet('192.168.1.1', -1), null);
+      assert.strictEqual(calculateSubnet('192.168.1.1', 33), null);
+      assert.strictEqual(calculateSubnet('192.168.1.1', 100), null);
+    });
   });
 
-  it('calculates subnet details for standard /24 subnet', () => {
-    const result = calculateSubnet('192.168.1.50', 24);
-    assert.notStrictEqual(result, null);
-    if (!result) return;
+  describe('extreme CIDR boundaries', () => {
+    it('calculates subnet details for /0 CIDR (entire IPv4 internet)', () => {
+      const result = calculateSubnet('10.20.30.40', 0);
+      assert.notStrictEqual(result, null);
+      if (!result) return;
 
-    assert.strictEqual(result.ip, '192.168.1.50');
-    assert.strictEqual(result.cidr, 24);
-    assert.strictEqual(result.netmask, '255.255.255.0');
-    assert.strictEqual(result.wildcardMask, '0.0.0.255');
-    assert.strictEqual(result.networkAddress, '192.168.1.0');
-    assert.strictEqual(result.broadcastAddress, '192.168.1.255');
-    assert.strictEqual(result.firstUsableIp, '192.168.1.1');
-    assert.strictEqual(result.lastUsableIp, '192.168.1.254');
-    assert.strictEqual(result.totalHosts, 256);
-    assert.strictEqual(result.usableHosts, 254);
-    assert.strictEqual(result.ipClass, 'Class C');
-    assert.strictEqual(result.ptrRecord, '50.1.168.192.in-addr.arpa');
+      assert.strictEqual(result.ip, '10.20.30.40');
+      assert.strictEqual(result.cidr, 0);
+      assert.strictEqual(result.netmask, '0.0.0.0');
+      assert.strictEqual(result.wildcardMask, '255.255.255.255');
+      assert.strictEqual(result.networkAddress, '0.0.0.0');
+      assert.strictEqual(result.broadcastAddress, '255.255.255.255');
+      assert.strictEqual(result.firstUsableIp, '0.0.0.1');
+      assert.strictEqual(result.lastUsableIp, '255.255.255.254');
+      assert.strictEqual(result.totalHosts, 4294967296);
+      assert.strictEqual(result.usableHosts, 4294967294);
+      assert.strictEqual(result.netmaskHex, '0x00000000');
+    });
+
+    it('calculates subnet details for /32 CIDR (single host)', () => {
+      const result = calculateSubnet('10.0.0.5', 32);
+      assert.notStrictEqual(result, null);
+      if (!result) return;
+
+      assert.strictEqual(result.ip, '10.0.0.5');
+      assert.strictEqual(result.cidr, 32);
+      assert.strictEqual(result.netmask, '255.255.255.255');
+      assert.strictEqual(result.wildcardMask, '0.0.0.0');
+      assert.strictEqual(result.networkAddress, '10.0.0.5');
+      assert.strictEqual(result.broadcastAddress, '10.0.0.5');
+      assert.strictEqual(result.firstUsableIp, '10.0.0.5');
+      assert.strictEqual(result.lastUsableIp, '10.0.0.5');
+      assert.strictEqual(result.totalHosts, 1);
+      assert.strictEqual(result.usableHosts, 1);
+      assert.strictEqual(result.netmaskHex, '0xFFFFFFFF');
+    });
+
+    it('calculates subnet details for /31 CIDR (RFC 3021 Point-to-Point links)', () => {
+      const result = calculateSubnet('10.0.0.0', 31);
+      assert.notStrictEqual(result, null);
+      if (!result) return;
+
+      assert.strictEqual(result.ip, '10.0.0.0');
+      assert.strictEqual(result.cidr, 31);
+      assert.strictEqual(result.netmask, '255.255.255.254');
+      assert.strictEqual(result.wildcardMask, '0.0.0.1');
+      assert.strictEqual(result.networkAddress, '10.0.0.0');
+      assert.strictEqual(result.broadcastAddress, '10.0.0.1');
+      assert.strictEqual(result.firstUsableIp, '10.0.0.0');
+      assert.strictEqual(result.lastUsableIp, '10.0.0.1');
+      assert.strictEqual(result.totalHosts, 2);
+      assert.strictEqual(result.usableHosts, 2);
+    });
+
+    it('calculates subnet details for /30 CIDR (smallest standard multi-host subnet)', () => {
+      const result = calculateSubnet('192.168.1.4', 30);
+      assert.notStrictEqual(result, null);
+      if (!result) return;
+
+      assert.strictEqual(result.networkAddress, '192.168.1.4');
+      assert.strictEqual(result.broadcastAddress, '192.168.1.7');
+      assert.strictEqual(result.firstUsableIp, '192.168.1.5');
+      assert.strictEqual(result.lastUsableIp, '192.168.1.6');
+      assert.strictEqual(result.totalHosts, 4);
+      assert.strictEqual(result.usableHosts, 2);
+    });
   });
 
-  it('handles /32 point host CIDR', () => {
-    const result = calculateSubnet('10.0.0.5', 32);
-    assert.notStrictEqual(result, null);
-    if (!result) return;
+  describe('standard IPv4 subnets, classes, and scopes', () => {
+    it('calculates Class A private subnet (/8)', () => {
+      const result = calculateSubnet('10.50.100.1', 8);
+      assert.notStrictEqual(result, null);
+      if (!result) return;
 
-    assert.strictEqual(result.usableHosts, 1);
-    assert.strictEqual(result.firstUsableIp, '10.0.0.5');
-    assert.strictEqual(result.lastUsableIp, '10.0.0.5');
+      assert.strictEqual(result.networkAddress, '10.0.0.0');
+      assert.strictEqual(result.broadcastAddress, '10.255.255.255');
+      assert.strictEqual(result.firstUsableIp, '10.0.0.1');
+      assert.strictEqual(result.lastUsableIp, '10.255.255.254');
+      assert.strictEqual(result.netmask, '255.0.0.0');
+      assert.strictEqual(result.totalHosts, 16777216);
+      assert.strictEqual(result.usableHosts, 16777214);
+      assert.strictEqual(result.ipClass, 'Class A');
+      assert.strictEqual(result.ipScope, 'RFC 1918 Private (10.0.0.0/8)');
+    });
+
+    it('calculates Class B private subnet (/16)', () => {
+      const result = calculateSubnet('172.16.5.10', 16);
+      assert.notStrictEqual(result, null);
+      if (!result) return;
+
+      assert.strictEqual(result.networkAddress, '172.16.0.0');
+      assert.strictEqual(result.broadcastAddress, '172.16.255.255');
+      assert.strictEqual(result.firstUsableIp, '172.16.0.1');
+      assert.strictEqual(result.lastUsableIp, '172.16.255.254');
+      assert.strictEqual(result.netmask, '255.255.0.0');
+      assert.strictEqual(result.totalHosts, 65536);
+      assert.strictEqual(result.usableHosts, 65534);
+      assert.strictEqual(result.ipClass, 'Class B');
+      assert.strictEqual(result.ipScope, 'RFC 1918 Private (172.16.0.0/12)');
+    });
+
+    it('calculates Class C private subnet (/24)', () => {
+      const result = calculateSubnet('192.168.1.50', 24);
+      assert.notStrictEqual(result, null);
+      if (!result) return;
+
+      assert.strictEqual(result.ip, '192.168.1.50');
+      assert.strictEqual(result.cidr, 24);
+      assert.strictEqual(result.netmask, '255.255.255.0');
+      assert.strictEqual(result.wildcardMask, '0.0.0.255');
+      assert.strictEqual(result.networkAddress, '192.168.1.0');
+      assert.strictEqual(result.broadcastAddress, '192.168.1.255');
+      assert.strictEqual(result.firstUsableIp, '192.168.1.1');
+      assert.strictEqual(result.lastUsableIp, '192.168.1.254');
+      assert.strictEqual(result.totalHosts, 256);
+      assert.strictEqual(result.usableHosts, 254);
+      assert.strictEqual(result.ipClass, 'Class C');
+      assert.strictEqual(result.ipScope, 'RFC 1918 Private (192.168.0.0/16)');
+    });
+
+    it('identifies multicast and experimental classes and special scopes', () => {
+      const multicastResult = calculateSubnet('224.0.0.5', 24);
+      assert.notStrictEqual(multicastResult, null);
+      assert.strictEqual(multicastResult?.ipClass, 'Class D (Multicast)');
+      assert.strictEqual(multicastResult?.ipScope, 'Multicast');
+
+      const expResult = calculateSubnet('240.0.0.1', 24);
+      assert.notStrictEqual(expResult, null);
+      assert.strictEqual(expResult?.ipClass, 'Class E (Experimental)');
+      assert.strictEqual(expResult?.ipScope, 'Reserved / Experimental');
+
+      const cgnatResult = calculateSubnet('100.64.1.1', 10);
+      assert.notStrictEqual(cgnatResult, null);
+      assert.strictEqual(cgnatResult?.ipScope, 'RFC 6598 Carrier-Grade NAT (CGNAT)');
+
+      const linkLocalResult = calculateSubnet('169.254.1.1', 16);
+      assert.notStrictEqual(linkLocalResult, null);
+      assert.strictEqual(linkLocalResult?.ipScope, 'RFC 3927 Link-Local (APIPA)');
+
+      const loopbackResult = calculateSubnet('127.0.0.1', 8);
+      assert.notStrictEqual(loopbackResult, null);
+      assert.strictEqual(loopbackResult?.ipClass, 'Class A (Loopback)');
+      assert.strictEqual(loopbackResult?.ipScope, 'RFC 1122 Loopback (127.0.0.0/8)');
+    });
   });
 
-  it('handles /31 RFC 3021 Point-to-Point links', () => {
-    const result = calculateSubnet('10.0.0.0', 31);
-    assert.notStrictEqual(result, null);
-    if (!result) return;
+  describe('field formatting and reverse DNS PTR', () => {
+    it('correctly formats binary IP, netmask binary, netmask hex, and PTR record', () => {
+      const result = calculateSubnet('192.168.1.50', 24);
+      assert.notStrictEqual(result, null);
+      if (!result) return;
 
-    assert.strictEqual(result.usableHosts, 2);
-    assert.strictEqual(result.firstUsableIp, '10.0.0.0');
-    assert.strictEqual(result.lastUsableIp, '10.0.0.1');
+      assert.strictEqual(result.binaryIp, '11000000.10101000.00000001.00110010');
+      assert.strictEqual(result.netmaskBinary, '11111111.11111111.11111111.00000000');
+      assert.strictEqual(result.netmaskHex, '0xFFFFFF00');
+      assert.strictEqual(result.ptrRecord, '50.1.168.192.in-addr.arpa');
+    });
+
+    it('correctly pads netmask hex string', () => {
+      const result = calculateSubnet('10.0.0.1', 8);
+      assert.notStrictEqual(result, null);
+      if (!result) return;
+
+      assert.strictEqual(result.netmaskHex, '0xFF000000');
+    });
   });
 });
 
