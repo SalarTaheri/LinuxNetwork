@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Terminal, Shield, Cpu, Layers, Copy, Check, ExternalLink, Download, AlertTriangle } from 'lucide-react';
+import { Terminal, Shield, Cpu, Layers, Copy, Check, ExternalLink } from 'lucide-react';
 import { Language, SetupScriptSettings } from '../types';
 import { translations } from '../i18n/translations';
 import { CodeOutputPanel } from './CodeOutputPanel';
