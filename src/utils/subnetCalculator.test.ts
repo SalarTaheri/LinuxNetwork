@@ -201,15 +201,112 @@ describe('cidrToNetmaskInt', () => {
 });
 
 describe('getIpClass', () => {
-  it('determines IPv4 address class based on first octet', () => {
-    assert.strictEqual(getIpClass(10), 'Class A');
-    assert.strictEqual(getIpClass(127), 'Class A (Loopback)');
-    assert.strictEqual(getIpClass(172), 'Class B');
-    assert.strictEqual(getIpClass(192), 'Class C');
-    assert.strictEqual(getIpClass(224), 'Class D (Multicast)');
-    assert.strictEqual(getIpClass(240), 'Class E (Experimental)');
-    assert.strictEqual(getIpClass(0), 'Unknown');
-    assert.strictEqual(getIpClass(256), 'Unknown');
+  describe('Class A addresses (1-126)', () => {
+    it('should return "Class A" for lower boundary (1)', () => {
+      assert.strictEqual(getIpClass(1), 'Class A');
+    });
+
+    it('should return "Class A" for upper boundary (126)', () => {
+      assert.strictEqual(getIpClass(126), 'Class A');
+    });
+
+    it('should return "Class A" for intermediate values in range 1-126', () => {
+      assert.strictEqual(getIpClass(10), 'Class A');
+      assert.strictEqual(getIpClass(50), 'Class A');
+      assert.strictEqual(getIpClass(100), 'Class A');
+    });
+  });
+
+  describe('Class A Loopback address (127)', () => {
+    it('should return "Class A (Loopback)" for octet 127', () => {
+      assert.strictEqual(getIpClass(127), 'Class A (Loopback)');
+    });
+  });
+
+  describe('Class B addresses (128-191)', () => {
+    it('should return "Class B" for lower boundary (128)', () => {
+      assert.strictEqual(getIpClass(128), 'Class B');
+    });
+
+    it('should return "Class B" for upper boundary (191)', () => {
+      assert.strictEqual(getIpClass(191), 'Class B');
+    });
+
+    it('should return "Class B" for intermediate values in range 128-191', () => {
+      assert.strictEqual(getIpClass(172), 'Class B');
+      assert.strictEqual(getIpClass(150), 'Class B');
+    });
+  });
+
+  describe('Class C addresses (192-223)', () => {
+    it('should return "Class C" for lower boundary (192)', () => {
+      assert.strictEqual(getIpClass(192), 'Class C');
+    });
+
+    it('should return "Class C" for upper boundary (223)', () => {
+      assert.strictEqual(getIpClass(223), 'Class C');
+    });
+
+    it('should return "Class C" for intermediate values in range 192-223', () => {
+      assert.strictEqual(getIpClass(198), 'Class C');
+      assert.strictEqual(getIpClass(210), 'Class C');
+    });
+  });
+
+  describe('Class D Multicast addresses (224-239)', () => {
+    it('should return "Class D (Multicast)" for lower boundary (224)', () => {
+      assert.strictEqual(getIpClass(224), 'Class D (Multicast)');
+    });
+
+    it('should return "Class D (Multicast)" for upper boundary (239)', () => {
+      assert.strictEqual(getIpClass(239), 'Class D (Multicast)');
+    });
+
+    it('should return "Class D (Multicast)" for intermediate values in range 224-239', () => {
+      assert.strictEqual(getIpClass(230), 'Class D (Multicast)');
+    });
+  });
+
+  describe('Class E Experimental addresses (240-255)', () => {
+    it('should return "Class E (Experimental)" for lower boundary (240)', () => {
+      assert.strictEqual(getIpClass(240), 'Class E (Experimental)');
+    });
+
+    it('should return "Class E (Experimental)" for upper boundary (255)', () => {
+      assert.strictEqual(getIpClass(255), 'Class E (Experimental)');
+    });
+
+    it('should return "Class E (Experimental)" for intermediate values in range 240-255', () => {
+      assert.strictEqual(getIpClass(250), 'Class E (Experimental)');
+    });
+  });
+
+  describe('out-of-bounds octets and unknown classes', () => {
+    it('should return "Unknown" for 0', () => {
+      assert.strictEqual(getIpClass(0), 'Unknown');
+    });
+
+    it('should return "Unknown" for negative values', () => {
+      assert.strictEqual(getIpClass(-1), 'Unknown');
+      assert.strictEqual(getIpClass(-100), 'Unknown');
+    });
+
+    it('should return "Unknown" for values above 255', () => {
+      assert.strictEqual(getIpClass(256), 'Unknown');
+      assert.strictEqual(getIpClass(300), 'Unknown');
+      assert.strictEqual(getIpClass(1000), 'Unknown');
+    });
+  });
+
+  describe('non-integer and special numeric inputs', () => {
+    it('should return "Unknown" for floating point numbers and NaN / Infinity', () => {
+      assert.strictEqual(getIpClass(10.5), 'Class A'); // Note: 10.5 >= 1 && 10.5 <= 126
+      assert.strictEqual(getIpClass(-0.5), 'Unknown');
+      assert.strictEqual(getIpClass(255.5), 'Unknown');
+      assert.strictEqual(getIpClass(NaN), 'Unknown');
+      assert.strictEqual(getIpClass(Infinity), 'Unknown');
+      assert.strictEqual(getIpClass(-Infinity), 'Unknown');
+    });
   });
 });
 
