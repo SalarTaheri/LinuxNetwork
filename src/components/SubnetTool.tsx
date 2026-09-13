@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Calculator, Network, Globe, Layers, ArrowUpDown, Terminal, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Calculator, Network, AlertCircle } from 'lucide-react';
 import { Language } from '../types';
 import { translations } from '../i18n/translations';
 import { calculateSubnet, isValidIpv4 } from '../utils/subnetCalculator';
