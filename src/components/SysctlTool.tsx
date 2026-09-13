@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Cpu, Server, Wifi, Zap, Activity, HardDrive, CheckCircle2 } from 'lucide-react';
 import { Language, SysctlSettings, ServerProfile, RamSize, BandwidthTier } from '../types';
@@ -53,8 +53,8 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
     }));
   };
 
-  const configText = generateSysctlConfig(settings, lang);
-  const oneLinerBash = generateSysctlOneLiner(configText);
+  const configText = useMemo(() => generateSysctlConfig(settings, lang), [settings, lang]);
+  const oneLinerBash = useMemo(() => generateSysctlOneLiner(configText), [configText]);
   const reloadCommand = 'sudo sysctl --system';
 
   // Quick stats calculation
