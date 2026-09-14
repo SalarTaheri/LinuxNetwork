@@ -29,6 +29,20 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
   const [copiedReload, setCopiedReload] = useState(false);
   const [activeTab, setActiveTab] = useState<'config' | 'bash' | 'reload'>('config');
 
+  const availableTabs = (['config', oneLinerBash && 'bash', reloadCommand && 'reload'].filter(Boolean) as ('config' | 'bash' | 'reload')[]);
+
+  const handleTabKeyDown = (e: React.KeyboardEvent, currentTab: 'config' | 'bash' | 'reload') => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const currentIndex = availableTabs.indexOf(currentTab);
+      const direction = e.key === 'ArrowRight' ? 1 : -1;
+      const nextIndex = (currentIndex + direction + availableTabs.length) % availableTabs.length;
+      const nextTab = availableTabs[nextIndex];
+      setActiveTab(nextTab);
+      document.getElementById(`tab-view-${nextTab}`)?.focus();
+    }
+  };
+
   const handleCopyConfig = async () => {
     try {
       await navigator.clipboard.writeText(configText);
@@ -105,12 +119,20 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
         </div>
 
         {/* View Switcher Tabs with Animated Sliding Pill */}
-        <div className="flex items-center gap-1 bg-slate-900/80 p-1 rounded-lg border border-slate-800 text-xs font-mono">
+        <div
+          role="tablist"
+          aria-label={t.output.title}
+          className="flex items-center gap-1 bg-slate-900/80 p-1 rounded-lg border border-slate-800 text-xs font-mono"
+        >
           <button
             id="tab-view-config"
+            role="tab"
+            aria-selected={activeTab === 'config'}
+            aria-controls="code-output-body"
             type="button"
             onClick={() => setActiveTab('config')}
-            className={`relative px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+            onKeyDown={(e) => handleTabKeyDown(e, 'config')}
+            className={`relative px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
               activeTab === 'config' ? 'text-emerald-200 font-semibold' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -128,9 +150,13 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
           {oneLinerBash && (
             <button
               id="tab-view-bash"
+              role="tab"
+              aria-selected={activeTab === 'bash'}
+              aria-controls="code-output-body"
               type="button"
               onClick={() => setActiveTab('bash')}
-              className={`relative px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+              onKeyDown={(e) => handleTabKeyDown(e, 'bash')}
+              className={`relative px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none ${
                 activeTab === 'bash' ? 'text-cyan-200 font-semibold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -149,9 +175,13 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
           {reloadCommand && (
             <button
               id="tab-view-reload"
+              role="tab"
+              aria-selected={activeTab === 'reload'}
+              aria-controls="code-output-body"
               type="button"
               onClick={() => setActiveTab('reload')}
-              className={`relative px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+              onKeyDown={(e) => handleTabKeyDown(e, 'reload')}
+              className={`relative px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                 activeTab === 'reload' ? 'text-amber-200 font-semibold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -183,7 +213,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
                 ? t.output.copyBash
                 : t.output.copyConfig
             }
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
               copiedConfig || copiedBash || copiedReload
                 ? 'bg-emerald-600 text-white border border-emerald-500 shadow-emerald-900/50 shadow-md'
                 : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30'
@@ -225,7 +255,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
             id="download-conf-btn"
             onClick={handleDownload}
             aria-label={`${t.output.download} ${filename}`}
-            className="px-2.5 py-1.5 rounded-lg text-xs font-mono text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-2.5 py-1.5 rounded-lg text-xs font-mono text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 transition-colors flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
             title={t.output.download}
           >
             <Download className="w-3.5 h-3.5 text-cyan-400" />
@@ -247,6 +277,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
 
       {/* Code Editor Body - ALWAYS dir="ltr" and font-mono */}
       <div
+        id="code-output-body"
         className="relative flex-1 overflow-auto bg-[#070b14] p-4 text-xs font-mono text-slate-200 leading-relaxed focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
         tabIndex={0}
         role="region"
@@ -311,7 +342,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
             whileTap={{ scale: 0.98 }}
             id="quick-copy-bash-btn"
             onClick={handleCopyBash}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-mono transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-mono transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none"
           >
             {copiedBash ? <Check className="w-3 h-3 text-emerald-400" /> : <Terminal className="w-3 h-3 text-cyan-400" />}
             <span>{copiedBash ? t.output.copied : 'sudo bash -c ...'}</span>
