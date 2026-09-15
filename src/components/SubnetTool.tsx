@@ -95,6 +95,8 @@ ip route get ${result.firstUsableIp}
                   value={ipInput}
                   onChange={(e) => setIpInput(e.target.value.trim())}
                   placeholder={t.subnet.ipPlaceholder}
+                  aria-invalid={!isValid}
+                  aria-describedby={!isValid ? 'subnet-ip-error' : undefined}
                   className={`w-full bg-slate-950/80 border rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none transition-colors ${
                     isValid
                       ? 'border-slate-700/80 focus:border-emerald-500'
@@ -103,7 +105,7 @@ ip route get ${result.firstUsableIp}
                   dir="ltr"
                 />
                 {!isValid && (
-                  <div className="text-[11px] text-rose-400 mt-1 flex items-center gap-1">
+                  <div id="subnet-ip-error" role="alert" className="text-[11px] text-rose-400 mt-1 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
                     <span>{t.subnet.invalidIpError}</span>
                   </div>
@@ -145,6 +147,8 @@ ip route get ${result.firstUsableIp}
                   whileTap={{ scale: 0.94 }}
                   type="button"
                   onClick={() => setCidr(m)}
+                  aria-label={`Select CIDR /${m}`}
+                  aria-pressed={cidr === m}
                   className={`px-2.5 py-1 rounded text-xs border transition-colors cursor-pointer ${
                     cidr === m
                       ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold'
@@ -160,10 +164,11 @@ ip route get ${result.firstUsableIp}
           {/* Gateway & Interface for Command Generator */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-800/80">
             <div className="space-y-1">
-              <label className="text-[11px] text-slate-400 font-mono">
+              <label htmlFor="subnet-gateway-ip" className="text-[11px] text-slate-400 font-mono cursor-pointer">
                 Gateway IP for routes:
               </label>
               <input
+                id="subnet-gateway-ip"
                 type="text"
                 value={gatewayIp}
                 onChange={(e) => setGatewayIp(e.target.value)}
@@ -172,10 +177,11 @@ ip route get ${result.firstUsableIp}
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[11px] text-slate-400 font-mono">
+              <label htmlFor="subnet-egress-iface" className="text-[11px] text-slate-400 font-mono cursor-pointer">
                 Egress Interface (dev):
               </label>
               <input
+                id="subnet-egress-iface"
                 type="text"
                 value={iface}
                 onChange={(e) => setIface(e.target.value)}
