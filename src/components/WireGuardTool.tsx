@@ -15,6 +15,15 @@ interface WireGuardToolProps {
   lang: Language;
 }
 
+const DNS_PRESETS = [
+  { name: '1.1.1.1', val: '1.1.1.1, 1.0.0.1' },
+  { name: '8.8.8.8', val: '8.8.8.8, 8.8.4.4' },
+  { name: 'Shecan (IR)', val: '178.22.122.100, 185.51.200.2' },
+  { name: '9.9.9.9', val: '9.9.9.9, 149.112.112.112' },
+] as const;
+
+const MTU_PRESETS = [1420, 1360, 1280] as const;
+
 export const WireGuardTool: React.FC<WireGuardToolProps> = ({ lang }) => {
   const t = translations[lang];
 
@@ -232,12 +241,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = ({ lang }) => {
               {t.wireguard.dnsLabel}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-xs font-mono" dir="ltr">
-              {[
-                { name: '1.1.1.1', val: '1.1.1.1, 1.0.0.1' },
-                { name: '8.8.8.8', val: '8.8.8.8, 8.8.4.4' },
-                { name: 'Shecan (IR)', val: '178.22.122.100, 185.51.200.2' },
-                { name: '9.9.9.9', val: '9.9.9.9, 149.112.112.112' },
-              ].map((dns) => (
+              {DNS_PRESETS.map((dns) => (
                 <button
                   key={dns.name}
                   type="button"
@@ -272,7 +276,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = ({ lang }) => {
                 <span className="text-xs font-mono text-emerald-400 font-bold">{settings.mtu}</span>
               </div>
               <div className="flex gap-1 font-mono text-xs" dir="ltr">
-                {[1420, 1360, 1280].map((m) => (
+                {MTU_PRESETS.map((m) => (
                   <button
                     key={m}
                     type="button"

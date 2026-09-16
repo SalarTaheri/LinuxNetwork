@@ -10,6 +10,8 @@ interface NginxToolProps {
   lang: Language;
 }
 
+const BUFFERING_OPTIONS = ['enabled', 'disabled', 'stream'] as const;
+
 export const NginxTool: React.FC<NginxToolProps> = ({ lang }) => {
   const t = translations[lang];
 
@@ -272,7 +274,7 @@ export const NginxTool: React.FC<NginxToolProps> = ({ lang }) => {
               {t.nginx.bufferingLabel}
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-              {(['enabled', 'disabled', 'stream'] as const).map((b) => (
+              {BUFFERING_OPTIONS.map((b) => (
                 <button
                   key={b}
                   type="button"

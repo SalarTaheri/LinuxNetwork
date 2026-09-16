@@ -29,6 +29,8 @@ interface LandingPageProps {
   onLaunchToolbox: (tool?: ToolTab) => void;
 }
 
+const SUPPORTED_DISTROS = ['Ubuntu', 'Debian', 'RHEL', 'Rocky', 'AlmaLinux', 'Alpine'] as const;
+
 export const LandingPage: React.FC<LandingPageProps> = ({ lang, onLaunchToolbox }) => {
   const t = translations[lang];
   const l = t.landing;
@@ -302,7 +304,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ lang, onLaunchToolbox 
               {/* Supported distributions tags inside terminal */}
               <div className="pt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-400">
                 <span className="text-slate-500">{l.hero.distrosLabel}</span>
-                {['Ubuntu', 'Debian', 'RHEL', 'Rocky', 'AlmaLinux', 'Alpine'].map((distro) => (
+                {SUPPORTED_DISTROS.map((distro) => (
                   <span
                     key={distro}
                     className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300"
