@@ -307,16 +307,17 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
               <code>
                 {lines.map((line, i) => {
                   const trimmed = line.trim();
-                  const isComment = trimmed.startsWith('#') || trimmed.startsWith('//');
-                  const isSectionHeader = trimmed.startsWith('[') && trimmed.endsWith(']');
-                  const isDirective = /^(listen|server_name|proxy_|ssl_|add_header|client_|net\.|fs\.)/.test(trimmed);
-                  const isCommand = trimmed.startsWith('sudo') || trimmed.startsWith('sysctl') || trimmed.startsWith('nginx');
-
                   let lineClass = 'text-slate-200';
-                  if (isComment) lineClass = 'text-slate-500 italic';
-                  else if (isSectionHeader) lineClass = 'text-amber-400 font-bold';
-                  else if (isDirective) lineClass = 'text-emerald-300';
-                  else if (isCommand) lineClass = 'text-cyan-300 font-semibold';
+
+                  if (trimmed.startsWith('#') || trimmed.startsWith('//')) {
+                    lineClass = 'text-slate-500 italic';
+                  } else if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                    lineClass = 'text-amber-400 font-bold';
+                  } else if (/^(listen|server_name|proxy_|ssl_|add_header|client_|net\.|fs\.)/.test(trimmed)) {
+                    lineClass = 'text-emerald-300';
+                  } else if (trimmed.startsWith('sudo') || trimmed.startsWith('sysctl') || trimmed.startsWith('nginx')) {
+                    lineClass = 'text-cyan-300 font-semibold';
+                  }
 
                   return (
                     <div key={i} className={`${lineClass} whitespace-pre`}>
