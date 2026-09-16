@@ -38,4 +38,30 @@ describe('Crypto Utils', () => {
     assert.ok(typeof result === 'string');
     assert.ok(result.length > 0);
   });
+
+  it('benchmark uint8ToBase64 performance', () => {
+    // Benchmark with WireGuard key size (32 bytes) x 100,000 runs
+    const keyBytes = new Uint8Array(32);
+    for (let i = 0; i < 32; i++) keyBytes[i] = i * 7;
+
+    const keyStart = performance.now();
+    for (let i = 0; i < 100000; i++) {
+      uint8ToBase64(keyBytes);
+    }
+    const keyDuration = performance.now() - keyStart;
+
+    // Benchmark with large byte array (1MB) x 500 runs
+    const largeBytes = new Uint8Array(1024 * 1024);
+    for (let i = 0; i < largeBytes.length; i++) largeBytes[i] = i % 256;
+
+    const largeStart = performance.now();
+    for (let i = 0; i < 500; i++) {
+      uint8ToBase64(largeBytes);
+    }
+    const largeDuration = performance.now() - largeStart;
+
+    console.log(`\n--- uint8ToBase64 Benchmark ---`);
+    console.log(`Small (32B x 100k): ${keyDuration.toFixed(2)} ms`);
+    console.log(`Large (1MB x 500):  ${largeDuration.toFixed(2)} ms\n`);
+  });
 });
