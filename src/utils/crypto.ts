@@ -114,18 +114,23 @@ function x25519(k: Uint8Array, uPoint: Uint8Array): Uint8Array {
 }
 
 export function uint8ToBase64(bytes: Uint8Array): string {
-  const CHUNK_SIZE = 0x8000;
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength).toString('base64');
+  }
+  const CHUNK_SIZE = 0x2000; // 8192 bytes - optimal chunk size to avoid V8 stack limits & slow string concat
   if (bytes.length <= CHUNK_SIZE) {
     return btoa(String.fromCharCode.apply(null, bytes as unknown as number[]));
   }
-  let binary = '';
+  const chunks: string[] = [];
   for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
-    binary += String.fromCharCode.apply(
-      null,
-      bytes.subarray(i, i + CHUNK_SIZE) as unknown as number[]
+    chunks.push(
+      String.fromCharCode.apply(
+        null,
+        bytes.subarray(i, i + CHUNK_SIZE) as unknown as number[]
+      )
     );
   }
-  return btoa(binary);
+  return btoa(chunks.join(''));
 }
 
 export interface WireGuardKeyPair {
