@@ -56,6 +56,7 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = ({
   const [canScrollRight, setCanScrollRight] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchTriggerRef = useRef<HTMLButtonElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // All registered tools with their categories and search keywords
@@ -234,6 +235,12 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = ({
     setSearchQuery('');
   };
 
+  const handleCloseSearch = () => {
+    setSearchOpen(false);
+    setSearchQuery('');
+    searchTriggerRef.current?.focus();
+  };
+
   // Keyboard shortcut listener: Cmd+K / Ctrl+K & Escape
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -364,9 +371,13 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = ({
 
         {/* Quick Search Trigger (Cmd+K Button) */}
         <button
+          ref={searchTriggerRef}
           type="button"
           onClick={() => setSearchOpen(true)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800/90 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 text-xs transition-all shadow-sm cursor-pointer shrink-0 ml-auto rtl:ml-0 rtl:mr-auto"
+          aria-haspopup="dialog"
+          aria-expanded={searchOpen}
+          aria-label={t.toolboxNav.searchBtn}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800/90 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 text-xs transition-all shadow-sm cursor-pointer shrink-0 ml-auto rtl:ml-0 rtl:mr-auto focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
           title={t.toolboxNav.searchHint}
         >
           <Search className="w-3.5 h-3.5 text-emerald-400" />
@@ -384,8 +395,8 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = ({
           <button
             type="button"
             onClick={() => handleScrollBy(-200)}
-            className="absolute left-1.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-lg bg-slate-900/95 border border-slate-700/80 text-slate-300 hover:text-white flex items-center justify-center shadow-lg transition-all cursor-pointer backdrop-blur-md"
-            aria-label="Scroll left"
+            className="absolute left-1.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-lg bg-slate-900/95 border border-slate-700/80 text-slate-300 hover:text-white flex items-center justify-center shadow-lg transition-all cursor-pointer backdrop-blur-md focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
+            aria-label={isFa ? "پیمایش به چپ" : "Scroll left"}
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -396,8 +407,8 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = ({
           <button
             type="button"
             onClick={() => handleScrollBy(200)}
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-lg bg-slate-900/95 border border-slate-700/80 text-slate-300 hover:text-white flex items-center justify-center shadow-lg transition-all cursor-pointer backdrop-blur-md"
-            aria-label="Scroll right"
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-lg bg-slate-900/95 border border-slate-700/80 text-slate-300 hover:text-white flex items-center justify-center shadow-lg transition-all cursor-pointer backdrop-blur-md focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
+            aria-label={isFa ? "پیمایش به راست" : "Scroll right"}
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -463,8 +474,18 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = ({
       {/* Command Palette / Quick Search Modal */}
       <AnimatePresence>
         {searchOpen && (
-          <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/60 backdrop-blur-sm">
+          <div
+            className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/60 backdrop-blur-sm"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                handleCloseSearch();
+              }
+            }}
+          >
             <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label={t.toolboxNav.searchBtn}
               initial={{ opacity: 0, scale: 0.95, y: -10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
@@ -493,24 +514,30 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = ({
                     } else if (e.key === 'Enter' && searchResults[selectedIndex]) {
                       e.preventDefault();
                       handleSelectTool(searchResults[selectedIndex].id);
+                    } else if (e.key === 'Escape') {
+                      e.preventDefault();
+                      handleCloseSearch();
                     }
                   }}
                   placeholder={t.toolboxNav.searchPlaceholder}
                   className="w-full bg-transparent text-sm text-slate-100 placeholder-slate-500 focus:outline-none"
+                  aria-label={t.toolboxNav.searchPlaceholder}
                 />
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="text-slate-500 hover:text-slate-300 p-1"
+                    aria-label={isFa ? 'پاک کردن جستجو' : 'Clear search'}
+                    className="text-slate-500 hover:text-slate-300 p-1 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none rounded"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
                 )}
                 <button
                   type="button"
-                  onClick={() => setSearchOpen(false)}
-                  className="px-1.5 py-0.5 text-[11px] font-mono rounded bg-slate-800 border border-slate-700 text-slate-400 hover:text-slate-200"
+                  onClick={handleCloseSearch}
+                  aria-label={isFa ? 'بستن جستجو' : 'Close search'}
+                  className="px-1.5 py-0.5 text-[11px] font-mono rounded bg-slate-800 border border-slate-700 text-slate-400 hover:text-slate-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
                 >
                   ESC
                 </button>
