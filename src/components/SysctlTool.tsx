@@ -10,6 +10,7 @@ interface SysctlToolProps {
   lang: Language;
 }
 
+// Module-level static arrays to avoid array re-creation on every render pass
 const SERVER_PROFILES: ServerProfile[] = ['web', 'proxy', 'download', 'lowlatency'];
 const RAM_SIZES: (RamSize | '32GB+')[] = ['1GB', '2GB', '4GB', '8GB', '16GB', '32GB+'];
 const BANDWIDTH_TIERS: BandwidthTier[] = ['100M', '1G', '10G'];
@@ -86,7 +87,7 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
     return { rmem, somax, fileMax };
   };
 
-  const calculated = getCalculatedBuffers();
+  const calculated = useMemo(() => getCalculatedBuffers(), [settings.ram]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

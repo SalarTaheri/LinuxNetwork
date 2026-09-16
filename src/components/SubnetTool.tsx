@@ -11,6 +11,7 @@ interface SubnetToolProps {
 }
 
 const CIDR_OPTIONS = Array.from({ length: 25 }, (_, i) => i + 8);
+const QUICK_CIDR_MASKS = [8, 16, 22, 24, 26, 28, 29, 30, 32] as const;
 
 export const SubnetTool: React.FC<SubnetToolProps> = ({ lang }) => {
   const t = translations[lang];
@@ -140,7 +141,7 @@ ip route get ${result.firstUsableIp}
               {t.subnet.quickPicks}
             </div>
             <div className="flex flex-wrap gap-1.5 font-mono text-xs" dir="ltr">
-              {[8, 16, 22, 24, 26, 28, 29, 30, 32].map((m) => (
+              {QUICK_CIDR_MASKS.map((m) => (
                 <motion.button
                   key={m}
                   whileHover={{ scale: 1.06 }}
