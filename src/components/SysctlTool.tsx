@@ -125,7 +125,9 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleProfileChange(prof)}
-                  className={`relative p-3 rounded-lg text-start transition-colors border cursor-pointer ${
+                  aria-pressed={active}
+                  aria-label={`${t.sysctl.profiles[prof]} profile`}
+                  className={`relative p-3 rounded-lg text-start transition-colors border cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                     active
                       ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-200 shadow-md shadow-emerald-950/30'
                       : 'bg-slate-800/40 border-slate-800 hover:border-slate-700 text-slate-300 hover:bg-slate-800/70'
@@ -167,7 +169,9 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setSettings({ ...settings, ram: ramVal as RamSize })}
-                    className={`py-1.5 px-2 rounded font-medium border text-center transition-colors cursor-pointer ${
+                    aria-label={`RAM size ${r}`}
+                    aria-pressed={active}
+                    className={`py-1.5 px-2 rounded font-medium border text-center transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                       active
                         ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-bold'
                         : 'bg-slate-800/50 border-slate-700/60 text-slate-400 hover:text-slate-200'
@@ -196,7 +200,9 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setSettings({ ...settings, bandwidth: bw })}
-                    className={`py-1.5 px-2 rounded font-medium border text-center transition-colors cursor-pointer ${
+                    aria-label={`Bandwidth ${bw} bps`}
+                    aria-pressed={active}
+                    className={`py-1.5 px-2 rounded font-medium border text-center transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none ${
                       active
                         ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300 font-bold'
                         : 'bg-slate-800/50 border-slate-700/60 text-slate-400 hover:text-slate-200'
