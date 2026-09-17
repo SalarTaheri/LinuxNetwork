@@ -343,6 +343,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
             whileTap={{ scale: 0.98 }}
             id="quick-copy-bash-btn"
             onClick={handleCopyBash}
+            aria-label={copiedBash ? t.output.copied : t.output.copyBash}
             className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-mono transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none"
           >
             {copiedBash ? <Check className="w-3 h-3 text-emerald-400" /> : <Terminal className="w-3 h-3 text-cyan-400" />}
@@ -350,6 +351,11 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
           </motion.button>
         </div>
       )}
+
+      {/* Screen Reader Live Region for Copy Announcements */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {(copiedConfig || copiedBash || copiedReload) && t.output.copied}
+      </div>
     </div>
   );
 };
