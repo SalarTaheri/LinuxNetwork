@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Globe2, ArrowRightLeft, Lock, Sliders } from 'lucide-react';
 import { Language, NginxSettings } from '../types';
@@ -34,9 +34,13 @@ export const NginxTool: React.FC<NginxToolProps> = ({ lang }) => {
     enableSecurityHeaders: true,
   });
 
-  const configText = generateNginxConfig(settings, lang);
-  const oneLinerBash = generateNginxOneLiner(settings.domain, configText);
-  const safeFilename = (settings.domain.trim() || 'api.example.com').replace(/[^a-zA-Z0-9_.-]/g, '_') + '.conf';
+  // Memoize expensive Nginx configuration and command calculations to avoid unnecessary string allocations and processing during re-renders
+  const configText = useMemo(() => generateNginxConfig(settings, lang), [settings, lang]);
+  const oneLinerBash = useMemo(() => generateNginxOneLiner(settings.domain, configText), [settings.domain, configText]);
+  const safeFilename = useMemo(
+    () => (settings.domain.trim() || 'api.example.com').replace(/[^a-zA-Z0-9_.-]/g, '_') + '.conf',
+    [settings.domain]
+  );
   const reloadCommand = `sudo nginx -t && sudo systemctl reload nginx`;
 
   return (
