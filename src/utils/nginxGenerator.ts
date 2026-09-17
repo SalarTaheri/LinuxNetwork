@@ -1,12 +1,37 @@
 import { NginxSettings } from '../types';
 
+/**
+ * Sanitizes input values (domains, aliases, paths) to prevent Nginx directive injection and command execution risks.
+ */
+function sanitizeDomain(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_.*-]/g, '');
+  return cleaned || fallback;
+}
+
+function sanitizeServerAlias(val: string | undefined | null): string {
+  return (val || '')
+    .trim()
+    .split(/\s+/)
+    .map((alias) => alias.replace(/[^a-zA-Z0-9_.*-]/g, ''))
+    .filter(Boolean)
+    .join(' ');
+}
+
+function sanitizeUpstream(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_.:/-]/g, '');
+  return cleaned || fallback;
+}
+
+function sanitizePath(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_.:/-]/g, '');
+  return cleaned || fallback;
+}
+
 export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'): string {
   const isFa = lang === 'fa';
-  const domain = settings.domain.trim() || 'api.example.com';
-  const upstream = settings.upstreamAddress.trim() || '127.0.0.1:8000';
-  const proxyPass = settings.upstreamType === 'unix'
-    ? (upstream.startsWith('unix:') ? `http://${upstream}` : `http://unix:${upstream}`)
-    : (upstream.startsWith('http://') || upstream.startsWith('https://') ? upstream : `http://${upstream}`);
+  const domain = sanitizeDomain(settings.domain, 'api.example.com');
+  const serverAlias = sanitizeServerAlias(settings.serverAlias);
+  const upstream = sanitizeUpstream(settings.upstreamAddress, '127.0.0.1:8000');
 
   const lines: string[] = [
     '# ==========================================================================',
@@ -32,7 +57,7 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
     lines.push('server {');
     lines.push(`    listen 80;`);
     lines.push(`    listen [::]:80;`);
-    lines.push(`    server_name ${domain}${settings.serverAlias ? ' ' + settings.serverAlias : ''};`);
+    lines.push(`    server_name ${domain}${serverAlias ? ' ' + serverAlias : ''};`);
     lines.push('');
     lines.push('    # ACME-challenge for Certbot SSL Renewal');
     lines.push('    location ^~ /.well-known/acme-challenge/ {');
@@ -57,13 +82,13 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
     lines.push(`    listen ${settings.listenPort};`);
     lines.push(`    listen [::]:${settings.listenPort};`);
   }
-  lines.push(`    server_name ${domain}${settings.serverAlias ? ' ' + settings.serverAlias : ''};`);
+  lines.push(`    server_name ${domain}${serverAlias ? ' ' + serverAlias : ''};`);
   lines.push('');
 
   // SSL Certificates and Parameters
   if (settings.enableSsl) {
-    const cert = settings.sslCertPath.trim() || `/etc/letsencrypt/live/${domain}/fullchain.pem`;
-    const key = settings.sslKeyPath.trim() || `/etc/letsencrypt/live/${domain}/privkey.pem`;
+    const cert = sanitizePath(settings.sslCertPath, `/etc/letsencrypt/live/${domain}/fullchain.pem`);
+    const key = sanitizePath(settings.sslKeyPath, `/etc/letsencrypt/live/${domain}/privkey.pem`);
 
     lines.push('    # SSL Certificates (Let\'s Encrypt / Custom)');
     lines.push(`    ssl_certificate ${cert};`);
