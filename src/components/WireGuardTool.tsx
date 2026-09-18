@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Shield, Key, RefreshCw, Smartphone, Server } from 'lucide-react';
 import { Language, WireGuardSettings } from '../types';
@@ -82,9 +82,10 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = ({ lang }) => {
     setTimeout(() => setKeyFlash(false), 800);
   };
 
-  const serverConfig = generateWireGuardServerConfig(settings);
-  const clientConfig = generateWireGuardClientConfig(settings);
-  const serverOneLiner = generateWireGuardServerOneLiner(settings);
+  // Memoize WireGuard server/client configs and one-liner bash installer to avoid redundant generator runs on UI re-renders
+  const serverConfig = useMemo(() => generateWireGuardServerConfig(settings), [settings]);
+  const clientConfig = useMemo(() => generateWireGuardClientConfig(settings), [settings]);
+  const serverOneLiner = useMemo(() => generateWireGuardServerOneLiner(settings), [settings]);
 
   const displayedConfig = activeOutputConfig === 'server' ? serverConfig : clientConfig;
   const displayedFilename = activeOutputConfig === 'server' ? 'wg0.conf' : 'wg0-client.conf';
