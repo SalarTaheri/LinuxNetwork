@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Globe,
@@ -70,11 +70,15 @@ export const RoutingTool: React.FC<RoutingToolProps> = ({ lang }) => {
 
   const [outputFormat, setOutputFormat] = useState<'iptables' | 'nftables' | 'diagnostics'>('iptables');
 
-  const iptablesText = generateIptablesRules(settings, lang);
-  const nftablesText = generateNftablesRules(settings, lang);
-  const oneLinerBash = generateRoutingOneLiner(settings, lang);
-  const diagnosticsText = generateVerificationCommands(settings, lang) + '\n\n' + generateRollbackCommands(settings, lang);
-  const rollbackCommand = generateRollbackCommands(settings, lang);
+  // Memoize routing config generator functions and derived bash one-liners to avoid redundant string processing on UI re-renders
+  const iptablesText = useMemo(() => generateIptablesRules(settings, lang), [settings, lang]);
+  const nftablesText = useMemo(() => generateNftablesRules(settings, lang), [settings, lang]);
+  const oneLinerBash = useMemo(() => generateRoutingOneLiner(settings, lang), [settings, lang]);
+  const diagnosticsText = useMemo(
+    () => generateVerificationCommands(settings, lang) + '\n\n' + generateRollbackCommands(settings, lang),
+    [settings, lang]
+  );
+  const rollbackCommand = useMemo(() => generateRollbackCommands(settings, lang), [settings, lang]);
 
   const scenarioTabs: { id: RoutingScenario; label: string; desc: string; icon: React.ReactNode }[] = [
     {
