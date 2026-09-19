@@ -819,6 +819,10 @@ parse_arguments() {
                 shift
                 ;;
             --qdisc)
+                if [[ "$2" != "fq" && "$2" != "cake" ]]; then
+                    log_error "Invalid qdisc algorithm: $2. Must be 'fq' or 'cake'."
+                    exit 1
+                fi
                 FLAG_QDISC="$2"
                 shift 2
                 ;;
