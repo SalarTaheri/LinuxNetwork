@@ -18,10 +18,10 @@ const mockSettings: WireGuardSettings = {
   persistentKeepalive: 25,
   allowedIps: '0.0.0.0/0, ::/0',
   interfaceName: 'wg0',
-  serverPrivateKey: 'SERVER_PRIV_KEY_MOCK_1234567890=',
-  serverPublicKey: 'SERVER_PUB_KEY_MOCK_1234567890=',
-  clientPrivateKey: 'CLIENT_PRIV_KEY_MOCK_1234567890=',
-  clientPublicKey: 'CLIENT_PUB_KEY_MOCK_1234567890=',
+  serverPrivateKey: 'SERVERPRIVKEYMOCK1234567890=',
+  serverPublicKey: 'SERVERPUBKEYMOCK1234567890=',
+  clientPrivateKey: 'CLIENTPRIVKEYMOCK1234567890=',
+  clientPublicKey: 'CLIENTPUBKEYMOCK1234567890=',
   serverInterface: 'eth0',
 };
 
@@ -32,7 +32,7 @@ describe('WireGuardTool Config Generation Benchmark', () => {
     const oneLiner = generateWireGuardServerOneLiner(mockSettings);
 
     assert.ok(serverCfg.includes('51820'), 'Server config should include listen port');
-    assert.ok(serverCfg.includes('SERVER_PRIV_KEY_MOCK'), 'Server config should include private key');
+    assert.ok(serverCfg.includes('SERVERPRIVKEYMOCK'), 'Server config should include private key');
     assert.ok(clientCfg.includes('203.0.113.10:51820'), 'Client config should include endpoint');
     assert.ok(oneLiner.includes('wg-quick'), 'One-liner should include wg-quick commands');
   });
