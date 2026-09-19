@@ -151,18 +151,35 @@ export const DistroBadges: React.FC<DistroBadgesProps> = ({ lang, showLabels = t
       </span>
       {DISTROS.map((distro) => {
         const isHovered = activeTooltip === distro.id;
+        const tooltipId = `distro-tooltip-${distro.id}`;
         return (
           <div
             key={distro.id}
-            className="relative cursor-pointer"
+            className="relative"
             onMouseEnter={() => setActiveTooltip(distro.id)}
             onMouseLeave={() => setActiveTooltip(null)}
           >
             <motion.div
+              tabIndex={0}
+              role="button"
+              aria-expanded={isHovered}
+              aria-describedby={isHovered ? tooltipId : undefined}
+              aria-label={`${distro.name}: ${distro.versions}`}
+              onFocus={() => setActiveTooltip(distro.id)}
+              onBlur={() => setActiveTooltip(null)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setActiveTooltip((prev) => (prev === distro.id ? null : distro.id));
+                } else if (e.key === 'Escape' && isHovered) {
+                  e.preventDefault();
+                  setActiveTooltip(null);
+                }
+              }}
               whileHover={{ scale: 1.06, y: -1.5 }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 450, damping: 25 }}
-              className={`flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800 text-[11px] font-mono transition-colors duration-200 ${distro.badgeBorder} ${distro.badgeBg}`}
+              className={`flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800 text-[11px] font-mono transition-colors duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${distro.badgeBorder} ${distro.badgeBg}`}
             >
               {distro.icon(distro.brandColor)}
               {showLabels && (
@@ -176,6 +193,8 @@ export const DistroBadges: React.FC<DistroBadgesProps> = ({ lang, showLabels = t
             <AnimatePresence>
               {isHovered && (
                 <motion.div
+                  id={tooltipId}
+                  role="tooltip"
                   initial={{ opacity: 0, y: 4, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 2, scale: 0.95 }}
