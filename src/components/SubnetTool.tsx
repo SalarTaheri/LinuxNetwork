@@ -13,6 +13,18 @@ interface SubnetToolProps {
 const CIDR_OPTIONS = Array.from({ length: 25 }, (_, i) => i + 8);
 const QUICK_CIDR_MASKS = [8, 16, 22, 24, 26, 28, 29, 30, 32] as const;
 
+const CIDR_HOST_DESCRIPTIONS: Record<number, { en: string; fa: string }> = {
+  8: { en: '16.7M hosts (Class A)', fa: '۱۶.۷ میلیون میزبان (کلاس A)' },
+  16: { en: '65,534 hosts (Class B)', fa: '۶۵,۵۳۴ میزبان (کلاس B)' },
+  22: { en: '1,022 hosts', fa: '۱,۰۲۲ میزبان' },
+  24: { en: '254 hosts (Class C)', fa: '۲۵۴ میزبان (کلاس C)' },
+  26: { en: '62 hosts', fa: '۶۲ میزبان' },
+  28: { en: '14 hosts', fa: '۱۴ میزبان' },
+  29: { en: '6 hosts', fa: '۶ میزبان' },
+  30: { en: '2 hosts (Point-to-Point)', fa: '۲ میزبان (نقطه به نقطه)' },
+  32: { en: '1 host (Single IP)', fa: '۱ میزبان (تک آی‌پی)' },
+};
+
 export const SubnetTool: React.FC<SubnetToolProps> = ({ lang }) => {
   const t = translations[lang];
 
@@ -141,24 +153,29 @@ ip route get ${result.firstUsableIp}
               {t.subnet.quickPicks}
             </div>
             <div className="flex flex-wrap gap-1.5 font-mono text-xs" dir="ltr">
-              {QUICK_CIDR_MASKS.map((m) => (
-                <motion.button
-                  key={m}
-                  whileHover={{ scale: 1.06 }}
-                  whileTap={{ scale: 0.94 }}
-                  type="button"
-                  onClick={() => setCidr(m)}
-                  aria-label={`Select CIDR /${m}`}
-                  aria-pressed={cidr === m}
-                  className={`px-2.5 py-1 rounded text-xs border transition-colors cursor-pointer ${
-                    cidr === m
-                      ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold'
-                      : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  /{m}
-                </motion.button>
-              ))}
+              {QUICK_CIDR_MASKS.map((m) => {
+                const descObj = CIDR_HOST_DESCRIPTIONS[m];
+                const descText = descObj ? (lang === 'fa' ? descObj.fa : descObj.en) : '';
+                return (
+                  <motion.button
+                    key={m}
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.94 }}
+                    type="button"
+                    onClick={() => setCidr(m)}
+                    title={`/${m} — ${descText}`}
+                    aria-label={`Select CIDR /${m} (${descText})`}
+                    aria-pressed={cidr === m}
+                    className={`px-2.5 py-1 rounded text-xs border transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
+                      cidr === m
+                        ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold'
+                        : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    /{m}
+                  </motion.button>
+                );
+              })}
             </div>
           </div>
 
