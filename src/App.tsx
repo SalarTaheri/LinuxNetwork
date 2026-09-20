@@ -7,13 +7,32 @@ import { SEOHead } from './components/SEOHead';
 import { NetworkBackground } from './components/NetworkBackground';
 import { ToolboxNavigation } from './components/ToolboxNavigation';
 
+export const toolLoaders: Record<ToolTab, () => Promise<unknown>> = {
+  setup: () => import('./components/SetupScriptTool'),
+  sysctl: () => import('./components/SysctlTool'),
+  nginx: () => import('./components/NginxTool'),
+  wireguard: () => import('./components/WireGuardTool'),
+  subnet: () => import('./components/SubnetTool'),
+  routing: () => import('./components/RoutingTool'),
+};
+
+export const preloadTool = (tool: ToolTab) => {
+  if (toolLoaders[tool]) {
+    toolLoaders[tool]();
+  }
+};
+
+export const preloadAllTools = () => {
+  Object.values(toolLoaders).forEach((loader) => loader());
+};
+
 const LandingPage = lazy(() => import('./components/LandingPage').then((m) => ({ default: m.LandingPage })));
-const SetupScriptTool = lazy(() => import('./components/SetupScriptTool').then((m) => ({ default: m.SetupScriptTool })));
-const SysctlTool = lazy(() => import('./components/SysctlTool').then((m) => ({ default: m.SysctlTool })));
-const NginxTool = lazy(() => import('./components/NginxTool').then((m) => ({ default: m.NginxTool })));
-const WireGuardTool = lazy(() => import('./components/WireGuardTool').then((m) => ({ default: m.WireGuardTool })));
-const SubnetTool = lazy(() => import('./components/SubnetTool').then((m) => ({ default: m.SubnetTool })));
-const RoutingTool = lazy(() => import('./components/RoutingTool').then((m) => ({ default: m.RoutingTool })));
+const SetupScriptTool = lazy(() => toolLoaders.setup().then((m: any) => ({ default: m.SetupScriptTool })));
+const SysctlTool = lazy(() => toolLoaders.sysctl().then((m: any) => ({ default: m.SysctlTool })));
+const NginxTool = lazy(() => toolLoaders.nginx().then((m: any) => ({ default: m.NginxTool })));
+const WireGuardTool = lazy(() => toolLoaders.wireguard().then((m: any) => ({ default: m.WireGuardTool })));
+const SubnetTool = lazy(() => toolLoaders.subnet().then((m: any) => ({ default: m.SubnetTool })));
+const RoutingTool = lazy(() => toolLoaders.routing().then((m: any) => ({ default: m.RoutingTool })));
 
 const ToolLoadingFallback = () => (
   <div className="flex items-center justify-center py-20">
@@ -56,6 +75,19 @@ export default function App() {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
   }, [lang]);
+
+  // Preload tool chunks in background when toolbox view is active
+  useEffect(() => {
+    if (view === 'toolbox') {
+      if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+        const handle = (window as any).requestIdleCallback(() => preloadAllTools());
+        return () => (window as any).cancelIdleCallback(handle);
+      } else {
+        const timer = setTimeout(() => preloadAllTools(), 300);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [view]);
 
   // Sync view & tab with browser back/forward history navigation
   useEffect(() => {
@@ -153,6 +185,7 @@ export default function App() {
                   activeTab={activeTab}
                   onTabChange={handleTabChange}
                   lang={lang}
+                  onPreloadTool={preloadTool}
                 />
 
                 {/* Active Tool View with Fluid Entry & Exit Transitions */}
@@ -168,12 +201,14 @@ export default function App() {
                     exit={{ opacity: 0, y: -12, filter: 'blur(3px)' }}
                     transition={{ duration: 0.2, ease: 'easeOut' }}
                   >
-                    {activeTab === 'setup' && <SetupScriptTool lang={lang} />}
-                    {activeTab === 'sysctl' && <SysctlTool lang={lang} />}
-                    {activeTab === 'nginx' && <NginxTool lang={lang} />}
-                    {activeTab === 'wireguard' && <WireGuardTool lang={lang} />}
-                    {activeTab === 'subnet' && <SubnetTool lang={lang} />}
-                    {activeTab === 'routing' && <RoutingTool lang={lang} />}
+                    <Suspense fallback={<ToolLoadingFallback />}>
+                      {activeTab === 'setup' && <SetupScriptTool lang={lang} />}
+                      {activeTab === 'sysctl' && <SysctlTool lang={lang} />}
+                      {activeTab === 'nginx' && <NginxTool lang={lang} />}
+                      {activeTab === 'wireguard' && <WireGuardTool lang={lang} />}
+                      {activeTab === 'subnet' && <SubnetTool lang={lang} />}
+                      {activeTab === 'routing' && <RoutingTool lang={lang} />}
+                    </Suspense>
                   </motion.div>
                 </AnimatePresence>
               </motion.div>
