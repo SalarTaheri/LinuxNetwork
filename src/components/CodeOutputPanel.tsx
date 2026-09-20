@@ -14,9 +14,10 @@ interface CodeOutputPanelProps {
   reloadCommand?: string;
 }
 
+const CONFIG_KEYWORD_REGEX = /^(listen|server_name|proxy_|ssl_|add_header|client_|net\.|fs\.)/;
+
 export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
   lang,
-  title,
   configText,
   filename,
   targetPath,
@@ -95,7 +96,12 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
       : (reloadCommand || '');
 
   const parsedLines = React.useMemo(() => {
-    return currentDisplayContent.split('\n').map((line) => {
+    const lines = currentDisplayContent.split('\n');
+    const len = lines.length;
+    const result = new Array(len);
+
+    for (let i = 0; i < len; i++) {
+      const line = lines[i];
       const trimmed = line.trim();
       let lineClass = 'text-slate-200';
 
@@ -103,14 +109,16 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
         lineClass = 'text-slate-500 italic';
       } else if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
         lineClass = 'text-amber-400 font-bold';
-      } else if (/^(listen|server_name|proxy_|ssl_|add_header|client_|net\.|fs\.)/.test(trimmed)) {
+      } else if (CONFIG_KEYWORD_REGEX.test(trimmed)) {
         lineClass = 'text-emerald-300';
       } else if (trimmed.startsWith('sudo') || trimmed.startsWith('sysctl') || trimmed.startsWith('nginx')) {
         lineClass = 'text-cyan-300 font-semibold';
       }
 
-      return { line, lineClass };
-    });
+      result[i] = { line, lineClass };
+    }
+
+    return result;
   }, [currentDisplayContent]);
 
   const linesCount = parsedLines.length;
