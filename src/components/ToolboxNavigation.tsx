@@ -39,7 +39,7 @@ interface ToolboxNavigationProps {
   lang: Language;
 }
 
-export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = ({
+export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
   activeTab,
   onTabChange,
   lang,
@@ -611,4 +611,6 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = ({
       </AnimatePresence>
     </div>
   );
-};
+});
+
+ToolboxNavigation.displayName = 'ToolboxNavigation';

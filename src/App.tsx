@@ -1,18 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Language, ToolTab, PageView } from './types';
 import { translations } from './i18n/translations';
 import { Header } from './components/Header';
-import { LandingPage } from './components/LandingPage';
 import { SEOHead } from './components/SEOHead';
 import { NetworkBackground } from './components/NetworkBackground';
-import { SetupScriptTool } from './components/SetupScriptTool';
-import { SysctlTool } from './components/SysctlTool';
-import { NginxTool } from './components/NginxTool';
-import { WireGuardTool } from './components/WireGuardTool';
-import { SubnetTool } from './components/SubnetTool';
-import { RoutingTool } from './components/RoutingTool';
 import { ToolboxNavigation } from './components/ToolboxNavigation';
+
+const LandingPage = lazy(() => import('./components/LandingPage').then((m) => ({ default: m.LandingPage })));
+const SetupScriptTool = lazy(() => import('./components/SetupScriptTool').then((m) => ({ default: m.SetupScriptTool })));
+const SysctlTool = lazy(() => import('./components/SysctlTool').then((m) => ({ default: m.SysctlTool })));
+const NginxTool = lazy(() => import('./components/NginxTool').then((m) => ({ default: m.NginxTool })));
+const WireGuardTool = lazy(() => import('./components/WireGuardTool').then((m) => ({ default: m.WireGuardTool })));
+const SubnetTool = lazy(() => import('./components/SubnetTool').then((m) => ({ default: m.SubnetTool })));
+const RoutingTool = lazy(() => import('./components/RoutingTool').then((m) => ({ default: m.RoutingTool })));
+
+const ToolLoadingFallback = () => (
+  <div className="flex items-center justify-center py-20">
+    <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 const VALID_TABS: ToolTab[] = ['setup', 'sysctl', 'nginx', 'wireguard', 'subnet', 'routing'];
 
@@ -118,57 +125,59 @@ export default function App() {
 
       {/* Main Container */}
       <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        <AnimatePresence mode="wait">
-          {view === 'landing' ? (
-            <motion.div
-              key="landing-page"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-            >
-              <LandingPage lang={lang} onLaunchToolbox={navigateToToolbox} />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="toolbox-page"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="space-y-6"
-            >
-              {/* Scalable Navigation, Categories & Quick Command Bar */}
-              <ToolboxNavigation
-                activeTab={activeTab}
-                onTabChange={handleTabChange}
-                lang={lang}
-              />
+        <Suspense fallback={<ToolLoadingFallback />}>
+          <AnimatePresence mode="wait">
+            {view === 'landing' ? (
+              <motion.div
+                key="landing-page"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+              >
+                <LandingPage lang={lang} onLaunchToolbox={navigateToToolbox} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="toolbox-page"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+                className="space-y-6"
+              >
+                {/* Scalable Navigation, Categories & Quick Command Bar */}
+                <ToolboxNavigation
+                  activeTab={activeTab}
+                  onTabChange={handleTabChange}
+                  lang={lang}
+                />
 
-              {/* Active Tool View with Fluid Entry & Exit Transitions */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTab}
-                  id={`tabpanel-${activeTab}`}
-                  role="tabpanel"
-                  aria-labelledby={`tab-nav-${activeTab}`}
-                  className="pt-2"
-                  initial={{ opacity: 0, y: 12, filter: 'blur(3px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, y: -12, filter: 'blur(3px)' }}
-                  transition={{ duration: 0.2, ease: 'easeOut' }}
-                >
-                  {activeTab === 'setup' && <SetupScriptTool lang={lang} />}
-                  {activeTab === 'sysctl' && <SysctlTool lang={lang} />}
-                  {activeTab === 'nginx' && <NginxTool lang={lang} />}
-                  {activeTab === 'wireguard' && <WireGuardTool lang={lang} />}
-                  {activeTab === 'subnet' && <SubnetTool lang={lang} />}
-                  {activeTab === 'routing' && <RoutingTool lang={lang} />}
-                </motion.div>
-              </AnimatePresence>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                {/* Active Tool View with Fluid Entry & Exit Transitions */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeTab}
+                    id={`tabpanel-${activeTab}`}
+                    role="tabpanel"
+                    aria-labelledby={`tab-nav-${activeTab}`}
+                    className="pt-2"
+                    initial={{ opacity: 0, y: 12, filter: 'blur(3px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, y: -12, filter: 'blur(3px)' }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                  >
+                    {activeTab === 'setup' && <SetupScriptTool lang={lang} />}
+                    {activeTab === 'sysctl' && <SysctlTool lang={lang} />}
+                    {activeTab === 'nginx' && <NginxTool lang={lang} />}
+                    {activeTab === 'wireguard' && <WireGuardTool lang={lang} />}
+                    {activeTab === 'subnet' && <SubnetTool lang={lang} />}
+                    {activeTab === 'routing' && <RoutingTool lang={lang} />}
+                  </motion.div>
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Suspense>
       </main>
 
       {/* Footer */}

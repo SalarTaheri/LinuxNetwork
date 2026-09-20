@@ -31,7 +31,7 @@ interface RoutingToolProps {
   lang: Language;
 }
 
-export const RoutingTool: React.FC<RoutingToolProps> = ({ lang }) => {
+export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => {
   const t = translations[lang];
   const isFa = lang === 'fa';
 
@@ -652,4 +652,6 @@ export const RoutingTool: React.FC<RoutingToolProps> = ({ lang }) => {
       </div>
     </div>
   );
-};
+});
+
+RoutingTool.displayName = 'RoutingTool';

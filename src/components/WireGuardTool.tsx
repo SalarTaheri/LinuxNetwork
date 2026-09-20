@@ -24,7 +24,7 @@ const DNS_PRESETS = [
 
 const MTU_PRESETS = [1420, 1360, 1280] as const;
 
-export const WireGuardTool: React.FC<WireGuardToolProps> = ({ lang }) => {
+export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang }) => {
   const t = translations[lang];
 
   const [activeOutputConfig, setActiveOutputConfig] = useState<'server' | 'client'>('server');
@@ -390,4 +390,6 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = ({ lang }) => {
       </div>
     </div>
   );
-};
+});
+
+WireGuardTool.displayName = 'WireGuardTool';

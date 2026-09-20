@@ -25,7 +25,7 @@ const CIDR_HOST_DESCRIPTIONS: Record<number, { en: string; fa: string }> = {
   32: { en: '1 host (Single IP)', fa: '۱ میزبان (تک آی‌پی)' },
 };
 
-export const SubnetTool: React.FC<SubnetToolProps> = ({ lang }) => {
+export const SubnetTool: React.FC<SubnetToolProps> = React.memo(({ lang }) => {
   const t = translations[lang];
 
   const [ipInput, setIpInput] = useState('192.168.1.100');
@@ -362,4 +362,6 @@ ip route get ${result.firstUsableIp}
       </div>
     </div>
   );
-};
+});
+
+SubnetTool.displayName = 'SubnetTool';

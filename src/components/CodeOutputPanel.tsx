@@ -14,7 +14,7 @@ interface CodeOutputPanelProps {
   reloadCommand?: string;
 }
 
-export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
+export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
   lang,
   title,
   configText,
@@ -94,7 +94,26 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
       ? (oneLinerBash || '')
       : (reloadCommand || '');
 
-  const lines = currentDisplayContent.split('\n');
+  const parsedLines = React.useMemo(() => {
+    return currentDisplayContent.split('\n').map((line) => {
+      const trimmed = line.trim();
+      let lineClass = 'text-slate-200';
+
+      if (trimmed.startsWith('#') || trimmed.startsWith('//')) {
+        lineClass = 'text-slate-500 italic';
+      } else if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+        lineClass = 'text-amber-400 font-bold';
+      } else if (/^(listen|server_name|proxy_|ssl_|add_header|client_|net\.|fs\.)/.test(trimmed)) {
+        lineClass = 'text-emerald-300';
+      } else if (trimmed.startsWith('sudo') || trimmed.startsWith('sysctl') || trimmed.startsWith('nginx')) {
+        lineClass = 'text-cyan-300 font-semibold';
+      }
+
+      return { line, lineClass };
+    });
+  }, [currentDisplayContent]);
+
+  const linesCount = parsedLines.length;
 
   return (
     <div className="flex flex-col h-full bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
@@ -271,7 +290,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
           <span className="text-cyan-300/90 font-medium truncate">{targetPath}</span>
         </div>
         <div className="text-slate-500 shrink-0 text-[10px]">
-          {lines.length} {t.output.lines} | {currentDisplayContent.length} {t.output.chars}
+          {linesCount} {t.output.lines} | {currentDisplayContent.length} {t.output.chars}
         </div>
       </div>
 
@@ -295,7 +314,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
           >
             {/* Line Numbers */}
             <div className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0">
-              {lines.map((_, i) => (
+              {parsedLines.map((_, i) => (
                 <div key={i} className="leading-6">
                   {i + 1}
                 </div>
@@ -305,26 +324,11 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
             {/* Code Lines with Syntax Coloring */}
             <pre className="font-mono flex-1 leading-6 focus:outline-none">
               <code>
-                {lines.map((line, i) => {
-                  const trimmed = line.trim();
-                  let lineClass = 'text-slate-200';
-
-                  if (trimmed.startsWith('#') || trimmed.startsWith('//')) {
-                    lineClass = 'text-slate-500 italic';
-                  } else if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
-                    lineClass = 'text-amber-400 font-bold';
-                  } else if (/^(listen|server_name|proxy_|ssl_|add_header|client_|net\.|fs\.)/.test(trimmed)) {
-                    lineClass = 'text-emerald-300';
-                  } else if (trimmed.startsWith('sudo') || trimmed.startsWith('sysctl') || trimmed.startsWith('nginx')) {
-                    lineClass = 'text-cyan-300 font-semibold';
-                  }
-
-                  return (
-                    <div key={i} className={`${lineClass} whitespace-pre`}>
-                      {line || ' '}
-                    </div>
-                  );
-                })}
+                {parsedLines.map(({ line, lineClass }, i) => (
+                  <div key={i} className={`${lineClass} whitespace-pre`}>
+                    {line || ' '}
+                  </div>
+                ))}
               </code>
             </pre>
           </motion.div>
@@ -358,4 +362,6 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = ({
       </div>
     </div>
   );
-};
+});
+
+CodeOutputPanel.displayName = 'CodeOutputPanel';
