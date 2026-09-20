@@ -12,7 +12,7 @@ interface NginxToolProps {
 
 const BUFFERING_OPTIONS = ['enabled', 'disabled', 'stream'] as const;
 
-export const NginxTool: React.FC<NginxToolProps> = ({ lang }) => {
+export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
   const t = translations[lang];
 
   const [settings, setSettings] = useState<NginxSettings>({
@@ -343,4 +343,6 @@ export const NginxTool: React.FC<NginxToolProps> = ({ lang }) => {
       </div>
     </div>
   );
-};
+});
+
+NginxTool.displayName = 'NginxTool';

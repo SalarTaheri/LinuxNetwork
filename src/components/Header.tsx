@@ -12,7 +12,7 @@ interface HeaderProps {
   onNavigateToolbox: (tool?: ToolTab) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({
+export const Header: React.FC<HeaderProps> = React.memo(({
   lang,
   onToggleLang,
   view,
@@ -133,4 +133,6 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
     </header>
   );
-};
+});
+
+Header.displayName = 'Header';

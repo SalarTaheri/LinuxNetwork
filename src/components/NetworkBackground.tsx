@@ -108,6 +108,7 @@ export const NetworkBackground: React.FC = () => {
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     const maxDistance = 145;
+    const maxDistanceSq = maxDistance * maxDistance;
 
     const loop = (currentTime: number) => {
       if (!isVisible) return;
@@ -142,12 +143,13 @@ export const NetworkBackground: React.FC = () => {
           node.vy *= -1;
         }
 
-        // Slight mouse repulsion/interaction
+        // Slight mouse repulsion/interaction (using squared distance before Math.sqrt)
         if (mouse.active) {
           const dx = node.x - mouse.x;
           const dy = node.y - mouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120 && dist > 0) {
+          const distSq = dx * dx + dy * dy;
+          if (distSq < 14400 && distSq > 0) { // 120^2 = 14400
+            const dist = Math.sqrt(distSq);
             const force = (120 - dist) / 120;
             node.x += (dx / dist) * force * 0.8;
             node.y += (dy / dist) * force * 0.8;
@@ -157,14 +159,15 @@ export const NetworkBackground: React.FC = () => {
 
       // Draw connection edges
       for (let i = 0; i < nodes.length; i++) {
+        const n1 = nodes[i];
         for (let j = i + 1; j < nodes.length; j++) {
-          const n1 = nodes[i];
           const n2 = nodes[j];
           const dx = n1.x - n2.x;
           const dy = n1.y - n2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+          const distSq = dx * dx + dy * dy;
 
-          if (dist < maxDistance) {
+          if (distSq < maxDistanceSq) {
+            const dist = Math.sqrt(distSq);
             const alpha = (1 - dist / maxDistance) * 0.2;
             ctx.beginPath();
             ctx.moveTo(n1.x, n1.y);

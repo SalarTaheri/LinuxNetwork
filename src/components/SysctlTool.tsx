@@ -15,7 +15,7 @@ const SERVER_PROFILES: ServerProfile[] = ['web', 'proxy', 'download', 'lowlatenc
 const RAM_SIZES: (RamSize | '32GB+')[] = ['1GB', '2GB', '4GB', '8GB', '16GB', '32GB+'];
 const BANDWIDTH_TIERS: BandwidthTier[] = ['100M', '1G', '10G'];
 
-export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
+export const SysctlTool: React.FC<SysctlToolProps> = React.memo(({ lang }) => {
   const t = translations[lang];
 
   const [settings, setSettings] = useState<SysctlSettings>({
@@ -378,4 +378,6 @@ export const SysctlTool: React.FC<SysctlToolProps> = ({ lang }) => {
       </div>
     </div>
   );
-};
+});
+
+SysctlTool.displayName = 'SysctlTool';

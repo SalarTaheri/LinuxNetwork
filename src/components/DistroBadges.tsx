@@ -141,7 +141,7 @@ export const DISTROS: DistroInfo[] = [
   },
 ];
 
-export const DistroBadges: React.FC<DistroBadgesProps> = ({ lang, showLabels = true }) => {
+export const DistroBadges: React.FC<DistroBadgesProps> = React.memo(({ lang, showLabels = true }) => {
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
   return (
@@ -216,4 +216,6 @@ export const DistroBadges: React.FC<DistroBadgesProps> = ({ lang, showLabels = t
       })}
     </div>
   );
-};
+});
+
+DistroBadges.displayName = 'DistroBadges';

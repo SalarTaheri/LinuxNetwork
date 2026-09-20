@@ -1,28 +1,27 @@
 import { SubnetCalculation } from '../types';
 
 export function ipToInt(ip: string): number {
-  return ip
-    .split('.')
-    .reduce((acc, octet) => ((acc << 8) + parseInt(octet, 10)) >>> 0, 0);
+  let res = 0;
+  let octet = 0;
+  for (let i = 0; i < ip.length; i++) {
+    const code = ip.charCodeAt(i);
+    if (code === 46) { // '.'
+      res = (res << 8) + octet;
+      octet = 0;
+    } else {
+      octet = octet * 10 + (code - 48);
+    }
+  }
+  return ((res << 8) + octet) >>> 0;
 }
 
 export function intToIp(int: number): string {
-  return [
-    (int >>> 24) & 255,
-    (int >>> 16) & 255,
-    (int >>> 8) & 255,
-    int & 255,
-  ].join('.');
+  return `${(int >>> 24) & 255}.${(int >>> 16) & 255}.${(int >>> 8) & 255}.${int & 255}`;
 }
 
 export function intToBinary(int: number): string {
   const binaryStr = (int >>> 0).toString(2).padStart(32, '0');
-  return [
-    binaryStr.slice(0, 8),
-    binaryStr.slice(8, 16),
-    binaryStr.slice(16, 24),
-    binaryStr.slice(24, 32),
-  ].join('.');
+  return `${binaryStr.slice(0, 8)}.${binaryStr.slice(8, 16)}.${binaryStr.slice(16, 24)}.${binaryStr.slice(24, 32)}`;
 }
 
 export function cidrToNetmaskInt(cidr: number): number {
@@ -55,7 +54,11 @@ export function getIpClass(firstOctet: number): string {
 }
 
 export function getIpScope(ip: string): string {
-  const [o1, o2] = ip.split('.').map((x) => parseInt(x, 10));
+  const dot1 = ip.indexOf('.');
+  const dot2 = ip.indexOf('.', dot1 + 1);
+  const o1 = parseInt(ip.substring(0, dot1), 10);
+  const o2 = parseInt(ip.substring(dot1 + 1, dot2), 10);
+
   if (o1 === 10) return 'RFC 1918 Private (10.0.0.0/8)';
   if (o1 === 172 && o2 >= 16 && o2 <= 31) return 'RFC 1918 Private (172.16.0.0/12)';
   if (o1 === 192 && o2 === 168) return 'RFC 1918 Private (192.168.0.0/16)';

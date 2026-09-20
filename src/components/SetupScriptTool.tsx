@@ -10,7 +10,7 @@ interface SetupScriptToolProps {
   lang: Language;
 }
 
-export const SetupScriptTool: React.FC<SetupScriptToolProps> = ({ lang }) => {
+export const SetupScriptTool: React.FC<SetupScriptToolProps> = React.memo(({ lang }) => {
   const t = translations[lang];
 
   const [settings, setSettings] = useState<SetupScriptSettings>({
@@ -460,4 +460,6 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
       </div>
     </div>
   );
-};
+});
+
+SetupScriptTool.displayName = 'SetupScriptTool';
