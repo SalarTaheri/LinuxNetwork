@@ -262,7 +262,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                 <select
                   value={settings.qdisc}
                   onChange={(e) => setSettings({ ...settings, qdisc: e.target.value as 'fq' | 'cake' })}
-                  className="bg-slate-950 border border-slate-700 rounded px-2.5 py-1 text-xs font-mono text-cyan-300 focus:outline-none"
+                  className="bg-slate-950 border border-slate-700 rounded px-2.5 py-1 text-xs font-mono text-cyan-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 cursor-pointer"
                   dir="ltr"
                 >
                   <option value="fq">fq (Fair Queueing - Recommended)</option>
@@ -304,7 +304,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   id="enable-custom-ssh"
                   checked={settings.enableCustomSshPort}
                   onChange={(e) => setSettings({ ...settings, enableCustomSshPort: e.target.checked })}
-                  className="rounded bg-slate-950 border-slate-700 text-cyan-500"
+                  className="rounded bg-slate-950 border-slate-700 text-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none cursor-pointer"
                 />
                 <label htmlFor="enable-custom-ssh" className="text-xs font-semibold text-slate-200 font-mono cursor-pointer">
                   {t.setup.customSshPort}
@@ -316,7 +316,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   max={65535}
                   disabled={!settings.enableCustomSshPort}
                   onChange={(e) => setSettings({ ...settings, sshPort: parseInt(e.target.value, 10) || 22 })}
-                  className="w-24 bg-slate-950 disabled:opacity-40 border border-slate-700 rounded px-2.5 py-1 text-xs font-mono text-cyan-300"
+                  className="w-24 bg-slate-950 disabled:opacity-40 border border-slate-700 rounded px-2.5 py-1 text-xs font-mono text-cyan-300 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none"
                   dir="ltr"
                 />
               </div>
@@ -326,7 +326,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   type="checkbox"
                   checked={settings.disablePasswordAuth}
                   onChange={(e) => setSettings({ ...settings, disablePasswordAuth: e.target.checked })}
-                  className="mt-1 rounded bg-slate-950 border-slate-700 text-cyan-500"
+                  className="mt-1 rounded bg-slate-950 border-slate-700 text-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none cursor-pointer"
                 />
                 <div className="text-xs">
                   <span className="font-semibold text-slate-200 font-mono">{t.setup.disablePwdAuth}</span>
@@ -339,7 +339,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   type="checkbox"
                   checked={settings.enableFail2ban}
                   onChange={(e) => setSettings({ ...settings, enableFail2ban: e.target.checked })}
-                  className="mt-1 rounded bg-slate-950 border-slate-700 text-cyan-500"
+                  className="mt-1 rounded bg-slate-950 border-slate-700 text-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none cursor-pointer"
                 />
                 <div className="text-xs">
                   <span className="font-semibold text-slate-200 font-mono">{t.setup.fail2ban}</span>
@@ -352,7 +352,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   type="checkbox"
                   checked={settings.enableUfw}
                   onChange={(e) => setSettings({ ...settings, enableUfw: e.target.checked })}
-                  className="mt-1 rounded bg-slate-950 border-slate-700 text-cyan-500"
+                  className="mt-1 rounded bg-slate-950 border-slate-700 text-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none cursor-pointer"
                 />
                 <div className="text-xs">
                   <span className="font-semibold text-slate-200 font-mono">{t.setup.ufw}</span>
@@ -380,7 +380,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   type="checkbox"
                   checked={settings.enableDocker}
                   onChange={(e) => setSettings({ ...settings, enableDocker: e.target.checked })}
-                  className="mt-1 rounded bg-slate-950 border-slate-700 text-blue-500"
+                  className="mt-1 rounded bg-slate-950 border-slate-700 text-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none cursor-pointer"
                 />
                 <div className="text-xs">
                   <span className="font-semibold text-slate-200 font-mono">{t.setup.docker}</span>
@@ -394,7 +394,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                     type="checkbox"
                     checked={settings.enableDockerMirror}
                     onChange={(e) => setSettings({ ...settings, enableDockerMirror: e.target.checked })}
-                    className="mt-1 rounded bg-slate-950 border-slate-700 text-blue-500"
+                    className="mt-1 rounded bg-slate-950 border-slate-700 text-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none cursor-pointer"
                   />
                   <div className="text-xs">
                     <span className="font-semibold text-slate-200 font-mono">{t.setup.dockerMirror}</span>
@@ -423,7 +423,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   type="checkbox"
                   checked={settings.enableTools}
                   onChange={(e) => setSettings({ ...settings, enableTools: e.target.checked })}
-                  className="mt-1 rounded bg-slate-950 border-slate-700 text-amber-500"
+                  className="mt-1 rounded bg-slate-950 border-slate-700 text-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none cursor-pointer"
                 />
                 <div className="text-xs">
                   <span className="font-semibold text-slate-200 font-mono">{t.setup.tools}</span>
@@ -436,7 +436,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   type="checkbox"
                   checked={settings.enableZsh}
                   onChange={(e) => setSettings({ ...settings, enableZsh: e.target.checked })}
-                  className="mt-1 rounded bg-slate-950 border-slate-700 text-amber-500"
+                  className="mt-1 rounded bg-slate-950 border-slate-700 text-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none cursor-pointer"
                 />
                 <div className="text-xs">
                   <span className="font-semibold text-slate-200 font-mono">{t.setup.zsh}</span>
