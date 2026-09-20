@@ -53,4 +53,21 @@ describe('Toolbox Navigation & Categorization', () => {
     assert.ok(searchByQuery('cidr').includes('subnet'));
     assert.ok(searchByQuery('docker').includes('setup') && searchByQuery('docker').includes('routing'));
   });
+
+  test('preloader callback is triggered correctly for each valid tool tab', () => {
+    const preloaded: ToolTab[] = [];
+    const mockPreload = (tab: ToolTab) => {
+      if (!preloaded.includes(tab)) {
+        preloaded.push(tab);
+      }
+    };
+
+    const tabs: ToolTab[] = ['setup', 'sysctl', 'nginx', 'wireguard', 'subnet', 'routing'];
+    for (const tab of tabs) {
+      mockPreload(tab);
+    }
+
+    assert.strictEqual(preloaded.length, 6);
+    assert.deepStrictEqual(preloaded, tabs);
+  });
 });

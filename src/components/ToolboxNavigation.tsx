@@ -37,12 +37,14 @@ interface ToolboxNavigationProps {
   activeTab: ToolTab;
   onTabChange: (tab: ToolTab) => void;
   lang: Language;
+  onPreloadTool?: (tab: ToolTab) => void;
 }
 
 export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
   activeTab,
   onTabChange,
   lang,
+  onPreloadTool,
 }) => {
   const t = translations[lang];
   const isFa = lang === 'fa';
@@ -448,6 +450,9 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
                 aria-controls={`tabpanel-${tool.id}`}
                 type="button"
                 onClick={() => handleSelectTool(tool.id)}
+                onMouseEnter={() => onPreloadTool?.(tool.id)}
+                onFocus={() => onPreloadTool?.(tool.id)}
+                onTouchStart={() => onPreloadTool?.(tool.id)}
                 title={tool.label}
                 className={`relative px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 whitespace-nowrap focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                   active
@@ -575,6 +580,8 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
                         aria-selected={isSelected}
                         type="button"
                         onClick={() => handleSelectTool(tool.id)}
+                        onMouseEnter={() => onPreloadTool?.(tool.id)}
+                        onFocus={() => onPreloadTool?.(tool.id)}
                         className={`w-full text-left rtl:text-right p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                           isSelected
                             ? 'bg-emerald-500/10 border-emerald-500/30 text-white'
