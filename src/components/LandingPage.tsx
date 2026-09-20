@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Terminal,
@@ -61,117 +61,123 @@ export const LandingPage: React.FC<LandingPageProps> = ({ lang, onLaunchToolbox 
     }
   };
 
-  const toolCards: {
-    id: ToolTab;
-    title: string;
-    desc: string;
-    badge: string;
-    icon: React.ReactNode;
-    colorClasses: {
-      glow: string;
+  // Memoize tool card structure to prevent re-creating 6 complex card objects, JSX icons, and highlights arrays on every render (e.g., FAQ toggle or command copy)
+  const toolCards = useMemo<
+    {
+      id: ToolTab;
+      title: string;
+      desc: string;
       badge: string;
-      iconBg: string;
-      button: string;
-    };
-    highlights: string[];
-  }[] = [
-    {
-      id: 'setup',
-      title: l.toolsSection.items.setup.title,
-      desc: l.toolsSection.items.setup.desc,
-      badge: l.toolsSection.items.setup.badge,
-      icon: <Terminal className="w-5 h-5" />,
+      icon: React.ReactNode;
       colorClasses: {
-        glow: 'group-hover:border-emerald-500/50 group-hover:shadow-emerald-950/40',
-        badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-        iconBg: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-        button: 'bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border-emerald-500/30',
+        glow: string;
+        badge: string;
+        iconBg: string;
+        button: string;
+      };
+      highlights: string[];
+    }[]
+  >(
+    () => [
+      {
+        id: 'setup',
+        title: l.toolsSection.items.setup.title,
+        desc: l.toolsSection.items.setup.desc,
+        badge: l.toolsSection.items.setup.badge,
+        icon: <Terminal className="w-5 h-5" />,
+        colorClasses: {
+          glow: 'group-hover:border-emerald-500/50 group-hover:shadow-emerald-950/40',
+          badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+          iconBg: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+          button: 'bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border-emerald-500/30',
+        },
+        highlights: isFa
+          ? ['BBRv1 و BBRv3', 'هاردنینگ پورت SSH', 'فایروال و Fail2ban', 'داکر با میرور داخلی']
+          : ['BBRv1 & BBRv3 Tuning', 'SSH Port Hardening', 'Fail2ban & Firewalls', 'Docker with Fast Mirrors'],
       },
-      highlights: isFa
-        ? ['BBRv1 و BBRv3', 'هاردنینگ پورت SSH', 'فایروال و Fail2ban', 'داکر با میرور داخلی']
-        : ['BBRv1 & BBRv3 Tuning', 'SSH Port Hardening', 'Fail2ban & Firewalls', 'Docker with Fast Mirrors'],
-    },
-    {
-      id: 'sysctl',
-      title: l.toolsSection.items.sysctl.title,
-      desc: l.toolsSection.items.sysctl.desc,
-      badge: l.toolsSection.items.sysctl.badge,
-      icon: <Cpu className="w-5 h-5" />,
-      colorClasses: {
-        glow: 'group-hover:border-cyan-500/50 group-hover:shadow-cyan-950/40',
-        badge: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-        iconBg: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
-        button: 'bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border-cyan-500/30',
+      {
+        id: 'sysctl',
+        title: l.toolsSection.items.sysctl.title,
+        desc: l.toolsSection.items.sysctl.desc,
+        badge: l.toolsSection.items.sysctl.badge,
+        icon: <Cpu className="w-5 h-5" />,
+        colorClasses: {
+          glow: 'group-hover:border-cyan-500/50 group-hover:shadow-cyan-950/40',
+          badge: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+          iconBg: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
+          button: 'bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border-cyan-500/30',
+        },
+        highlights: isFa
+          ? ['تنظیم بر اساس RAM و پهنای باند', 'الگوریتم fq / cake', 'بازیافت سوکت‌های TIME_WAIT', 'افزایش File Descriptors']
+          : ['Hardware-aware Presets', 'fq / cake Qdisc', 'TIME_WAIT Socket Reuse', 'Max File Descriptors'],
       },
-      highlights: isFa
-        ? ['تنظیم بر اساس RAM و پهنای باند', 'الگوریتم fq / cake', 'بازیافت سوکت‌های TIME_WAIT', 'افزایش File Descriptors']
-        : ['Hardware-aware Presets', 'fq / cake Qdisc', 'TIME_WAIT Socket Reuse', 'Max File Descriptors'],
-    },
-    {
-      id: 'nginx',
-      title: l.toolsSection.items.nginx.title,
-      desc: l.toolsSection.items.nginx.desc,
-      badge: l.toolsSection.items.nginx.badge,
-      icon: <Globe2 className="w-5 h-5" />,
-      colorClasses: {
-        glow: 'group-hover:border-sky-500/50 group-hover:shadow-sky-950/40',
-        badge: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-        iconBg: 'bg-sky-500/15 text-sky-400 border-sky-500/30',
-        button: 'bg-sky-600/20 hover:bg-sky-600/30 text-sky-300 border-sky-500/30',
+      {
+        id: 'nginx',
+        title: l.toolsSection.items.nginx.title,
+        desc: l.toolsSection.items.nginx.desc,
+        badge: l.toolsSection.items.nginx.badge,
+        icon: <Globe2 className="w-5 h-5" />,
+        colorClasses: {
+          glow: 'group-hover:border-sky-500/50 group-hover:shadow-sky-950/40',
+          badge: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
+          iconBg: 'bg-sky-500/15 text-sky-400 border-sky-500/30',
+          button: 'bg-sky-600/20 hover:bg-sky-600/30 text-sky-300 border-sky-500/30',
+        },
+        highlights: isFa
+          ? ['پروفایل مدرن موزیلا (TLS 1.3)', 'پشتیبانی HTTP/2 و HTTP/3', 'ارتقای اتصالات WebSocket', 'هدرهای امنیتی HSTS و CSP']
+          : ['Mozilla Modern SSL', 'HTTP/2 & HTTP/3 QUIC', 'WebSocket Proxying', 'HSTS & Security Headers'],
       },
-      highlights: isFa
-        ? ['پروفایل مدرن موزیلا (TLS 1.3)', 'پشتیبانی HTTP/2 و HTTP/3', 'ارتقای اتصالات WebSocket', 'هدرهای امنیتی HSTS و CSP']
-        : ['Mozilla Modern SSL', 'HTTP/2 & HTTP/3 QUIC', 'WebSocket Proxying', 'HSTS & Security Headers'],
-    },
-    {
-      id: 'wireguard',
-      title: l.toolsSection.items.wireguard.title,
-      desc: l.toolsSection.items.wireguard.desc,
-      badge: l.toolsSection.items.wireguard.badge,
-      icon: <Shield className="w-5 h-5" />,
-      colorClasses: {
-        glow: 'group-hover:border-purple-500/50 group-hover:shadow-purple-950/40',
-        badge: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-        iconBg: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
-        button: 'bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border-purple-500/30',
+      {
+        id: 'wireguard',
+        title: l.toolsSection.items.wireguard.title,
+        desc: l.toolsSection.items.wireguard.desc,
+        badge: l.toolsSection.items.wireguard.badge,
+        icon: <Shield className="w-5 h-5" />,
+        colorClasses: {
+          glow: 'group-hover:border-purple-500/50 group-hover:shadow-purple-950/40',
+          badge: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+          iconBg: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+          button: 'bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border-purple-500/30',
+        },
+        highlights: isFa
+          ? ['تولید کلید با Web Crypto در مرورگر', 'ساخت کیو‌آرکد برای موبایل', 'محاسبه‌گر خودکار MTU', 'وان‌لاینر نصب سرور']
+          : ['Browser-native Curve25519', 'Mobile QR Code Generation', 'Optimal MTU Calculation', 'Automated Server Setup'],
       },
-      highlights: isFa
-        ? ['تولید کلید با Web Crypto در مرورگر', 'ساخت کیو‌آرکد برای موبایل', 'محاسبه‌گر خودکار MTU', 'وان‌لاینر نصب سرور']
-        : ['Browser-native Curve25519', 'Mobile QR Code Generation', 'Optimal MTU Calculation', 'Automated Server Setup'],
-    },
-    {
-      id: 'subnet',
-      title: l.toolsSection.items.subnet.title,
-      desc: l.toolsSection.items.subnet.desc,
-      badge: l.toolsSection.items.subnet.badge,
-      icon: <Calculator className="w-5 h-5" />,
-      colorClasses: {
-        glow: 'group-hover:border-amber-500/50 group-hover:shadow-amber-950/40',
-        badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-        iconBg: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-        button: 'bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border-amber-500/30',
+      {
+        id: 'subnet',
+        title: l.toolsSection.items.subnet.title,
+        desc: l.toolsSection.items.subnet.desc,
+        badge: l.toolsSection.items.subnet.badge,
+        icon: <Calculator className="w-5 h-5" />,
+        colorClasses: {
+          glow: 'group-hover:border-amber-500/50 group-hover:shadow-amber-950/40',
+          badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+          iconBg: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+          button: 'bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border-amber-500/30',
+        },
+        highlights: isFa
+          ? ['تفکیک شبکه و آدرس Broadcast', 'محاسبه دقیق هاست‌های مفید', 'نمایش وایلدکارت و باینری', 'دستورات آماده ip route و iptables']
+          : ['Network & Broadcast IPs', 'Usable Host Capacity', 'Wildcard & Binary Masks', 'Ready iproute2 & iptables CLI'],
       },
-      highlights: isFa
-        ? ['تفکیک شبکه و آدرس Broadcast', 'محاسبه دقیق هاست‌های مفید', 'نمایش وایلدکارت و باینری', 'دستورات آماده ip route و iptables']
-        : ['Network & Broadcast IPs', 'Usable Host Capacity', 'Wildcard & Binary Masks', 'Ready iproute2 & iptables CLI'],
-    },
-    {
-      id: 'routing',
-      title: l.toolsSection.items.routing.title,
-      desc: l.toolsSection.items.routing.desc,
-      badge: l.toolsSection.items.routing.badge,
-      icon: <Route className="w-5 h-5" />,
-      colorClasses: {
-        glow: 'group-hover:border-emerald-500/50 group-hover:shadow-emerald-950/40',
-        badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-        iconBg: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-        button: 'bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border-emerald-500/30',
+      {
+        id: 'routing',
+        title: l.toolsSection.items.routing.title,
+        desc: l.toolsSection.items.routing.desc,
+        badge: l.toolsSection.items.routing.badge,
+        icon: <Route className="w-5 h-5" />,
+        colorClasses: {
+          glow: 'group-hover:border-emerald-500/50 group-hover:shadow-emerald-950/40',
+          badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+          iconBg: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+          button: 'bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border-emerald-500/30',
+        },
+        highlights: isFa
+          ? ['اشتراک اینترنت NAT Gateway', 'پورت فورواردینگ و Hairpin NAT', 'ایمن‌سازی پورت‌های داکر (DOCKER-USER)', 'پالیسی روتینگ و سینتکس nftables']
+          : ['NAT Gateway & Masquerade', 'Port Forwarding & Hairpin NAT', 'Docker Protection (DOCKER-USER)', 'Policy Routing & Modern nftables'],
       },
-      highlights: isFa
-        ? ['اشتراک اینترنت NAT Gateway', 'پورت فورواردینگ و Hairpin NAT', 'ایمن‌سازی پورت‌های داکر (DOCKER-USER)', 'پالیسی روتینگ و سینتکس nftables']
-        : ['NAT Gateway & Masquerade', 'Port Forwarding & Hairpin NAT', 'Docker Protection (DOCKER-USER)', 'Policy Routing & Modern nftables'],
-    },
-  ];
+    ],
+    [l, isFa]
+  );
 
   return (
     <div className="space-y-16 sm:space-y-24 py-4 sm:py-8">
