@@ -282,7 +282,8 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                     key={m}
                     type="button"
                     onClick={() => setSettings({ ...settings, mtu: m })}
-                    className={`flex-1 py-1 rounded border text-xs cursor-pointer ${
+                    aria-pressed={settings.mtu === m}
+                    className={`flex-1 py-1 rounded border text-xs cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                       settings.mtu === m
                         ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
                         : 'bg-slate-800/40 border-slate-700/60 text-slate-400'
@@ -337,11 +338,13 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
       {/* Live Output Panel with Server / Client Tabs */}
       <div className="lg:col-span-6 lg:sticky lg:top-24 space-y-3">
         {/* Output Profile Switcher */}
-        <div className="flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
+        <div role="tablist" aria-label="WireGuard Configuration View" className="flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
           <button
             type="button"
+            role="tab"
+            aria-selected={activeOutputConfig === 'server'}
             onClick={() => setActiveOutputConfig('server')}
-            className={`relative flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer ${
+            className={`relative flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
               activeOutputConfig === 'server'
                 ? 'text-white'
                 : 'text-slate-400 hover:text-slate-200'
@@ -360,8 +363,10 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
 
           <button
             type="button"
+            role="tab"
+            aria-selected={activeOutputConfig === 'client'}
             onClick={() => setActiveOutputConfig('client')}
-            className={`relative flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer ${
+            className={`relative flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none ${
               activeOutputConfig === 'client'
                 ? 'text-white'
                 : 'text-slate-400 hover:text-slate-200'
@@ -377,6 +382,11 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
             <Smartphone className="w-4 h-4 relative z-10" />
             <span className="relative z-10">{t.wireguard.clientConfigTab}</span>
           </button>
+        </div>
+
+        {/* Screen reader notification for key regeneration */}
+        <div className="sr-only" aria-live="polite">
+          {keyFlash && (lang === 'fa' ? 'کلیدهای جدید وایرگارد تولید شدند' : 'New WireGuard keys generated successfully')}
         </div>
 
         <CodeOutputPanel

@@ -216,6 +216,8 @@ ip route get ${result.firstUsableIp}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
+            aria-live="polite"
+            aria-atomic="true"
             className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-4"
           >
             <div className="flex items-center justify-between">

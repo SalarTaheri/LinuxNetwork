@@ -256,7 +256,7 @@ export const SysctlTool: React.FC<SysctlToolProps> = React.memo(({ lang }) => {
                 type="checkbox"
                 checked={settings.enableBbr}
                 onChange={(e) => setSettings({ ...settings, enableBbr: e.target.checked })}
-                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
               />
               <div className="text-xs">
                 <div className="font-semibold text-slate-200 font-mono text-xs">{t.sysctl.bbr}</div>
@@ -270,7 +270,7 @@ export const SysctlTool: React.FC<SysctlToolProps> = React.memo(({ lang }) => {
                 type="checkbox"
                 checked={settings.enableSynCookies}
                 onChange={(e) => setSettings({ ...settings, enableSynCookies: e.target.checked })}
-                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
               />
               <div className="text-xs">
                 <div className="font-semibold text-slate-200 font-mono text-xs">{t.sysctl.synCookies}</div>
@@ -284,7 +284,7 @@ export const SysctlTool: React.FC<SysctlToolProps> = React.memo(({ lang }) => {
                 type="checkbox"
                 checked={settings.enableTwReuse}
                 onChange={(e) => setSettings({ ...settings, enableTwReuse: e.target.checked })}
-                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
               />
               <div className="text-xs">
                 <div className="font-semibold text-slate-200 font-mono text-xs">{t.sysctl.twReuse}</div>
@@ -298,7 +298,7 @@ export const SysctlTool: React.FC<SysctlToolProps> = React.memo(({ lang }) => {
                 type="checkbox"
                 checked={settings.enableFastOpen}
                 onChange={(e) => setSettings({ ...settings, enableFastOpen: e.target.checked })}
-                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
               />
               <div className="text-xs">
                 <div className="font-semibold text-slate-200 font-mono text-xs">{t.sysctl.fastOpen}</div>
@@ -312,7 +312,7 @@ export const SysctlTool: React.FC<SysctlToolProps> = React.memo(({ lang }) => {
                 type="checkbox"
                 checked={settings.enableIpForward}
                 onChange={(e) => setSettings({ ...settings, enableIpForward: e.target.checked })}
-                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
               />
               <div className="text-xs">
                 <div className="font-semibold text-slate-200 font-mono text-xs">{t.sysctl.ipForward}</div>
@@ -326,7 +326,7 @@ export const SysctlTool: React.FC<SysctlToolProps> = React.memo(({ lang }) => {
                 type="checkbox"
                 checked={settings.enableMtuProbing}
                 onChange={(e) => setSettings({ ...settings, enableMtuProbing: e.target.checked })}
-                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
               />
               <div className="text-xs">
                 <div className="font-semibold text-slate-200 font-mono text-xs">{t.sysctl.mtuProbing}</div>
@@ -340,7 +340,7 @@ export const SysctlTool: React.FC<SysctlToolProps> = React.memo(({ lang }) => {
                 type="checkbox"
                 checked={settings.increaseFileLimits}
                 onChange={(e) => setSettings({ ...settings, increaseFileLimits: e.target.checked })}
-                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
               />
               <div className="text-xs">
                 <div className="font-semibold text-slate-200 font-mono text-xs">{t.sysctl.fileLimits}</div>
@@ -354,7 +354,7 @@ export const SysctlTool: React.FC<SysctlToolProps> = React.memo(({ lang }) => {
                 type="checkbox"
                 checked={settings.disableIpv6}
                 onChange={(e) => setSettings({ ...settings, disableIpv6: e.target.checked })}
-                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                className="mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
               />
               <div className="text-xs">
                 <div className="font-semibold text-slate-200 font-mono text-xs">{t.sysctl.disableIpv6}</div>

@@ -159,7 +159,8 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
             whileTap={{ scale: 0.96 }}
             type="button"
             onClick={handleCopyOneLiner}
-            className={`ml-3 shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer ${
+            aria-label={copiedOneLiner ? t.setup.copied : t.setup.copyCommand}
+            className={`ml-3 shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
               copiedOneLiner
                 ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/30'
                 : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40'
@@ -235,7 +236,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   type="checkbox"
                   checked={settings.enableBbr}
                   onChange={(e) => setSettings({ ...settings, enableBbr: e.target.checked })}
-                  className="mt-1 rounded bg-slate-950 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                  className="mt-1 rounded bg-slate-950 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
                 />
                 <div className="text-xs">
                   <span className="font-semibold text-slate-200 font-mono">{t.setup.bbr}</span>
@@ -248,7 +249,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   type="checkbox"
                   checked={settings.enableBbr3}
                   onChange={(e) => setSettings({ ...settings, enableBbr3: e.target.checked })}
-                  className="mt-1 rounded bg-slate-950 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                  className="mt-1 rounded bg-slate-950 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
                 />
                 <div className="text-xs">
                   <span className="font-semibold text-slate-200 font-mono">{t.setup.bbr3}</span>
@@ -274,7 +275,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   type="checkbox"
                   checked={settings.enableSysctlOpt}
                   onChange={(e) => setSettings({ ...settings, enableSysctlOpt: e.target.checked })}
-                  className="mt-1 rounded bg-slate-950 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                  className="mt-1 rounded bg-slate-950 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
                 />
                 <div className="text-xs">
                   <span className="font-semibold text-slate-200 font-mono">{t.setup.sysctlOpt}</span>
