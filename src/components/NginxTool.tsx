@@ -106,7 +106,8 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
                 <button
                   type="button"
                   onClick={() => setSettings({ ...settings, upstreamType: 'http', upstreamAddress: '127.0.0.1:8080' })}
-                  className={`relative px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
+                  aria-pressed={settings.upstreamType === 'http'}
+                  className={`relative px-2.5 py-1 rounded text-xs transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none ${
                     settings.upstreamType === 'http'
                       ? 'text-cyan-200 font-bold'
                       : 'text-slate-400 hover:text-slate-200'
@@ -124,7 +125,8 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
                 <button
                   type="button"
                   onClick={() => setSettings({ ...settings, upstreamType: 'unix', upstreamAddress: '/run/gunicorn.sock' })}
-                  className={`relative px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
+                  aria-pressed={settings.upstreamType === 'unix'}
+                  className={`relative px-2.5 py-1 rounded text-xs transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none ${
                     settings.upstreamType === 'unix'
                       ? 'text-cyan-200 font-bold'
                       : 'text-slate-400 hover:text-slate-200'
@@ -267,8 +269,12 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
               step="5"
               value={settings.clientMaxBodySize}
               onChange={(e) => setSettings({ ...settings, clientMaxBodySize: parseInt(e.target.value, 10) })}
+              aria-label={t.nginx.clientMaxBodySize}
+              aria-valuemin={1}
+              aria-valuemax={500}
+              aria-valuenow={settings.clientMaxBodySize}
               aria-valuetext={`${settings.clientMaxBodySize} MB`}
-              className="w-full accent-cyan-400 cursor-pointer"
+              className="w-full accent-cyan-400 cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none"
             />
           </div>
 
@@ -283,7 +289,8 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
                   key={b}
                   type="button"
                   onClick={() => setSettings({ ...settings, proxyBuffering: b })}
-                  className={`p-2 rounded border text-start transition-all cursor-pointer ${
+                  aria-pressed={settings.proxyBuffering === b}
+                  className={`p-2 rounded border text-start transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none ${
                     settings.proxyBuffering === b
                       ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300'
                       : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-slate-200'

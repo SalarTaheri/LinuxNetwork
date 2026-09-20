@@ -231,19 +231,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ lang, onLaunchToolbox 
             type="button"
             id="btn-hero-launch-toolbox"
             onClick={() => onLaunchToolbox('setup')}
-            className="group relative inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-sm sm:text-base shadow-xl shadow-emerald-950/60 transition-all duration-200 transform hover:-translate-y-0.5 cursor-pointer border border-emerald-400/40"
+            className="group relative inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-sm sm:text-base shadow-xl shadow-emerald-950/60 transition-all duration-200 transform hover:-translate-y-0.5 cursor-pointer border border-emerald-400/40 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
           >
             <span>{l.hero.ctaLaunch}</span>
-            <ArrowIcon className="w-4 h-4 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+            <ArrowIcon className="w-4 h-4 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" aria-hidden="true" />
           </button>
 
           <a
             href="https://github.com/SalarTaheri/LinuxNetwork"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700/80 hover:border-slate-600 text-sm sm:text-base font-semibold shadow-md transition-all duration-200 cursor-pointer"
+            aria-label={`${l.hero.ctaGithub} (opens in new tab)`}
+            className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700/80 hover:border-slate-600 text-sm sm:text-base font-semibold shadow-md transition-all duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
           >
-            <Github className="w-4 h-4 text-slate-400" />
+            <Github className="w-4 h-4 text-slate-400" aria-hidden="true" />
             <span>{l.hero.ctaGithub}</span>
           </a>
         </motion.div>
@@ -284,7 +285,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ lang, onLaunchToolbox 
                 <button
                   type="button"
                   onClick={handleCopyOneLiner}
-                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-500/30 text-emerald-300 text-xs transition-colors cursor-pointer"
+                  aria-label={copiedTerminal ? t.setup.copied : l.hero.copyCmd}
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-500/30 text-emerald-300 text-xs transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
                   title="Copy command"
                 >
                   {copiedTerminal ? (
@@ -380,10 +382,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ lang, onLaunchToolbox 
                 <button
                   type="button"
                   onClick={() => onLaunchToolbox(card.id)}
-                  className={`w-full py-2.5 px-4 rounded-xl border text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${card.colorClasses.button}`}
+                  className={`w-full py-2.5 px-4 rounded-xl border text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${card.colorClasses.button}`}
                 >
                   <span>{l.toolsSection.openTool}</span>
-                  <ArrowIcon className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                  <ArrowIcon className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" aria-hidden="true" />
                 </button>
               </div>
             </motion.div>
@@ -464,13 +466,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ lang, onLaunchToolbox 
               >
                 <button
                   type="button"
+                  id={`faq-question-${idx}`}
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${idx}`}
                   onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                  className="w-full px-5 py-4 flex items-center justify-between text-left rtl:text-right gap-4 cursor-pointer hover:bg-slate-800/40 transition-colors"
+                  className="w-full px-5 py-4 flex items-center justify-between text-left rtl:text-right gap-4 cursor-pointer hover:bg-slate-800/40 transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
                 >
                   <span className="font-semibold text-sm sm:text-base text-slate-200">
                     {item.q}
                   </span>
                   <ChevronDown
+                    aria-hidden="true"
                     className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${
                       isOpen ? 'rotate-180 text-emerald-400' : ''
                     }`}
@@ -479,6 +485,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ lang, onLaunchToolbox 
                 <AnimatePresence>
                   {isOpen && (
                     <motion.div
+                      id={`faq-answer-${idx}`}
+                      role="region"
+                      aria-labelledby={`faq-question-${idx}`}
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}

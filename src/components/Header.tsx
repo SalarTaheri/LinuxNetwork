@@ -40,7 +40,8 @@ export const Header: React.FC<HeaderProps> = React.memo(({
         <button
           type="button"
           onClick={onNavigateLanding}
-          className="flex items-center gap-3 text-left rtl:text-right cursor-pointer group focus:outline-none"
+          aria-label={isFa ? 'صفحه اصلی LinuxNetwork.ir' : 'LinuxNetwork.ir Home'}
+          className="flex items-center gap-3 text-left rtl:text-right cursor-pointer group rounded-xl p-1 -m-1 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
           title={isFa ? 'صفحه اصلی LinuxNetwork' : 'LinuxNetwork Home'}
         >
           <motion.div
@@ -49,7 +50,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             transition={{ duration: 0.3 }}
             className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 via-cyan-500/10 to-transparent border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-950/50"
           >
-            <Terminal className="w-5 h-5" />
+            <Terminal className="w-5 h-5" aria-hidden="true" />
           </motion.div>
           <div>
             <div className="flex items-center gap-2">
@@ -80,10 +81,10 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               type="button"
               id="btn-header-launch-toolbox"
               onClick={() => onNavigateToolbox('setup')}
-              className="flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md shadow-emerald-950/50 border border-emerald-400/30 transition-all cursor-pointer"
+              className="flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md shadow-emerald-950/50 border border-emerald-400/30 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
             >
               <span>{t.nav.launchToolbox}</span>
-              <ArrowIcon className="w-3.5 h-3.5" />
+              <ArrowIcon className="w-3.5 h-3.5" aria-hidden="true" />
             </motion.button>
           ) : (
             <motion.button
@@ -92,9 +93,9 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               type="button"
               id="btn-header-go-home"
               onClick={onNavigateLanding}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
             >
-              <Home className="w-3.5 h-3.5 text-emerald-400" />
+              <Home className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
               <span>{t.nav.home}</span>
             </motion.button>
           )}
@@ -107,9 +108,9 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${t.github} (opens in new tab)`}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent hover:border-slate-700/60 transition-colors font-medium"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent hover:border-slate-700/60 transition-colors font-medium focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
           >
-            <Github className="w-4 h-4" />
+            <Github className="w-4 h-4" aria-hidden="true" />
             <span className="hidden sm:inline">{t.github}</span>
           </motion.a>
 
@@ -120,10 +121,10 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             id="lang-toggle-btn"
             onClick={onToggleLang}
             aria-label={`Switch Language / تغییر زبان (${lang === 'fa' ? 'Farsi' : 'English'})`}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-slate-200 hover:text-white shadow-sm transition-colors cursor-pointer"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-slate-200 hover:text-white shadow-sm transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
             title="Switch Language / تغییر زبان"
           >
-            <Globe className="w-3.5 h-3.5 text-cyan-400" />
+            <Globe className="w-3.5 h-3.5 text-cyan-400" aria-hidden="true" />
             <span className="font-semibold">{t.switchLang}</span>
             <span className="text-[10px] px-1 rounded bg-slate-700 text-slate-300 font-mono">
               {lang === 'fa' ? 'FA' : 'EN'}

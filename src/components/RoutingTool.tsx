@@ -166,7 +166,8 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
                   key={tab.id}
                   type="button"
                   onClick={() => setSettings({ ...settings, scenario: tab.id })}
-                  className={`text-left rtl:text-right p-3 rounded-lg border transition-all cursor-pointer flex flex-col gap-1.5 ${
+                  aria-pressed={isActive}
+                  className={`text-left rtl:text-right p-3 rounded-lg border transition-all cursor-pointer flex flex-col gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                     isActive
                       ? 'bg-emerald-500/10 border-emerald-500/40 text-white shadow-sm shadow-emerald-950/30'
                       : 'bg-slate-800/40 border-slate-800 hover:bg-slate-800/80 text-slate-400 hover:text-slate-200'
@@ -601,11 +602,13 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
       {/* Code & Output Panel (Right on LTR / Left on RTL) */}
       <div className="lg:col-span-6 space-y-4">
         {/* Output Selector Tabs */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-900/80 border border-slate-800 rounded-xl">
+        <div role="tablist" aria-label="Routing Output Format View" className="flex items-center gap-1.5 p-1 bg-slate-900/80 border border-slate-800 rounded-xl">
           <button
             type="button"
+            role="tab"
+            aria-selected={outputFormat === 'iptables'}
             onClick={() => setOutputFormat('iptables')}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
               outputFormat === 'iptables'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
@@ -616,8 +619,10 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={outputFormat === 'nftables'}
             onClick={() => setOutputFormat('nftables')}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
               outputFormat === 'nftables'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
@@ -628,8 +633,10 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={outputFormat === 'diagnostics'}
             onClick={() => setOutputFormat('diagnostics')}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
               outputFormat === 'diagnostics'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/60'

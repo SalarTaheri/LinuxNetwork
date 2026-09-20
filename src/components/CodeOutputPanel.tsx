@@ -321,7 +321,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
             className="flex gap-3 min-w-max"
           >
             {/* Line Numbers */}
-            <div className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0">
+            <div aria-hidden="true" className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0">
               {parsedLines.map((_, i) => (
                 <div key={i} className="leading-6">
                   {i + 1}

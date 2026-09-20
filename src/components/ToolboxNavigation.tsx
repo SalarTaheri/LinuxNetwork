@@ -256,11 +256,17 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [searchOpen]);
 
-  // Auto-focus search input on modal open
+  // Auto-focus search input on modal open & lock body scroll
   useEffect(() => {
     if (searchOpen) {
+      document.body.style.overflow = 'hidden';
       setTimeout(() => searchInputRef.current?.focus(), 50);
+    } else {
+      document.body.style.overflow = '';
     }
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [searchOpen]);
 
   // Check overflow and scroll boundaries
@@ -345,7 +351,8 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
                 key={cat.id}
                 type="button"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`relative px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 shrink-0 cursor-pointer border ${
+                aria-pressed={isCatActive}
+                className={`relative px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 shrink-0 cursor-pointer border focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                   isCatActive
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 shadow-sm shadow-emerald-950/40'
                     : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -442,7 +449,7 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
                 type="button"
                 onClick={() => handleSelectTool(tool.id)}
                 title={tool.label}
-                className={`relative px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 whitespace-nowrap ${
+                className={`relative px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 whitespace-nowrap focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                   active
                     ? 'text-white shadow-sm shadow-emerald-950/40'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -522,6 +529,12 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
                   placeholder={t.toolboxNav.searchPlaceholder}
                   className="w-full bg-transparent text-sm text-slate-100 placeholder-slate-500 focus:outline-none"
                   aria-label={t.toolboxNav.searchPlaceholder}
+                  aria-controls="search-results-list"
+                  aria-activedescendant={
+                    searchResults[selectedIndex]
+                      ? `search-option-${searchResults[selectedIndex].id}`
+                      : undefined
+                  }
                 />
                 {searchQuery && (
                   <button
@@ -544,7 +557,12 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
               </div>
 
               {/* Search Results List */}
-              <div className="max-h-80 overflow-y-auto p-2 space-y-1">
+              <div
+                id="search-results-list"
+                role="listbox"
+                aria-label={t.toolboxNav.searchBtn}
+                className="max-h-80 overflow-y-auto p-2 space-y-1"
+              >
                 {searchResults.length > 0 ? (
                   searchResults.map((tool, idx) => {
                     const isSelected = selectedIndex === idx;
@@ -552,9 +570,12 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
                     return (
                       <button
                         key={tool.id}
+                        id={`search-option-${tool.id}`}
+                        role="option"
+                        aria-selected={isSelected}
                         type="button"
                         onClick={() => handleSelectTool(tool.id)}
-                        className={`w-full text-left rtl:text-right p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                        className={`w-full text-left rtl:text-right p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                           isSelected
                             ? 'bg-emerald-500/10 border-emerald-500/30 text-white'
                             : 'bg-slate-900/30 border-transparent hover:bg-slate-800/40 text-slate-300'
