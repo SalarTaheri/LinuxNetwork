@@ -30,13 +30,38 @@ export function cidrToNetmaskInt(cidr: number): number {
 }
 
 export function isValidIpv4(ip: string): boolean {
-  const parts = ip.trim().split('.');
-  if (parts.length !== 4) return false;
-  return parts.every((p) => {
-    if (!/^\d+$/.test(p)) return false;
-    const num = parseInt(p, 10);
-    return num >= 0 && num <= 255 && (p === '0' || !p.startsWith('0'));
-  });
+  const str = ip.trim();
+  if (str.length < 7 || str.length > 15) return false;
+
+  let dots = 0;
+  let octetVal = 0;
+  let octetLen = 0;
+  let startsWithZero = false;
+
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i);
+    if (code === 46) { // '.'
+      if (octetLen === 0 || octetVal > 255 || (startsWithZero && octetLen > 1)) return false;
+      dots++;
+      octetVal = 0;
+      octetLen = 0;
+      startsWithZero = false;
+    } else if (code >= 48 && code <= 57) { // '0'-'9'
+      if (octetLen === 0 && code === 48) {
+        startsWithZero = true;
+      }
+      octetVal = octetVal * 10 + (code - 48);
+      octetLen++;
+    } else {
+      return false;
+    }
+  }
+
+  if (dots !== 3 || octetLen === 0 || octetVal > 255 || (startsWithZero && octetLen > 1)) {
+    return false;
+  }
+
+  return true;
 }
 
 export function isValidPort(port: number): boolean {
@@ -54,10 +79,9 @@ export function getIpClass(firstOctet: number): string {
 }
 
 export function getIpScope(ip: string): string {
-  const dot1 = ip.indexOf('.');
-  const dot2 = ip.indexOf('.', dot1 + 1);
-  const o1 = parseInt(ip.substring(0, dot1), 10);
-  const o2 = parseInt(ip.substring(dot1 + 1, dot2), 10);
+  const ipInt = ipToInt(ip);
+  const o1 = (ipInt >>> 24) & 255;
+  const o2 = (ipInt >>> 16) & 255;
 
   if (o1 === 10) return 'RFC 1918 Private (10.0.0.0/8)';
   if (o1 === 172 && o2 >= 16 && o2 <= 31) return 'RFC 1918 Private (172.16.0.0/12)';
@@ -101,8 +125,11 @@ export function calculateSubnet(ipStr: string, cidr: number): SubnetCalculation 
     lastUsableInt = broadcastInt - 1;
   }
 
-  const octets = ipStr.split('.');
-  const ptrRecord = `${octets[3]}.${octets[2]}.${octets[1]}.${octets[0]}.in-addr.arpa`;
+  const o1 = (ipInt >>> 24) & 255;
+  const o2 = (ipInt >>> 16) & 255;
+  const o3 = (ipInt >>> 8) & 255;
+  const o4 = ipInt & 255;
+  const ptrRecord = `${o4}.${o3}.${o2}.${o1}.in-addr.arpa`;
 
   const maskHex = '0x' + (maskInt >>> 0).toString(16).toUpperCase().padStart(8, '0');
 
@@ -119,7 +146,7 @@ export function calculateSubnet(ipStr: string, cidr: number): SubnetCalculation 
     lastUsableIp: intToIp(lastUsableInt),
     totalHosts,
     usableHosts,
-    ipClass: getIpClass(parseInt(octets[0], 10)),
+    ipClass: getIpClass(o1),
     ipScope: getIpScope(ipStr),
     binaryIp: intToBinary(ipInt),
     ptrRecord,

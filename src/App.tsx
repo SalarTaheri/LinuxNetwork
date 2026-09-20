@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Language, ToolTab, PageView } from './types';
 import { translations } from './i18n/translations';
@@ -69,11 +69,11 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const toggleLanguage = () => {
+  const toggleLanguage = useCallback(() => {
     setLang((prev) => (prev === 'fa' ? 'en' : 'fa'));
-  };
+  }, []);
 
-  const navigateToLanding = () => {
+  const navigateToLanding = useCallback(() => {
     setView('landing');
     if (typeof window !== 'undefined') {
       const currentUrl = new URL(window.location.href);
@@ -82,27 +82,29 @@ export default function App() {
       const target = currentUrl.search ? `${newPath}?${currentUrl.searchParams.toString()}` : newPath;
       window.history.pushState(null, '', target);
     }
-  };
+  }, []);
 
-  const navigateToToolbox = (tool?: ToolTab) => {
-    const targetTool = tool || activeTab;
-    setActiveTab(targetTool);
+  const navigateToToolbox = useCallback((tool?: ToolTab) => {
+    setActiveTab((prevActive) => {
+      const targetTool = tool || prevActive;
+      if (typeof window !== 'undefined') {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('tool', targetTool);
+        window.history.pushState(null, '', currentUrl.toString());
+      }
+      return targetTool;
+    });
     setView('toolbox');
-    if (typeof window !== 'undefined') {
-      const currentUrl = new URL(window.location.href);
-      currentUrl.searchParams.set('tool', targetTool);
-      window.history.pushState(null, '', currentUrl.toString());
-    }
-  };
+  }, []);
 
-  const handleTabChange = (tab: ToolTab) => {
+  const handleTabChange = useCallback((tab: ToolTab) => {
     setActiveTab(tab);
     if (typeof window !== 'undefined') {
       const currentUrl = new URL(window.location.href);
       currentUrl.searchParams.set('tool', tab);
       window.history.pushState(null, '', currentUrl.toString());
     }
-  };
+  }, []);
 
   const t = translations[lang];
 

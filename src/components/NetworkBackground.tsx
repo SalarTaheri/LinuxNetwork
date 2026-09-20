@@ -205,14 +205,19 @@ export const NetworkBackground: React.FC = () => {
         const px = s.x + (t.x - s.x) * p.progress;
         const py = s.y + (t.y - s.y) * p.progress;
 
-        // Packet glow dot
+        // Outer aura circle (fast replacement for shadowBlur)
+        ctx.beginPath();
+        ctx.arc(px, py, 4, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = 0.25;
+        ctx.fill();
+
+        // Core packet dot
         ctx.beginPath();
         ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+        ctx.globalAlpha = 1.0;
         ctx.fillStyle = p.color;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 6;
         ctx.fill();
-        ctx.shadowBlur = 0;
       }
 
       // Draw nodes on top
