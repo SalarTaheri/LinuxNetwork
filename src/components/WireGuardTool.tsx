@@ -128,7 +128,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
               id="regen-keys-btn"
               type="button"
               onClick={handleRegenerateKeys}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             >
               <motion.div
                 animate={isRegenerating ? { rotate: 360 } : { rotate: 0 }}
@@ -184,7 +184,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                 value={settings.serverEndpoint}
                 onChange={(e) => setSettings({ ...settings, serverEndpoint: e.target.value })}
                 placeholder={t.wireguard.endpointPlaceholder}
-                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                 dir="ltr"
               />
             </div>
@@ -200,7 +200,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                 max="65535"
                 value={settings.serverPort}
                 onChange={(e) => setSettings({ ...settings, serverPort: parseInt(e.target.value, 10) || 51820 })}
-                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                 dir="ltr"
               />
             </div>
@@ -216,7 +216,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                 type="text"
                 value={settings.serverIp}
                 onChange={(e) => setSettings({ ...settings, serverIp: e.target.value })}
-                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                 dir="ltr"
               />
             </div>
@@ -230,7 +230,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                 type="text"
                 value={settings.clientIp}
                 onChange={(e) => setSettings({ ...settings, clientIp: e.target.value })}
-                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                 dir="ltr"
               />
             </div>
@@ -247,7 +247,8 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                   key={dns.name}
                   type="button"
                   onClick={() => setSettings({ ...settings, dnsResolver: dns.val })}
-                  className={`px-2 py-1.5 rounded text-[11px] border transition-all cursor-pointer truncate ${
+                  aria-pressed={settings.dnsResolver === dns.val}
+                  className={`px-2 py-1.5 rounded text-[11px] border transition-all cursor-pointer truncate focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                     settings.dnsResolver === dns.val
                       ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-semibold'
                       : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-slate-200'
@@ -262,7 +263,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
               type="text"
               value={settings.dnsResolver}
               onChange={(e) => setSettings({ ...settings, dnsResolver: e.target.value })}
-              className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-emerald-500"
+              className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
               dir="ltr"
             />
           </div>
@@ -306,7 +307,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                 type="number"
                 value={settings.persistentKeepalive}
                 onChange={(e) => setSettings({ ...settings, persistentKeepalive: parseInt(e.target.value, 10) || 0 })}
-                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-1.5 text-xs font-mono text-slate-100 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-1.5 text-xs font-mono text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                 dir="ltr"
               />
               <div className="text-[10px] text-slate-400 leading-tight">
@@ -325,7 +326,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
               value={settings.serverInterface}
               onChange={(e) => setSettings({ ...settings, serverInterface: e.target.value })}
               placeholder="eth0 or ens3"
-              className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-emerald-500"
+              className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
               dir="ltr"
             />
             <div className="text-[10px] text-slate-400">
