@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { classifyLineOptimized } from './CodeOutputPanel';
 
 function classifyLineUnoptimized(line: string): string {
   const isComment = line.trim().startsWith('#') || line.trim().startsWith('//');
@@ -13,20 +14,6 @@ function classifyLineUnoptimized(line: string): string {
   else if (isDirective) lineClass = 'text-emerald-300';
   else if (isCommand) lineClass = 'text-cyan-300 font-semibold';
   return lineClass;
-}
-
-export function classifyLineOptimized(line: string): string {
-  const trimmed = line.trim();
-  const isComment = trimmed.startsWith('#') || trimmed.startsWith('//');
-  const isSectionHeader = trimmed.startsWith('[') && trimmed.endsWith(']');
-  const isDirective = /^(listen|server_name|proxy_|ssl_|add_header|client_|net\.|fs\.)/.test(trimmed);
-  const isCommand = trimmed.startsWith('sudo') || trimmed.startsWith('sysctl') || trimmed.startsWith('nginx');
-
-  if (isComment) return 'text-slate-500 italic';
-  if (isSectionHeader) return 'text-amber-400 font-bold';
-  if (isDirective) return 'text-emerald-300';
-  if (isCommand) return 'text-cyan-300 font-semibold';
-  return 'text-slate-200';
 }
 
 describe('CodeOutputPanel Line Classification', () => {
