@@ -42,7 +42,7 @@ describe('WireGuard Generator', () => {
     assert.match(config, /MTU = 1420/);
   });
 
-  it('generates multi-distro server one-liner supporting apk, dnf, yum, and apt-get', () => {
+  it('generates multi-distro server one-liner supporting apk, dnf, yum, and apt-get', async () => {
     const oneLiner = generateWireGuardServerOneLiner(dummySettings);
     assert.ok(oneLiner.includes('command -v apk'), 'should check for apk');
     assert.ok(oneLiner.includes('command -v dnf'), 'should check for dnf');
@@ -51,6 +51,14 @@ describe('WireGuard Generator', () => {
     assert.ok(oneLiner.includes('command -v apt-get'), 'should check for apt-get');
     assert.ok(oneLiner.includes('rc-service'), 'should support OpenRC');
     assert.ok(oneLiner.includes('systemctl enable wg-quick@wg0'), 'should support systemd service');
+
+    const scriptWithoutSudo = oneLiner.replace(/^sudo /, '');
+    const { execFile } = await import('node:child_process');
+    const { promisify } = await import('node:util');
+    const execFileAsync = promisify(execFile);
+
+    const { stderr } = await execFileAsync('bash', ['-n', '-c', scriptWithoutSudo]);
+    assert.equal(stderr, '');
   });
 
   describe('Security & Input Sanitization', () => {

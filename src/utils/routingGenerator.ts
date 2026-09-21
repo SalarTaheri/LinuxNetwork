@@ -383,13 +383,14 @@ table inet filter {
  */
 export function generateRoutingOneLiner(settings: RoutingSettings, lang: Language): string {
   const rawIptables = generateIptablesRules(settings, lang);
+  const safeIptables = rawIptables.replace(/^sudo /gm, '').replace(/'/g, "'\\''");
 
   return `sudo bash -c '
 set -e
 echo "==> [LinuxNetwork.ir] Applying Firewall & Routing Configuration..."
 
 # 1. Apply kernel & firewall rules
-${rawIptables.replace(/^sudo /gm, '')}
+${safeIptables}
 
 # 2. Configure Persistence across Distributions
 if command -v apt-get >/dev/null 2>&1; then

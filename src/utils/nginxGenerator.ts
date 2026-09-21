@@ -90,7 +90,7 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
     const cert = sanitizePath(settings.sslCertPath, `/etc/letsencrypt/live/${domain}/fullchain.pem`);
     const key = sanitizePath(settings.sslKeyPath, `/etc/letsencrypt/live/${domain}/privkey.pem`);
 
-    lines.push('    # SSL Certificates (Let\'s Encrypt / Custom)');
+    lines.push('    # SSL Certificates (Lets Encrypt / Custom)');
     lines.push(`    ssl_certificate ${cert};`);
     lines.push(`    ssl_certificate_key ${key};`);
     lines.push('    ssl_protocols TLSv1.2 TLSv1.3;');
@@ -207,8 +207,9 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
 
 export function generateNginxOneLiner(domain: string, configText: string): string {
   const safeName = (domain || 'reverse-proxy').replace(/[^a-zA-Z0-9_.-]/g, '_');
+  const safeConfig = configText.trim().replace(/'/g, "'\\''");
   return `sudo bash -c 'cat << "EOF" > /etc/nginx/sites-available/${safeName}.conf
-${configText.trim()}
+${safeConfig}
 EOF
 ln -sf /etc/nginx/sites-available/${safeName}.conf /etc/nginx/sites-enabled/
 nginx -t && systemctl reload nginx'`;

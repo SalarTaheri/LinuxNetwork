@@ -92,4 +92,20 @@ describe('Nginx Generator', () => {
     assert.ok(oneLiner.includes('sites-available/api.example.com.conf'));
     assert.ok(oneLiner.includes('nginx -t && systemctl reload nginx'));
   });
+
+  it('escapes single quotes in one-liner script to prevent syntax errors and breakout', async () => {
+    const configWithSingleQuotes = `# Custom config with 'single quotes' & special chars\nserver { listen 80; }`;
+    const oneLiner = generateNginxOneLiner('api.example.com', configWithSingleQuotes);
+
+    assert.ok(oneLiner.includes("'\\''single quotes'\\''"));
+
+    // Verify bash syntax validation (-n flag) without requiring root/sudo
+    const scriptWithoutSudo = oneLiner.replace(/^sudo /, '');
+    const { execFile } = await import('node:child_process');
+    const { promisify } = await import('node:util');
+    const execFileAsync = promisify(execFile);
+
+    const { stderr } = await execFileAsync('bash', ['-n', '-c', scriptWithoutSudo]);
+    assert.equal(stderr, '');
+  });
 });

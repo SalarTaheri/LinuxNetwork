@@ -180,11 +180,19 @@ describe('Routing & NAT Generator', () => {
   });
 
   describe('One-Liner and Diagnostics', () => {
-    test('one-liner script handles apt, dnf/yum, and apk persistence', () => {
+    test('one-liner script handles apt, dnf/yum, and apk persistence', async () => {
       const oneLiner = generateRoutingOneLiner(defaultSettings, 'en');
       assert.match(oneLiner, /iptables-persistent/);
       assert.match(oneLiner, /iptables-services/);
       assert.match(oneLiner, /apk/);
+
+      const scriptWithoutSudo = oneLiner.replace(/^sudo /, '');
+      const { execFile } = await import('node:child_process');
+      const { promisify } = await import('node:util');
+      const execFileAsync = promisify(execFile);
+
+      const { stderr } = await execFileAsync('bash', ['-n', '-c', scriptWithoutSudo]);
+      assert.equal(stderr, '');
     });
 
     test('verification commands output tcpdump and iptables query commands', () => {
