@@ -20,14 +20,35 @@ export function intToIp(int: number): string {
 }
 
 export function intToBinary(int: number): string {
-  const binaryStr = (int >>> 0).toString(2).padStart(32, '0');
-  return `${binaryStr.slice(0, 8)}.${binaryStr.slice(8, 16)}.${binaryStr.slice(16, 24)}.${binaryStr.slice(24, 32)}`;
+  const b1 = ((int >>> 24) & 255).toString(2).padStart(8, '0');
+  const b2 = ((int >>> 16) & 255).toString(2).padStart(8, '0');
+  const b3 = ((int >>> 8) & 255).toString(2).padStart(8, '0');
+  const b4 = (int & 255).toString(2).padStart(8, '0');
+  return `${b1}.${b2}.${b3}.${b4}`;
 }
 
 export function cidrToNetmaskInt(cidr: number): number {
   if (cidr === 0) return 0;
   return ((0xffffffff << (32 - cidr)) & 0xffffffff) >>> 0;
 }
+
+// Pre-computed CIDR metadata lookup table (0 to 32)
+// Eliminates redundant bitwise calculations, string conversions, hex padding, and power operations
+const CIDR_CACHE = Array.from({ length: 33 }, (_, cidr) => {
+  const maskInt = cidr === 0 ? 0 : ((0xffffffff << (32 - cidr)) & 0xffffffff) >>> 0;
+  const wildcardInt = (~maskInt) >>> 0;
+  const totalHosts = Math.pow(2, 32 - cidr);
+  const maskHex = '0x' + (maskInt >>> 0).toString(16).toUpperCase().padStart(8, '0');
+  return {
+    maskInt,
+    wildcardInt,
+    netmask: intToIp(maskInt),
+    netmaskBinary: intToBinary(maskInt),
+    netmaskHex: maskHex,
+    wildcardMask: intToIp(wildcardInt),
+    totalHosts,
+  };
+});
 
 export function isValidIpv4(ip: string): boolean {
   const str = ip.trim();
@@ -99,13 +120,11 @@ export function calculateSubnet(ipStr: string, cidr: number): SubnetCalculation 
     return null;
   }
 
+  const cidrInfo = CIDR_CACHE[cidr];
   const ipInt = ipToInt(ipStr);
-  const maskInt = cidrToNetmaskInt(cidr);
-  const wildcardInt = (~maskInt) >>> 0;
-  const networkInt = (ipInt & maskInt) >>> 0;
-  const broadcastInt = (networkInt | wildcardInt) >>> 0;
+  const networkInt = (ipInt & cidrInfo.maskInt) >>> 0;
+  const broadcastInt = (networkInt | cidrInfo.wildcardInt) >>> 0;
 
-  const totalHosts = Math.pow(2, 32 - cidr);
   let usableHosts = 0;
   let firstUsableInt = 0;
   let lastUsableInt = 0;
@@ -120,7 +139,7 @@ export function calculateSubnet(ipStr: string, cidr: number): SubnetCalculation 
     firstUsableInt = networkInt;
     lastUsableInt = broadcastInt;
   } else {
-    usableHosts = Math.max(0, totalHosts - 2);
+    usableHosts = Math.max(0, cidrInfo.totalHosts - 2);
     firstUsableInt = networkInt + 1;
     lastUsableInt = broadcastInt - 1;
   }
@@ -131,20 +150,18 @@ export function calculateSubnet(ipStr: string, cidr: number): SubnetCalculation 
   const o4 = ipInt & 255;
   const ptrRecord = `${o4}.${o3}.${o2}.${o1}.in-addr.arpa`;
 
-  const maskHex = '0x' + (maskInt >>> 0).toString(16).toUpperCase().padStart(8, '0');
-
   return {
     ip: ipStr,
     cidr,
-    netmask: intToIp(maskInt),
-    netmaskBinary: intToBinary(maskInt),
-    netmaskHex: maskHex,
-    wildcardMask: intToIp(wildcardInt),
+    netmask: cidrInfo.netmask,
+    netmaskBinary: cidrInfo.netmaskBinary,
+    netmaskHex: cidrInfo.netmaskHex,
+    wildcardMask: cidrInfo.wildcardMask,
     networkAddress: intToIp(networkInt),
     broadcastAddress: intToIp(broadcastInt),
     firstUsableIp: intToIp(firstUsableInt),
     lastUsableIp: intToIp(lastUsableInt),
-    totalHosts,
+    totalHosts: cidrInfo.totalHosts,
     usableHosts,
     ipClass: getIpClass(o1),
     ipScope: getIpScope(ipStr),

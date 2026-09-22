@@ -591,6 +591,33 @@ describe('calculateSubnet', () => {
   });
 });
 
+describe('calculateSubnet performance benchmark', () => {
+  it('benchmark subnet calculations with pre-computed CIDR cache', () => {
+    const iterations = 50000;
+    const testCases: [string, number][] = [
+      ['192.168.1.100', 24],
+      ['10.0.0.1', 8],
+      ['172.16.50.2', 16],
+      ['100.64.12.34', 10],
+      ['127.0.0.1', 32],
+    ];
+
+    const start = performance.now();
+    for (let i = 0; i < iterations; i++) {
+      const tc = testCases[i % testCases.length];
+      calculateSubnet(tc[0], tc[1]);
+    }
+    const duration = performance.now() - start;
+
+    console.log(`\n--- SUBNET CALCULATOR BENCHMARK (${iterations} iterations) ---`);
+    console.log(`Duration: ${duration.toFixed(3)} ms`);
+    console.log(`Avg per calculation: ${(duration / iterations * 1000).toFixed(3)} µs`);
+    console.log(`-----------------------------------------------------------\n`);
+
+    assert.ok(duration < 1000, '50,000 subnet calculations should complete in under 1 second');
+  });
+});
+
 describe('CIDR options benchmark', () => {
   it('measures inline array allocation vs static array reference', () => {
     const iterations = 100000;
