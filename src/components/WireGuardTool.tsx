@@ -128,7 +128,8 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
               id="regen-keys-btn"
               type="button"
               onClick={handleRegenerateKeys}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono transition-colors cursor-pointer"
+              aria-label={t.wireguard.regenerateKeys}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
             >
               <motion.div
                 animate={isRegenerating ? { rotate: 360 } : { rotate: 0 }}
@@ -247,7 +248,9 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                   key={dns.name}
                   type="button"
                   onClick={() => setSettings({ ...settings, dnsResolver: dns.val })}
-                  className={`px-2 py-1.5 rounded text-[11px] border transition-all cursor-pointer truncate ${
+                  aria-pressed={settings.dnsResolver === dns.val}
+                  aria-label={`Select DNS resolver ${dns.name} (${dns.val})`}
+                  className={`px-2 py-1.5 rounded text-[11px] border transition-all cursor-pointer truncate focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                     settings.dnsResolver === dns.val
                       ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-semibold'
                       : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-slate-200'
