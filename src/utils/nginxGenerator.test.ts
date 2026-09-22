@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { generateNginxConfig, generateNginxOneLiner } from './nginxGenerator';
 import { NginxSettings } from '../types';
 
@@ -85,11 +86,38 @@ describe('Nginx Generator', () => {
     assert.match(config, /ssl_certificate_key \/etc\/key\.pemreturn500;/);
   });
 
-  it('generates valid one-liner script', () => {
+  it('sanitizes listenPort and clientMaxBodySize against non-numeric injection', () => {
+    const maliciousSettings: NginxSettings = {
+      ...defaultSettings,
+      enableSsl: false,
+      listenPort: '80; return 500;' as unknown as number,
+      clientMaxBodySize: '100M; location /evil {}' as unknown as number,
+    };
+    const config = generateNginxConfig(maliciousSettings, 'en');
+    assert.match(config, /listen 80;/);
+    assert.match(config, /client_max_body_size 100M;/);
+    assert.doesNotMatch(config, /return 500/);
+    assert.doesNotMatch(config, /location \/evil/);
+  });
+
+  it('generates valid one-liner script with valid bash syntax even with SSL enabled and single quotes', () => {
     const config = generateNginxConfig(defaultSettings, 'en');
     const oneLiner = generateNginxOneLiner('api.example.com', config);
     assert.ok(oneLiner.includes('sudo bash -c'));
     assert.ok(oneLiner.includes('sites-available/api.example.com.conf'));
     assert.ok(oneLiner.includes('nginx -t && systemctl reload nginx'));
+
+    // Check bash syntax validity via `bash -n -c <oneLiner>`
+    const res = spawnSync('bash', ['-n', '-c', oneLiner], { encoding: 'utf-8' });
+    assert.equal(res.status, 0, `Bash syntax error in one-liner: ${res.stderr}`);
+  });
+
+  it('escapes single quotes safely in one-liner script to prevent command breakout', () => {
+    const maliciousConfig = "server { # comment with ' single quote and echo 'breakout' }";
+    const oneLiner = generateNginxOneLiner('api.example.com', maliciousConfig);
+    assert.ok(oneLiner.includes("'\\''"));
+
+    const res = spawnSync('bash', ['-n', '-c', oneLiner], { encoding: 'utf-8' });
+    assert.equal(res.status, 0, `Bash syntax error in one-liner: ${res.stderr}`);
   });
 });

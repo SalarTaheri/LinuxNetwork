@@ -27,11 +27,29 @@ function sanitizePath(val: string | undefined | null, fallback: string): string 
   return cleaned || fallback;
 }
 
+function sanitizePort(val: number | string | undefined | null, fallback: number): number {
+  const parsed = typeof val === 'number' ? val : parseInt(String(val || ''), 10);
+  if (isNaN(parsed) || parsed <= 0 || parsed > 65535) {
+    return fallback;
+  }
+  return parsed;
+}
+
+function sanitizeNumber(val: number | string | undefined | null, fallback: number, min = 1, max = 10240): number {
+  const parsed = typeof val === 'number' ? val : parseInt(String(val || ''), 10);
+  if (isNaN(parsed) || parsed < min || parsed > max) {
+    return fallback;
+  }
+  return parsed;
+}
+
 export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'): string {
   const isFa = lang === 'fa';
   const domain = sanitizeDomain(settings.domain, 'api.example.com');
   const serverAlias = sanitizeServerAlias(settings.serverAlias);
   const upstream = sanitizeUpstream(settings.upstreamAddress, '127.0.0.1:8000');
+  const listenPort = sanitizePort(settings.listenPort, 80);
+  const clientMaxBodySize = sanitizeNumber(settings.clientMaxBodySize, 50, 1, 10240);
 
   const lines: string[] = [
     '# ==========================================================================',
@@ -79,8 +97,8 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
     lines.push(`    listen 443 ssl${settings.enableHttp2 ? ' http2' : ''};`);
     lines.push(`    listen [::]:443 ssl${settings.enableHttp2 ? ' http2' : ''};`);
   } else {
-    lines.push(`    listen ${settings.listenPort};`);
-    lines.push(`    listen [::]:${settings.listenPort};`);
+    lines.push(`    listen ${listenPort};`);
+    lines.push(`    listen [::]:${listenPort};`);
   }
   lines.push(`    server_name ${domain}${serverAlias ? ' ' + serverAlias : ''};`);
   lines.push('');
@@ -90,7 +108,7 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
     const cert = sanitizePath(settings.sslCertPath, `/etc/letsencrypt/live/${domain}/fullchain.pem`);
     const key = sanitizePath(settings.sslKeyPath, `/etc/letsencrypt/live/${domain}/privkey.pem`);
 
-    lines.push('    # SSL Certificates (Let\'s Encrypt / Custom)');
+    lines.push('    # SSL Certificates (Lets Encrypt / Custom)');
     lines.push(`    ssl_certificate ${cert};`);
     lines.push(`    ssl_certificate_key ${key};`);
     lines.push('    ssl_protocols TLSv1.2 TLSv1.3;');
@@ -121,7 +139,7 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
 
   // Client Body Size
   lines.push(`    # Maximum Allowed Request Payload Size`);
-  lines.push(`    client_max_body_size ${settings.clientMaxBodySize}M;`);
+  lines.push(`    client_max_body_size ${clientMaxBodySize}M;`);
   lines.push('    client_body_buffer_size 128k;');
   lines.push('');
 
@@ -207,8 +225,9 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
 
 export function generateNginxOneLiner(domain: string, configText: string): string {
   const safeName = (domain || 'reverse-proxy').replace(/[^a-zA-Z0-9_.-]/g, '_');
+  const safeConfig = (configText || '').trim().replace(/'/g, "'\\''");
   return `sudo bash -c 'cat << "EOF" > /etc/nginx/sites-available/${safeName}.conf
-${configText.trim()}
+${safeConfig}
 EOF
 ln -sf /etc/nginx/sites-available/${safeName}.conf /etc/nginx/sites-enabled/
 nginx -t && systemctl reload nginx'`;
