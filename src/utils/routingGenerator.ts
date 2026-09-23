@@ -8,6 +8,24 @@ function sanitize(val: string | undefined | null, fallback: string): string {
   return cleaned || fallback;
 }
 
+function sanitizeTableName(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 32);
+  return cleaned || fallback;
+}
+
+function sanitizePortSpec(
+  val: string | undefined | null,
+  fallback: string,
+  targetFormat: 'iptables' | 'nftables' = 'iptables'
+): string {
+  const cleaned = (val || '').trim().replace(/[^0-9:-]/g, '');
+  if (!cleaned) return fallback;
+  if (targetFormat === 'nftables') {
+    return cleaned.replace(':', '-');
+  }
+  return cleaned.replace('-', ':');
+}
+
 function sanitizeNumber(val: number | string | undefined | null, fallback: number, min = 1, max = 65535): number {
   const parsed = typeof val === 'number' ? val : parseInt(String(val || ''), 10);
   if (isNaN(parsed) || parsed < min || parsed > max) {
@@ -64,9 +82,9 @@ ${dnsRule}${mssRule}
     }
 
     case 'port_forward': {
-      const extPort = sanitize(settings.externalPort, '8080');
+      const extPort = sanitizePortSpec(settings.externalPort, '8080', 'iptables');
       const intIp = sanitize(settings.internalIp, '192.168.100.15');
-      const intPort = sanitize(settings.internalPort, '80');
+      const intPort = sanitizePortSpec(settings.internalPort, '80', 'iptables');
       const proto = settings.protocol === 'udp' ? 'udp' : settings.protocol === 'both' ? 'both' : 'tcp';
 
       const protocols = proto === 'both' ? ['tcp', 'udp'] : [proto];
@@ -121,7 +139,7 @@ ${fwdRules}${hairpinRules}
     }
 
     case 'docker_shield': {
-      const port = sanitize(settings.dockerPort, '5432');
+      const port = sanitizePortSpec(settings.dockerPort, '5432', 'iptables');
       const allowed = sanitize(settings.dockerAllowedSubnet, '10.8.0.0/24');
       const action = settings.dockerAction === 'REJECT' ? 'REJECT' : 'DROP';
 
@@ -151,7 +169,7 @@ sudo iptables -A DOCKER-USER -j RETURN
       const secIp = sanitize(settings.secondaryIp, '192.168.2.100');
       const secGw = sanitize(settings.secondaryGateway, '192.168.2.1');
       const tableNum = sanitizeNumber(settings.pbrTableNumber, 200, 1, 32767);
-      const tableName = sanitize(settings.pbrTableName, 'isp2');
+      const tableName = sanitizeTableName(settings.pbrTableName, 'isp2');
 
       const rpFilterRules = settings.enableLooseRpFilter
         ? `\n# ${isFa ? 'غیرفعال‌سازی استعلام سخت‌گیرانه مسیر معکوس (Loose Reverse Path Filter)' : 'Set loose reverse path filtering (rp_filter=2) to prevent dropping asymmetric packets'}
@@ -188,7 +206,7 @@ ip route show table ${tableName}`;
     }
 
     case 'rate_limit': {
-      const port = sanitize(settings.rateLimitPort, '22');
+      const port = sanitizePortSpec(settings.rateLimitPort, '22', 'iptables');
       const maxHits = sanitizeNumber(settings.rateLimitMaxHits, 4, 1, 1000);
       const winSec = sanitizeNumber(settings.rateLimitWindowSeconds, 60, 1, 86400);
       const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
@@ -275,9 +293,9 @@ table ip nat {
     }
 
     case 'port_forward': {
-      const extPort = sanitize(settings.externalPort, '8080');
+      const extPort = sanitizePortSpec(settings.externalPort, '8080', 'nftables');
       const intIp = sanitize(settings.internalIp, '192.168.100.15');
-      const intPort = sanitize(settings.internalPort, '80');
+      const intPort = sanitizePortSpec(settings.internalPort, '80', 'nftables');
       const proto = settings.protocol === 'udp' ? 'udp' : settings.protocol === 'both' ? 'both' : 'tcp';
       const protocols = proto === 'both' ? ['tcp', 'udp'] : [proto];
 
@@ -325,7 +343,7 @@ ${fwdStatements}
     }
 
     case 'docker_shield': {
-      const port = sanitize(settings.dockerPort, '5432');
+      const port = sanitizePortSpec(settings.dockerPort, '5432', 'nftables');
       const allowed = sanitize(settings.dockerAllowedSubnet, '10.8.0.0/24');
       const action = settings.dockerAction === 'REJECT' ? 'reject' : 'drop';
 
@@ -351,7 +369,7 @@ table inet filter {
     }
 
     case 'rate_limit': {
-      const port = sanitize(settings.rateLimitPort, '22');
+      const port = sanitizePortSpec(settings.rateLimitPort, '22', 'nftables');
       const maxHits = sanitizeNumber(settings.rateLimitMaxHits, 4, 1, 1000);
       const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
 
@@ -432,10 +450,10 @@ export function generateVerificationCommands(settings: RoutingSettings, lang: La
   const wan = sanitize(settings.wanInterface, 'eth0');
   const port =
     settings.scenario === 'port_forward'
-      ? sanitize(settings.externalPort, '8080')
+      ? sanitizePortSpec(settings.externalPort, '8080', 'iptables')
       : settings.scenario === 'docker_shield'
-      ? sanitize(settings.dockerPort, '5432')
-      : sanitize(settings.rateLimitPort, '22');
+      ? sanitizePortSpec(settings.dockerPort, '5432', 'iptables')
+      : sanitizePortSpec(settings.rateLimitPort, '22', 'iptables');
 
   return `# ================================================================
 # 🔍 ${isFa ? 'دستورات بررسی وضعیت، مانیتورینگ زنده و عیب‌یابی پکت‌ها' : 'Live Verification, Packet Monitoring & Diagnostic Commands'}

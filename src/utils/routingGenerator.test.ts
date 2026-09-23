@@ -245,5 +245,32 @@ describe('Routing & NAT Generator', () => {
       assert.match(iptables, /--seconds 300/); // falls back to default 300 for invalid string
       assert.match(iptables, /--hitcount 4/); // falls back to default 4 for out-of-range number
     });
+
+    test('sanitizes routing table names against file/command injection', () => {
+      const settings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'pbr_multiwan',
+        pbrTableName: 'isp2/evil;rm -rf /',
+      };
+      const iptables = generateIptablesRules(settings, 'en');
+      assert.doesNotMatch(iptables, /isp2\/evil/);
+      assert.match(iptables, /isp2evilrm-rf/);
+    });
+
+    test('formats port ranges correctly for iptables (colon) and nftables (dash)', () => {
+      const settings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'port_forward',
+        externalPort: '8080:8090',
+        internalPort: '8080-8090',
+      };
+      const iptables = generateIptablesRules(settings, 'en');
+      assert.match(iptables, /--dport 8080:8090/);
+      assert.match(iptables, /--dport 8080:8090/);
+
+      const nftables = generateNftablesRules(settings, 'en');
+      assert.match(nftables, /dport 8080-8090/);
+      assert.match(nftables, /dport 8080-8090/);
+    });
   });
 });

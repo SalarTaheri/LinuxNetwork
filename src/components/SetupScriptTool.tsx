@@ -49,8 +49,9 @@ export const SetupScriptTool: React.FC<SetupScriptToolProps> = React.memo(({ lan
       flags.push('--sysctl-opt');
     }
 
-    if (settings.enableCustomSshPort && settings.sshPort) {
-      flags.push(`--ssh-port ${settings.sshPort}`);
+    if (settings.enableCustomSshPort) {
+      const safeSshPort = Math.min(65535, Math.max(1, settings.sshPort || 2222));
+      flags.push(`--ssh-port ${safeSshPort}`);
     }
 
     if (settings.disablePasswordAuth) {
@@ -114,7 +115,7 @@ ${settings.enableSysctlOpt ? '#   [✔] Optimized TCP buffers: rmem_max=64MB, wm
 #   [✔] Queue Discipline: ${settings.qdisc}
 
 # 3. Server Hardening & SSH:
-${settings.enableCustomSshPort ? `#   [✔] Custom SSH Port: ${settings.sshPort} (sshd syntax checked before reload)` : '#   [ ] SSH Port default (22)'}
+${settings.enableCustomSshPort ? `#   [✔] Custom SSH Port: ${Math.min(65535, Math.max(1, settings.sshPort || 2222))} (sshd syntax checked before reload)` : '#   [ ] SSH Port default (22)'}
 ${settings.disablePasswordAuth ? '#   [✔] Password authentication disabled (PubkeyAuthentication only)' : '#   [ ] Password authentication retained'}
 ${settings.enableFail2ban ? '#   [✔] Fail2ban installed and guarding SSH (3 retries = 24h ban)' : '#   [ ] Fail2ban skipped'}
 ${settings.enableUfw ? '#   [✔] Firewall enabled (UFW on Debian/Ubuntu, Firewalld on Red Hat, Iptables on Alpine; allows SSH, 80, 443)' : '#   [ ] Firewall skipped'}
