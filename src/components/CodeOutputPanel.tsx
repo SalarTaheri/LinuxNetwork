@@ -134,6 +134,17 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
 
   const linesCount = parsedLines.length;
 
+  // Memoize single pre-formatted line numbers string to replace O(N) div element allocations with O(1) text node
+  const lineNumbersText = React.useMemo(() => {
+    const count = parsedLines.length;
+    if (count === 0) return '';
+    const nums = new Array(count);
+    for (let i = 0; i < count; i++) {
+      nums[i] = i + 1;
+    }
+    return nums.join('\n');
+  }, [parsedLines.length]);
+
   return (
     <div className="flex flex-col h-full bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
       {/* Header bar */}
@@ -331,14 +342,13 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
             transition={{ duration: 0.15 }}
             className="flex gap-3 min-w-max"
           >
-            {/* Line Numbers */}
-            <div aria-hidden="true" className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0">
-              {parsedLines.map((_, i) => (
-                <div key={i} className="leading-6">
-                  {i + 1}
-                </div>
-              ))}
-            </div>
+            {/* Line Numbers - single <pre> block eliminates O(N) React element/DOM node allocations */}
+            <pre
+              aria-hidden="true"
+              className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0 leading-6"
+            >
+              {lineNumbersText}
+            </pre>
 
             {/* Code Lines with Syntax Coloring */}
             <pre className="font-mono flex-1 leading-6 focus:outline-none">
