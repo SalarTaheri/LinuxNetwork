@@ -312,33 +312,36 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
     scrollContainerRef.current.scrollBy({ left: offset * sign, behavior: 'smooth' });
   };
 
-  // Categories config
-  const categories: { id: ToolCategory; label: string; icon: React.ReactNode; count: number }[] = [
-    {
-      id: 'all',
-      label: t.toolboxNav.categories.all,
-      icon: <Layers className="w-3.5 h-3.5" />,
-      count: tools.length,
-    },
-    {
-      id: 'server',
-      label: t.toolboxNav.categories.server,
-      icon: <Server className="w-3.5 h-3.5" />,
-      count: tools.filter((t) => t.category === 'server').length,
-    },
-    {
-      id: 'network',
-      label: t.toolboxNav.categories.network,
-      icon: <Network className="w-3.5 h-3.5" />,
-      count: tools.filter((t) => t.category === 'network').length,
-    },
-    {
-      id: 'security',
-      label: t.toolboxNav.categories.security,
-      icon: <Lock className="w-3.5 h-3.5" />,
-      count: tools.filter((t) => t.category === 'security').length,
-    },
-  ];
+  // Memoize categories config to avoid array and object re-creations during search or scroll interactions
+  const categories = useMemo<{ id: ToolCategory; label: string; icon: React.ReactNode; count: number }[]>(
+    () => [
+      {
+        id: 'all',
+        label: t.toolboxNav.categories.all,
+        icon: <Layers className="w-3.5 h-3.5" />,
+        count: tools.length,
+      },
+      {
+        id: 'server',
+        label: t.toolboxNav.categories.server,
+        icon: <Server className="w-3.5 h-3.5" />,
+        count: tools.filter((t) => t.category === 'server').length,
+      },
+      {
+        id: 'network',
+        label: t.toolboxNav.categories.network,
+        icon: <Network className="w-3.5 h-3.5" />,
+        count: tools.filter((t) => t.category === 'network').length,
+      },
+      {
+        id: 'security',
+        label: t.toolboxNav.categories.security,
+        icon: <Lock className="w-3.5 h-3.5" />,
+        count: tools.filter((t) => t.category === 'security').length,
+      },
+    ],
+    [t, tools]
+  );
 
   return (
     <div className="space-y-3">

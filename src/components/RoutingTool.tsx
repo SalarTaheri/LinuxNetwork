@@ -80,57 +80,64 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
   );
   const rollbackCommand = useMemo(() => generateRollbackCommands(settings, lang), [settings, lang]);
 
-  const scenarioTabs: { id: RoutingScenario; label: string; desc: string; icon: React.ReactNode }[] = [
-    {
-      id: 'nat_gateway',
-      label: t.routing.scenarios.nat_gateway.title,
-      desc: t.routing.scenarios.nat_gateway.desc,
-      icon: <Globe className="w-4 h-4" />,
-    },
-    {
-      id: 'port_forward',
-      label: t.routing.scenarios.port_forward.title,
-      desc: t.routing.scenarios.port_forward.desc,
-      icon: <ArrowRightLeft className="w-4 h-4" />,
-    },
-    {
-      id: 'docker_shield',
-      label: t.routing.scenarios.docker_shield.title,
-      desc: t.routing.scenarios.docker_shield.desc,
-      icon: <ShieldAlert className="w-4 h-4" />,
-    },
-    {
-      id: 'pbr_multiwan',
-      label: t.routing.scenarios.pbr_multiwan.title,
-      desc: t.routing.scenarios.pbr_multiwan.desc,
-      icon: <GitFork className="w-4 h-4" />,
-    },
-    {
-      id: 'rate_limit',
-      label: t.routing.scenarios.rate_limit.title,
-      desc: t.routing.scenarios.rate_limit.desc,
-      icon: <Zap className="w-4 h-4" />,
-    },
-  ];
+  // Memoize scenario options and derived active properties to prevent re-creating objects and JSX icons on form input re-renders
+  const scenarioTabs = useMemo<{ id: RoutingScenario; label: string; desc: string; icon: React.ReactNode }[]>(
+    () => [
+      {
+        id: 'nat_gateway',
+        label: t.routing.scenarios.nat_gateway.title,
+        desc: t.routing.scenarios.nat_gateway.desc,
+        icon: <Globe className="w-4 h-4" />,
+      },
+      {
+        id: 'port_forward',
+        label: t.routing.scenarios.port_forward.title,
+        desc: t.routing.scenarios.port_forward.desc,
+        icon: <ArrowRightLeft className="w-4 h-4" />,
+      },
+      {
+        id: 'docker_shield',
+        label: t.routing.scenarios.docker_shield.title,
+        desc: t.routing.scenarios.docker_shield.desc,
+        icon: <ShieldAlert className="w-4 h-4" />,
+      },
+      {
+        id: 'pbr_multiwan',
+        label: t.routing.scenarios.pbr_multiwan.title,
+        desc: t.routing.scenarios.pbr_multiwan.desc,
+        icon: <GitFork className="w-4 h-4" />,
+      },
+      {
+        id: 'rate_limit',
+        label: t.routing.scenarios.rate_limit.title,
+        desc: t.routing.scenarios.rate_limit.desc,
+        icon: <Zap className="w-4 h-4" />,
+      },
+    ],
+    [t.routing.scenarios]
+  );
 
-  const activeConfigText =
-    outputFormat === 'iptables'
+  const activeConfigText = useMemo(() => {
+    return outputFormat === 'iptables'
       ? iptablesText
       : outputFormat === 'nftables'
       ? nftablesText
       : diagnosticsText;
+  }, [outputFormat, iptablesText, nftablesText, diagnosticsText]);
 
-  const activeFilename =
-    outputFormat === 'nftables'
+  const activeFilename = useMemo(() => {
+    return outputFormat === 'nftables'
       ? 'nftables.conf'
       : outputFormat === 'diagnostics'
       ? 'network-diagnostics.sh'
       : 'iptables-rules.sh';
+  }, [outputFormat]);
 
-  const activeTargetPath =
-    outputFormat === 'nftables'
+  const activeTargetPath = useMemo(() => {
+    return outputFormat === 'nftables'
       ? '/etc/nftables.conf'
       : '/etc/iptables/rules.v4';
+  }, [outputFormat]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
