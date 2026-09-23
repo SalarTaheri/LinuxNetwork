@@ -1,16 +1,16 @@
-# Graph Report - LinuxNetwork  (2026-09-23)
+# Graph Report - LinuxNetwork  (2026-09-12)
 
 ## Corpus Check
-- 73 files · ~91,062 words
+- 53 files · ~50,638 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 460 nodes · 699 edges · 43 communities (28 shown, 15 thin omitted)
+- 354 nodes · 507 edges · 34 communities (25 shown, 9 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `34a7d886`
+- Built from commit: `66a4f9ae`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -47,76 +47,67 @@
 - .claude/CLAUDE.md
 - .claude/skills/graphify/references/extraction-spec.md
 - NetworkBackground.tsx
-- NginxTool.tsx
-- RoutingTool.tsx
-- LinuxNetwork Project Development Standards
-- SysctlTool.bench.test.ts
-- ArrayAllocation.bench.test.ts
-- bolt.md
-- palette.md
-- setupScript.test.ts
-- sentinel.md
 
 ## God Nodes (most connected - your core abstractions)
-1. `Language` - 28 edges
+1. `Language` - 21 edges
 2. `compilerOptions` - 15 edges
-3. `apply_hardening()` - 14 edges
-4. `ToolTab` - 14 edges
-5. `translations` - 12 edges
-6. `What You Must Do When Invoked` - 12 edges
-7. `What You Must Do When Invoked` - 12 edges
-8. `install_docker()` - 11 edges
-9. `main()` - 11 edges
-10. `generateWireGuardClientConfig()` - 11 edges
+3. `apply_hardening()` - 13 edges
+4. `What You Must Do When Invoked` - 12 edges
+5. `What You Must Do When Invoked` - 12 edges
+6. `install_docker()` - 11 edges
+7. `main()` - 11 edges
+8. `calculateSubnet()` - 11 edges
+9. `/graphify` - 10 edges
+10. `/graphify` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `NginxToolProps` --references--> `Language`  [EXTRACTED]
-  src/components/NginxTool.tsx → src/types.ts
 - `CodeOutputPanelProps` --references--> `Language`  [EXTRACTED]
   src/components/CodeOutputPanel.tsx → src/types.ts
 - `DistroBadgesProps` --references--> `Language`  [EXTRACTED]
   src/components/DistroBadges.tsx → src/types.ts
-- `RoutingToolProps` --references--> `Language`  [EXTRACTED]
-  src/components/RoutingTool.tsx → src/types.ts
+- `HeaderProps` --references--> `Language`  [EXTRACTED]
+  src/components/Header.tsx → src/types.ts
+- `NginxToolProps` --references--> `Language`  [EXTRACTED]
+  src/components/NginxTool.tsx → src/types.ts
 - `SetupScriptToolProps` --references--> `Language`  [EXTRACTED]
   src/components/SetupScriptTool.tsx → src/types.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (43 total, 15 thin omitted)
+## Communities (34 total, 9 thin omitted)
 
 ### Community 0 - "types.ts"
-Cohesion: 0.07
-Nodes (47): classifyLineOptimized(), CodeOutputPanel, CodeOutputPanelProps, DistroBadges, DistroBadgesProps, DistroInfo, DISTROS, HeaderProps (+39 more)
+Cohesion: 0.09
+Nodes (40): App(), VALID_TABS, CodeOutputPanel(), CodeOutputPanelProps, DistroBadges(), DistroBadgesProps, DistroInfo, DISTROS (+32 more)
 
 ### Community 1 - "devDependencies"
 Cohesion: 0.11
 Nodes (19): autoprefixer, esbuild, devDependencies, autoprefixer, esbuild, tailwindcss, tsx, @types/express (+11 more)
 
 ### Community 2 - "dependencies"
-Cohesion: 0.06
-Nodes (33): dotenv, express, lucide-react, motion, dependencies, dotenv, express, lucide-react (+25 more)
+Cohesion: 0.11
+Nodes (19): dotenv, express, @google/genai, lucide-react, motion, dependencies, dotenv, express (+11 more)
 
 ### Community 3 - "compilerOptions"
-Cohesion: 0.10
-Nodes (20): ./*, DOM, DOM.Iterable, ES2022, compilerOptions, allowImportingTsExtensions, allowJs, experimentalDecorators (+12 more)
+Cohesion: 0.11
+Nodes (18): DOM, DOM.Iterable, ES2022, compilerOptions, allowImportingTsExtensions, allowJs, experimentalDecorators, isolatedModules (+10 more)
 
 ### Community 4 - "WireGuardTool.tsx"
-Cohesion: 0.29
-Nodes (9): RFC-7748, decodeLittleEndian(), encodeLittleEndian(), generateWireGuardKeyPair(), modInverse(), modPow(), uint8ToBase64(), WireGuardKeyPair (+1 more)
+Cohesion: 0.21
+Nodes (15): RFC-7748, WireGuardTool(), WireGuardSettings, decodeLittleEndian(), encodeLittleEndian(), generateWireGuardKeyPair(), modInverse(), modPow() (+7 more)
 
 ### Community 5 - "setup.sh"
-Cohesion: 0.23
-Nodes (25): apply_hardening(), apply_kernel_tuning(), backup_file(), check_root(), detect_os(), ensure_epel_repo(), install_docker(), install_tools() (+17 more)
+Cohesion: 0.24
+Nodes (24): apply_hardening(), apply_kernel_tuning(), backup_file(), check_root(), detect_os(), ensure_epel_repo(), install_docker(), install_tools() (+16 more)
 
 ### Community 6 - "scripts"
-Cohesion: 0.21
-Nodes (17): mockSettings, DNS_PRESETS, MTU_PRESETS, WireGuardTool, WireGuardSettings, generateWireGuardClientConfig(), generateWireGuardServerConfig(), generateWireGuardServerOneLiner() (+9 more)
+Cohesion: 0.12
+Nodes (15): engines, node, name, private, scripts, build, clean, deploy (+7 more)
 
 ### Community 7 - "subnetCalculator.ts"
-Cohesion: 0.32
-Nodes (12): RFC-3021, SubnetCalculation, calculateSubnet(), CIDR_CACHE, cidrToNetmaskInt(), getIpClass(), getIpScope(), intToBinary() (+4 more)
+Cohesion: 0.36
+Nodes (11): RFC-3021, SubnetTool(), calculateSubnet(), cidrToNetmaskInt(), getIpClass(), getIpScope(), intToBinary(), intToIp() (+3 more)
 
 ### Community 8 - "What You Must Do When Invoked"
 Cohesion: 0.08
@@ -132,7 +123,7 @@ Nodes (23): Build & Production Test, Cloudflare Direct Deployment, 🤝 Contribu
 
 ### Community 13 - "راهنمای جامع دیپلوی روی Cloudflare Pages (linuxnetwork.ir)"
 Cohesion: 0.20
-Nodes (9): راهنمای جامع دیپلوی روی Cloudflare Pages (linuxnetwork.ir), ۱. تنظیم سکرت‌ها در گیت‌هاب (Repository Secrets), ۱. تنظیمات اعمال‌شده در پروژه, ۲. دیپلوی خودکار با GitHub Actions (با Merge به Main یا ارسال Tag), ۲. غیرفعال‌سازی بیلد خودکار در داشبورد کلودفلر (جهت جلوگیری از تداخل), ۳. روش دستی از طریق داشبورد گیت‌هاب / گیت‌لب (Cloudflare Pages Git Integration), ۳. روش دوم: دیپلوی مستقیم با CLI (Wrangler), ۳. نحوه ایجاد و انتشار نسخه جدید (+1 more)
+Nodes (9): راهنمای جامع دیپلوی روی Cloudflare Pages (linuxnetwork.ir), ۱. تنظیم سکرت‌ها در گیت‌هاب (Repository Secrets), ۱. تنظیمات اعمال‌شده در پروژه, ۲. دیپلوی خودکار نسخه‌بندی‌شده با GitHub Actions (بر اساس Tag), ۲. غیرفعال‌سازی بیلد خودکار در داشبورد کلودفلر (جهت جلوگیری از تداخل), ۳. روش دستی از طریق داشبورد گیت‌هاب / گیت‌لب (Cloudflare Pages Git Integration), ۳. روش دوم: دیپلوی مستقیم با CLI (Wrangler), ۳. نحوه ایجاد و انتشار نسخه جدید (+1 more)
 
 ### Community 14 - "graphify reference: extra exports and benchmark"
 Cohesion: 0.22
@@ -175,40 +166,28 @@ Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
 
 ### Community 33 - "NetworkBackground.tsx"
-Cohesion: 0.11
-Nodes (17): App(), getInitialRouting(), LandingPage, NginxTool, preloadAllTools(), RoutingTool, SetupScriptTool, SubnetTool (+9 more)
-
-### Community 34 - "NginxTool.tsx"
-Cohesion: 0.21
-Nodes (14): mockSettings, BUFFERING_OPTIONS, NginxTool, NginxToolProps, NginxSettings, generateNginxConfig(), generateNginxOneLiner(), sanitizeDomain() (+6 more)
-
-### Community 35 - "RoutingTool.tsx"
-Cohesion: 0.29
-Nodes (13): mockSettings, RoutingTool, NatMode, RoutingScenario, RoutingSettings, generateIptablesRules(), generateNftablesRules(), generateRollbackCommands() (+5 more)
-
-### Community 36 - "LinuxNetwork Project Development Standards"
-Cohesion: 0.40
-Nodes (4): 1. Package Management, 2. Non-ASCII & Persian Text Editing, 3. SEO & Route Synchronization, LinuxNetwork Project Development Standards
+Cohesion: 0.50
+Nodes (3): NetworkBackground(), Node, Packet
 
 ## Knowledge Gaps
-- **209 isolated node(s):** `name`, `private`, `version`, `packageManager`, `type` (+204 more)
+- **169 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+164 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Language` connect `types.ts` to `NetworkBackground.tsx`, `NginxTool.tsx`, `RoutingTool.tsx`, `scripts`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
-- **Why does `devDependencies` connect `devDependencies` to `dependencies`?**
-  _High betweenness centrality (0.007) - this node is a cross-community bridge._
+- **Why does `dependencies` connect `dependencies` to `scripts`?**
+  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+- **Why does `devDependencies` connect `devDependencies` to `scripts`?**
+  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+- **Why does `Language` connect `types.ts` to `WireGuardTool.tsx`, `subnetCalculator.ts`?**
+  _High betweenness centrality (0.011) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _209 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _169 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `types.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.06971153846153846 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08735150244584207 - nodes in this community are weakly interconnected._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**
-  _Cohesion score 0.058823529411764705 - nodes in this community are weakly interconnected._
-- **Should `compilerOptions` be split into smaller, more focused modules?**
-  _Cohesion score 0.09523809523809523 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected._

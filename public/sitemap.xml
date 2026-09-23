@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- 1. Home / Landing Page -->
+  <url>
+    <loc>https://linuxnetwork.ir/</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="fa" href="https://linuxnetwork.ir/?lang=fa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://linuxnetwork.ir/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://linuxnetwork.ir/" />
+  </url>
+
+  <!-- 2. Setup Script Generator (setup.sh) -->
+  <url>
+    <loc>https://linuxnetwork.ir/?tool=setup</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="fa" href="https://linuxnetwork.ir/?tool=setup&amp;lang=fa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://linuxnetwork.ir/?tool=setup&amp;lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://linuxnetwork.ir/?tool=setup" />
+  </url>
+
+  <!-- 3. Sysctl Kernel & Network Optimizer -->
+  <url>
+    <loc>https://linuxnetwork.ir/?tool=sysctl</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="fa" href="https://linuxnetwork.ir/?tool=sysctl&amp;lang=fa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://linuxnetwork.ir/?tool=sysctl&amp;lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://linuxnetwork.ir/?tool=sysctl" />
+  </url>
+
+  <!-- 4. Nginx Reverse Proxy Config Builder -->
+  <url>
+    <loc>https://linuxnetwork.ir/?tool=nginx</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="fa" href="https://linuxnetwork.ir/?tool=nginx&amp;lang=fa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://linuxnetwork.ir/?tool=nginx&amp;lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://linuxnetwork.ir/?tool=nginx" />
+  </url>
+
+  <!-- 5. WireGuard Peer & Tunnel Configurator -->
+  <url>
+    <loc>https://linuxnetwork.ir/?tool=wireguard</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="fa" href="https://linuxnetwork.ir/?tool=wireguard&amp;lang=fa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://linuxnetwork.ir/?tool=wireguard&amp;lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://linuxnetwork.ir/?tool=wireguard" />
+  </url>
+
+  <!-- 6. CIDR Subnet Calculator & Routing Engine -->
+  <url>
+    <loc>https://linuxnetwork.ir/?tool=subnet</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="fa" href="https://linuxnetwork.ir/?tool=subnet&amp;lang=fa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://linuxnetwork.ir/?tool=subnet&amp;lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://linuxnetwork.ir/?tool=subnet" />
+  </url>
+
+  <!-- 7. Linux Routing, NAT & Firewall Studio -->
+  <url>
+    <loc>https://linuxnetwork.ir/?tool=routing</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="fa" href="https://linuxnetwork.ir/?tool=routing&amp;lang=fa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://linuxnetwork.ir/?tool=routing&amp;lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://linuxnetwork.ir/?tool=routing" />
+  </url>
+
+  <!-- 8. Standalone Single-file Tool -->
+  <url>
+    <loc>https://linuxnetwork.ir/standalone.html</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- 9. Raw Bash Setup Script -->
+  <url>
+    <loc>https://linuxnetwork.ir/setup.sh</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+</urlset>

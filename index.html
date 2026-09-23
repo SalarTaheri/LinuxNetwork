@@ -3,36 +3,184 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LinuxNetwork.ir - Linux Network & Kernel Tuning Toolbox</title>
-    <meta name="description" content="Bilingual Linux Network & Kernel Optimizer, Automated setup.sh Generator, Nginx Reverse Proxy, WireGuard Configurator, and CIDR Subnet Toolbox." />
-    <meta name="keywords" content="linuxnetwork, linux network tuning, bbr, sysctl, setup.sh, nginx reverse proxy, wireguard, cidr subnet calculator" />
+    <title>LinuxNetwork.ir | جعبه‌ابزار مهندسی شبکه، تیونینگ کرنل و ستاپ لینوکس</title>
+    <meta name="description" content="پلتفرم جامع مهندسی شبکه و لینوکس: بهینه‌سازی پارامترهای TCP و BBR کرنل، ژنراتور خودکار setup.sh، کانفیگوریشن امن Nginx و WireGuard، استودیو فایروال و NAT، و ماشین‌حساب پیشرفته ساب‌نت CIDR — کاملاً کلاینت‌ساید و امن." />
+    <meta name="keywords" content="linuxnetwork, اسکریپت ستاپ سرور, کانفیگ سرور اوبونتو, فعالسازی bbr اوبونتو, بهینه سازی شبکه لینوکس, کانفیگ ریورس پروکسی nginx, کانفیگ وایرگارد لینوکس, محاسبه گر ساب نت, دور زدن تحریم داکر, میرور داکر ایران, پورت فورواردینگ لینوکس, اشتراک اینترنت nat gateway, sysctl tuning, bbr3 linux, wireguard config generator, nginx reverse proxy builder, cidr subnet calculator" />
     <meta name="author" content="LinuxNetwork.ir Community" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <link rel="canonical" href="https://linuxnetwork.ir/" />
 
-    <!-- Open Graph / Facebook / Telegram / LinkedIn -->
+    <!-- Language Alternates (Hreflang) -->
+    <link rel="alternate" hreflang="fa" href="https://linuxnetwork.ir/?lang=fa" />
+    <link rel="alternate" hreflang="en" href="https://linuxnetwork.ir/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://linuxnetwork.ir/" />
+
+    <!-- Favicon & PWA Web Manifest -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#090d16" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="LinuxNetwork" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Open Graph / Facebook / Telegram / LinkedIn / WhatsApp -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://linuxnetwork.ir/" />
     <meta property="og:site_name" content="LinuxNetwork.ir" />
-    <meta property="og:title" content="LinuxNetwork.ir - Linux Network & Kernel Tuning Toolbox" />
-    <meta property="og:description" content="Bilingual Linux Network & Kernel Optimizer, Automated setup.sh Generator, Nginx Reverse Proxy, WireGuard Configurator, and CIDR Subnet Toolbox." />
-    <meta property="og:image" content="https://linuxnetwork.ir/og-image.svg" />
+    <meta property="og:locale" content="fa_IR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:title" content="LinuxNetwork.ir | جعبه‌ابزار مهندسی شبکه و تیونینگ سرور لینوکس" />
+    <meta property="og:description" content="پلتفرم جامع مهندسی شبکه و لینوکس: بهینه‌سازی پارامترهای TCP و BBR کرنل، ژنراتور خودکار setup.sh، کانفیگوریشن امن Nginx و WireGuard، استودیو فایروال و NAT، و ماشین‌حساب ساب‌نت CIDR." />
+    <meta property="og:image" content="https://linuxnetwork.ir/og-image.png" />
+    <meta property="og:image:secure_url" content="https://linuxnetwork.ir/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:alt" content="LinuxNetwork.ir - Linux Network & Kernel Tuning Toolbox" />
 
-    <!-- Twitter / X -->
+    <!-- Twitter / X Cards -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@linuxnetwork_ir" />
-    <meta name="twitter:title" content="LinuxNetwork.ir - Linux Network & Kernel Tuning Toolbox" />
-    <meta name="twitter:description" content="Bilingual Linux Network & Kernel Optimizer, Automated setup.sh Generator, Nginx Reverse Proxy, WireGuard Configurator, and CIDR Subnet Toolbox." />
-    <meta name="twitter:image" content="https://linuxnetwork.ir/og-image.svg" />
+    <meta name="twitter:creator" content="@linuxnetwork_ir" />
+    <meta name="twitter:title" content="LinuxNetwork.ir | جعبه‌ابزار مهندسی شبکه و تیونینگ سرور لینوکس" />
+    <meta name="twitter:description" content="پلتفرم جامع مهندسی شبکه و لینوکس: بهینه‌سازی TCP و BBR، ژنراتور setup.sh، کانفیگوریشن Nginx و WireGuard، استودیو فایروال و NAT، و ماشین‌حساب ساب‌نت." />
+    <meta name="twitter:image" content="https://linuxnetwork.ir/og-image.png" />
+    <meta name="twitter:image:alt" content="LinuxNetwork.ir - Linux Network & Kernel Tuning Toolbox" />
+
+    <!-- Font Optimization & Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Static Structured Data (Schema.org JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://linuxnetwork.ir/#website",
+          "url": "https://linuxnetwork.ir/",
+          "name": "LinuxNetwork.ir",
+          "alternateName": ["لینوکس نتورک", "LinuxNetwork"],
+          "description": "پلتفرم جامع مهندسی شبکه و لینوکس: بهینه‌سازی BBR، ژنراتور setup.sh، کانفیگ‌های Nginx، وایرگارد، روتینگ و ساب‌نت",
+          "inLanguage": ["fa-IR", "en-US"],
+          "publisher": {
+            "@type": "Organization",
+            "name": "LinuxNetwork.ir Community",
+            "url": "https://linuxnetwork.ir"
+          }
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://linuxnetwork.ir/#webapp",
+          "name": "LinuxNetwork.ir - Linux Network & Kernel Tuning Toolbox",
+          "url": "https://linuxnetwork.ir/",
+          "applicationCategory": "NetworkingApplication",
+          "operatingSystem": "Linux (Ubuntu, Debian, CentOS, RHEL, AlmaLinux, Rocky Linux, Alpine Linux)",
+          "browserRequirements": "Requires JavaScript. 100% Client-Side Computing.",
+          "description": "Bilingual Linux Network & Kernel Optimizer, Automated setup.sh Generator, Nginx Reverse Proxy, WireGuard Configurator, Firewall/NAT Studio, and CIDR Subnet Toolbox.",
+          "inLanguage": ["fa-IR", "en-US"],
+          "isAccessibleForFree": true,
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "featureList": [
+            "BBR v1 / BBR v3 Linux TCP Congestion Tuning",
+            "Automated setup.sh Bash script generator with domestic mirror fallbacks",
+            "Nginx Reverse Proxy Builder with Mozilla Modern SSL and WebSocket support",
+            "WireGuard RFC 7748 Curve25519 browser-native key and QR code generator",
+            "IPv4 CIDR Subnet Calculator with iproute2 CLI commands",
+            "Linux Routing, NAT Gateway, Port Forwarding (DNAT/Hairpin) & Docker Shield Studio"
+          ],
+          "screenshot": "https://linuxnetwork.ir/og-image.png"
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://linuxnetwork.ir/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "آیا اجرای اسکریپت setup.sh روی سرور تازه امن است؟",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "بله، اسکریپت به‌صورت ماژولار و شفاف نوشته شده و تنها بسته‌های رسمی را نصب می‌کند. تمامی مراحل قبل از اعمال توسط شما در پنل پیش‌نمایش قابل مشاهده و ممیزی است."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "کلیدهای رمزنگاری WireGuard چگونه تولید می‌شوند؟",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "با استفاده از Web Crypto API مرورگر، محاسبات منحنی Curve25519 مستقیماً روی دستگاه شما انجام می‌شود و هیچ اطلاعات حساسی به هیچ سروری ارسال نخواهد شد."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "آیا تنظیمات BBR و sysctl بر روی سرورهای ابری ایرانی و خارجی کار می‌کند؟",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "بله، پروفایل‌های ارائه‌شده برای انواع مجازی‌سازهای KVM و سرورهای اختصاصی تست شده و سبب بهبود چشمگیر پهنای باند و کاهش لیتنسی و بافربلوت می‌شوند."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "چگونه می‌توانم در بهبود این پروژه مشارکت کنم؟",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "پروژه به صورت کامل روی گیت‌هاب (SalarTaheri/LinuxNetwork) متن‌باز است و تحت مجوز MIT منتشر شده است."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
   <body class="bg-[#090d16] text-slate-100 min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
+    <!-- Search Engine & Accessibility Noscript Semantic Snapshot -->
+    <noscript>
+      <header style="padding: 24px; text-align: center; border-bottom: 1px solid #1e293b;">
+        <h1>LinuxNetwork.ir | جعبه‌ابزار جامع مهندسی شبکه و لینوکس</h1>
+        <p>مجموعه ابزارهای تخصصی، متن‌باز و کلاینت‌ساید برای بهینه‌سازی کرنل لینوکس، ستاپ سرور و پیکربندی شبکه</p>
+      </header>
+      <main style="max-width: 900px; margin: 0 auto; padding: 24px; font-family: sans-serif; line-height: 1.8;">
+        <h2>ابزارهای تخصصی موجود:</h2>
+        <ul>
+          <li>
+            <a href="/?tool=setup"><strong>اسکریپت ستاپ سرور (setup.sh):</strong></a>
+            ژنراتور وان‌لاینر Bash برای فعال‌سازی BBR، ایمن‌سازی SSH، فایروال Fail2ban و نصب داکر با میرورهای سریع ایرانی.
+          </li>
+          <li>
+            <a href="/?tool=sysctl"><strong>بهینه‌ساز کرنل و استک شبکه (Sysctl Optimizer):</strong></a>
+            تنظیمات حرفه‌ای /etc/sysctl.d/99-network-tuning.conf برای وب‌سرورها، تانل، بافرهای TCP و کنترل ازدحام BBR.
+          </li>
+          <li>
+            <a href="/?tool=nginx"><strong>سازنده کانفیگ پروکسی معکوس انجین‌ایکس (Nginx Builder):</strong></a>
+            پیکربندی ماژولار با پشتیبانی از ارتقای WebSocket، هدرهای امنیتی OWASP و گواهی SSL Let’s Encrypt.
+          </li>
+          <li>
+            <a href="/?tool=wireguard"><strong>سازنده کانفیگ تانل وایرگارد (WireGuard Configurator):</strong></a>
+            تولید محلی کلیدهای Curve25519 درون مرورگر، ساخت کانفیگ سرور wg0.conf، کیو‌آرکد موبایل و قوانین فورواردینگ فایروال.
+          </li>
+          <li>
+            <a href="/?tool=subnet"><strong>محاسبه‌گر ساب‌نت و روتینگ (CIDR Subnet Calculator):</strong></a>
+            تفکیک محدوده IP، نت‌ماسک، وایلدکارت و تولید خودکار دستورات ip route add و iptables MASQUERADE لینوکس.
+          </li>
+          <li>
+            <a href="/?tool=routing"><strong>استودیو مسیریابی و فایروال لینوکس (Routing & NAT Studio):</strong></a>
+            پیکربندی آسان NAT Gateway (اشتراک اینترنت)، پورت فورواردینگ (DNAT و Hairpin NAT)، ایمن‌سازی داکر با DOCKER-USER و پالیسی روتینگ (Multi-WAN) با سینتکس همزمان iptables و nftables.
+          </li>
+        </ul>
+        <h3>دانلود مستقیم اسکریپت</h3>
+        <p>برای دریافت یا اجرای مستقیم اسکریپت ستاپ سرور می‌توانید از آدرس <a href="/setup.sh">https://linuxnetwork.ir/setup.sh</a> استفاده فرمایید.</p>
+      </main>
+    </noscript>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

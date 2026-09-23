@@ -1,0 +1,17 @@
+{
+  "name": "LinuxNetwork.ir - Linux Network & Kernel Tuning Toolbox",
+  "short_name": "LinuxNetwork",
+  "description": "Bilingual Linux Network & Kernel Optimizer, Automated setup.sh Generator, Nginx Reverse Proxy, WireGuard Configurator, and CIDR Subnet Toolbox.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

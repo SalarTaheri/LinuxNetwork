@@ -1,0 +1,17 @@
+# Robots.txt for LinuxNetwork.ir
+# The ultimate Linux network tuning & kernel optimization suite
+# https://linuxnetwork.ir/
+
+User-agent: *
+Allow: /
+
+# Explicitly allow core static files & shell scripts
+Allow: /setup.sh
+Allow: /standalone.html
+Allow: /og-image.svg
+Allow: /og-image.png
+Allow: /favicon.svg
+Allow: /site.webmanifest
+
+# Sitemaps
+Sitemap: https://linuxnetwork.ir/sitemap.xml

@@ -8,15 +8,42 @@
   Cache-Control: public, max-age=300, must-revalidate
   X-Content-Type-Options: nosniff
 
-# Static compiled assets (Immutable cache for max performance)
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
+# Search Engine Crawlers & Sitemaps
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
-# Open Graph & Social Sharing Vector Banner
+/sitemap.xml
+  Content-Type: application/xml; charset=utf-8
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Open Graph & Social Sharing Banners
 /og-image.svg
   Content-Type: image/svg+xml
   Access-Control-Allow-Origin: *
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+
+/og-image.png
+  Content-Type: image/png
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+
+# Favicon & Progressive Web App Manifest
+/favicon.svg
+  Content-Type: image/svg+xml
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=604800, immutable
+
+/site.webmanifest
+  Content-Type: application/manifest+json; charset=utf-8
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=86400
+
+# Static compiled assets (Immutable cache for max performance)
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
 
 # Global Web Application Security Headers
 /*

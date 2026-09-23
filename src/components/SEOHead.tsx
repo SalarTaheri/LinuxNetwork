@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Share2, Check, Copy, ExternalLink, Eye, Code, Globe, ShieldCheck, X } from 'lucide-react';
 import { Language, ToolTab, PageView } from '../types';
 import { SEO_CONFIG, LANDING_SEO_CONFIG, SITE_CONFIG, ToolSEOData } from '../data/seoConfig';
@@ -17,6 +17,90 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ view = 'toolbox', activeTab, l
   const isLanding = view === 'landing';
   const currentSEO: ToolSEOData = isLanding ? LANDING_SEO_CONFIG[lang] : SEO_CONFIG[activeTab][lang];
   const shareUrl = isLanding ? SITE_CONFIG.siteUrl : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}`;
+  const pageCanonical = isLanding ? SITE_CONFIG.siteUrl : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}`;
+
+  const structuredData = useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': `${SITE_CONFIG.siteUrl}/#website`,
+        url: SITE_CONFIG.siteUrl,
+        name: SITE_CONFIG.siteName,
+        alternateName: ['لینوکس نتورک', 'LinuxNetwork'],
+        description: currentSEO.metaDescription,
+        inLanguage: ['fa-IR', 'en-US'],
+        publisher: {
+          '@type': 'Organization',
+          name: SITE_CONFIG.author,
+          url: SITE_CONFIG.siteUrl,
+        },
+      },
+      {
+        '@type': 'WebApplication',
+        '@id': `${pageCanonical}#webapp`,
+        name: currentSEO.title,
+        headline: currentSEO.headline,
+        url: pageCanonical,
+        applicationCategory: 'NetworkingApplication',
+        operatingSystem: 'Linux (Ubuntu, Debian, CentOS, RHEL, AlmaLinux, Rocky Linux, Alpine Linux)',
+        browserRequirements: 'Requires JavaScript. 100% Client-Side Private Processing.',
+        description: currentSEO.metaDescription,
+        inLanguage: [lang === 'fa' ? 'fa-IR' : 'en-US'],
+        isAccessibleForFree: true,
+        featureList: currentSEO.featureList,
+        screenshot: SITE_CONFIG.ogImage,
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD',
+        },
+        creator: {
+          '@type': 'Organization',
+          name: SITE_CONFIG.author,
+          url: SITE_CONFIG.siteUrl,
+        },
+      },
+      ...(!isLanding
+        ? [
+            {
+              '@type': 'BreadcrumbList',
+              '@id': `${pageCanonical}#breadcrumb`,
+              itemListElement: [
+                {
+                  '@type': 'ListItem',
+                  position: 1,
+                  name: lang === 'fa' ? 'صفحه اصلی' : 'Home',
+                  item: SITE_CONFIG.siteUrl,
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 2,
+                  name: currentSEO.headline,
+                  item: pageCanonical,
+                },
+              ],
+            },
+          ]
+        : []),
+      ...(currentSEO.faqs && currentSEO.faqs.length > 0
+        ? [
+            {
+              '@type': 'FAQPage',
+              '@id': `${pageCanonical}#faq`,
+              mainEntity: currentSEO.faqs.map((faq) => ({
+                '@type': 'Question',
+                name: faq.question,
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: faq.answer,
+                },
+              })),
+            },
+          ]
+        : []),
+    ],
+  }), [currentSEO, isLanding, lang, pageCanonical]);
 
   // Dynamically update document title, meta tags, and structured JSON-LD data
   useEffect(() => {
@@ -34,23 +118,38 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ view = 'toolbox', activeTab, l
       element.setAttribute('content', content);
     };
 
+    // Helper to update or create a <link> tag
+    const setLinkTag = (rel: string, href: string, hreflang?: string) => {
+      const selector = hreflang ? `link[rel="${rel}"][hreflang="${hreflang}"]` : `link[rel="${rel}"]`;
+      let element = document.querySelector(selector) as HTMLLinkElement | null;
+      if (!element) {
+        element = document.createElement('link');
+        element.setAttribute('rel', rel);
+        if (hreflang) element.setAttribute('hreflang', hreflang);
+        document.head.appendChild(element);
+      }
+      element.setAttribute('href', href);
+    };
+
     // 2. Standard Search Engine Meta Tags
     setMetaTag('name', 'description', currentSEO.metaDescription);
     setMetaTag('name', 'keywords', currentSEO.keywords.join(', '));
     setMetaTag('name', 'author', SITE_CONFIG.author);
     setMetaTag('name', 'robots', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
 
-    // 3. Open Graph (Facebook, Telegram, LinkedIn, Discord)
+    // 3. Open Graph (Facebook, Telegram, LinkedIn, Discord, WhatsApp)
     setMetaTag('property', 'og:title', currentSEO.ogTitle);
     setMetaTag('property', 'og:description', currentSEO.ogDescription);
     setMetaTag('property', 'og:url', isLanding ? `${SITE_CONFIG.siteUrl}/?lang=${lang}` : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}&lang=${lang}`);
     setMetaTag('property', 'og:type', 'website');
     setMetaTag('property', 'og:site_name', SITE_CONFIG.siteName);
     setMetaTag('property', 'og:locale', lang === 'fa' ? 'fa_IR' : 'en_US');
+    setMetaTag('property', 'og:locale:alternate', lang === 'fa' ? 'en_US' : 'fa_IR');
     setMetaTag('property', 'og:image', SITE_CONFIG.ogImage);
+    setMetaTag('property', 'og:image:secure_url', SITE_CONFIG.ogImage);
     setMetaTag('property', 'og:image:width', '1200');
     setMetaTag('property', 'og:image:height', '630');
-    setMetaTag('property', 'og:image:type', 'image/svg+xml');
+    setMetaTag('property', 'og:image:type', 'image/png');
     setMetaTag('property', 'og:image:alt', currentSEO.title);
 
     // 4. Twitter Cards
@@ -62,14 +161,11 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ view = 'toolbox', activeTab, l
     setMetaTag('name', 'twitter:site', SITE_CONFIG.twitterHandle);
     setMetaTag('name', 'twitter:creator', SITE_CONFIG.twitterHandle);
 
-    // 5. Canonical Link
-    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonical);
-    }
-    canonical.setAttribute('href', isLanding ? SITE_CONFIG.siteUrl : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}`);
+    // 5. Canonical & Hreflang Multi-language Alternate Links
+    setLinkTag('canonical', pageCanonical);
+    setLinkTag('alternate', isLanding ? `${SITE_CONFIG.siteUrl}/?lang=fa` : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}&lang=fa`, 'fa');
+    setLinkTag('alternate', isLanding ? `${SITE_CONFIG.siteUrl}/?lang=en` : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}&lang=en`, 'en');
+    setLinkTag('alternate', pageCanonical, 'x-default');
 
     // 6. Schema.org JSON-LD Structured Data
     let schemaScript = document.getElementById('seo-structured-data') as HTMLScriptElement | null;
@@ -79,32 +175,6 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ view = 'toolbox', activeTab, l
       schemaScript.type = 'application/ld+json';
       document.head.appendChild(schemaScript);
     }
-
-    const structuredData = {
-      '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: currentSEO.title,
-      headline: currentSEO.headline,
-      url: isLanding ? SITE_CONFIG.siteUrl : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}`,
-      applicationCategory: 'NetworkingApplication',
-      operatingSystem: 'Linux (Ubuntu, Debian, CentOS, RHEL, AlmaLinux)',
-      browserRequirements: 'Requires JavaScript. 100% Client-Side Private Processing.',
-      description: currentSEO.metaDescription,
-      inLanguage: [lang === 'fa' ? 'fa-IR' : 'en-US'],
-      isAccessibleForFree: true,
-      featureList: currentSEO.featureList,
-      screenshot: SITE_CONFIG.ogImage,
-      offers: {
-        '@type': 'Offer',
-        price: '0',
-        priceCurrency: 'USD',
-      },
-      creator: {
-        '@type': 'Organization',
-        name: 'LinuxNetwork.ir',
-        url: SITE_CONFIG.siteUrl,
-      },
-    };
 
     schemaScript.textContent = JSON.stringify(structuredData, null, 2);
 
@@ -300,7 +370,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ view = 'toolbox', activeTab, l
                     {/* Banner Image Simulation */}
                     <div className="relative aspect-[1200/630] w-full bg-slate-900 border-b border-slate-800 overflow-hidden group">
                       <img
-                        src="/og-image.svg"
+                        src="/og-image.png"
                         alt={currentSEO.title}
                         className="w-full h-full object-cover"
                         loading="eager"
@@ -365,20 +435,33 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ view = 'toolbox', activeTab, l
 <title>${currentSEO.title}</title>
 <meta name="description" content="${currentSEO.metaDescription}" />
 <meta name="keywords" content="${currentSEO.keywords.join(', ')}" />
-<link rel="canonical" href="${shareUrl}" />
+<meta name="author" content="${SITE_CONFIG.author}" />
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
 
-<!-- Open Graph / Facebook / Telegram / LinkedIn -->
+<!-- Canonical & Language Alternates -->
+<link rel="canonical" href="${pageCanonical}" />
+<link rel="alternate" hreflang="fa" href="${isLanding ? `${SITE_CONFIG.siteUrl}/?lang=fa` : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}&lang=fa`}" />
+<link rel="alternate" hreflang="en" href="${isLanding ? `${SITE_CONFIG.siteUrl}/?lang=en` : `${SITE_CONFIG.siteUrl}/?tool=${activeTab}&lang=en`}" />
+<link rel="alternate" hreflang="x-default" href="${pageCanonical}" />
+
+<!-- Open Graph / Facebook / Telegram / LinkedIn / WhatsApp -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${shareUrl}" />
 <meta property="og:site_name" content="${SITE_CONFIG.siteName}" />
 <meta property="og:locale" content="${lang === 'fa' ? 'fa_IR' : 'en_US'}" />
+<meta property="og:locale:alternate" content="${lang === 'fa' ? 'en_US' : 'fa_IR'}" />
 <meta property="og:title" content="${currentSEO.ogTitle}" />
 <meta property="og:description" content="${currentSEO.ogDescription}" />
 <meta property="og:image" content="${SITE_CONFIG.ogImage}" />
+<meta property="og:image:secure_url" content="${SITE_CONFIG.ogImage}" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 
 <!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="${SITE_CONFIG.twitterHandle}" />
+<meta name="twitter:creator" content="${SITE_CONFIG.twitterHandle}" />
 <meta name="twitter:title" content="${currentSEO.ogTitle}" />
 <meta name="twitter:description" content="${currentSEO.ogDescription}" />
 <meta name="twitter:image" content="${SITE_CONFIG.ogImage}" />`}
@@ -391,34 +474,13 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ view = 'toolbox', activeTab, l
                 <div className="space-y-3">
                   <p className="text-[11px] text-slate-400">
                     {isFa
-                      ? 'دیتای ساختاریافته Schema.org WebApplication برای ثبت ریچ اسنیپت‌های گوگل (Rich Snippets) و موتورهای جستجو:'
-                      : 'Schema.org WebApplication structured JSON-LD data for Google Search Engine rich results:'}
+                      ? 'دیتای ساختاریافته چندگانه Schema.org (@graph شامل WebSite، WebApplication، BreadcrumbList و FAQPage) برای ثبت ریچ اسنیپت‌های گوگل:'
+                      : 'Schema.org Multi-entity Graph (WebSite, WebApplication, BreadcrumbList, and FAQPage) for Google Rich Snippets:'}
                   </p>
                   <pre
                     className="p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-[11px] font-mono text-emerald-300/90 overflow-x-auto leading-relaxed dir-ltr select-all"
                   >
-{JSON.stringify(
-  {
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: currentSEO.title,
-    headline: currentSEO.headline,
-    url: shareUrl,
-    applicationCategory: 'NetworkingApplication',
-    operatingSystem: 'Linux',
-    description: currentSEO.metaDescription,
-    inLanguage: [lang === 'fa' ? 'fa-IR' : 'en-US'],
-    isAccessibleForFree: true,
-    featureList: currentSEO.featureList,
-    publisher: {
-      '@type': 'Organization',
-      name: 'LinuxNetwork.ir',
-      url: SITE_CONFIG.siteUrl,
-    },
-  },
-  null,
-  2
-)}
+{JSON.stringify(structuredData, null, 2)}
                   </pre>
                 </div>
               )}

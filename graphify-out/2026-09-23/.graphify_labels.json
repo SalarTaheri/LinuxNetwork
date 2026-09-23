@@ -32,14 +32,5 @@
   "30": ".claude/CLAUDE.md",
   "31": ".claude/skills/graphify/references/extraction-spec.md",
   "32": "vite-env.d.ts",
-  "33": "NetworkBackground.tsx",
-  "34": "NginxTool.tsx",
-  "35": "RoutingTool.tsx",
-  "36": "LinuxNetwork Project Development Standards",
-  "37": "SysctlTool.bench.test.ts",
-  "38": "ArrayAllocation.bench.test.ts",
-  "39": "bolt.md",
-  "40": "palette.md",
-  "41": "setupScript.test.ts",
-  "42": "sentinel.md"
+  "33": "NetworkBackground.tsx"
 }

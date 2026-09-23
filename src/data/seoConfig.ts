@@ -10,13 +10,15 @@ export interface ToolSEOData {
   badge: string;
   category: string;
   featureList: string[];
+  faqs?: { question: string; answer: string }[];
 }
 
 export const SITE_CONFIG = {
   domain: 'linuxnetwork.ir',
   siteUrl: 'https://linuxnetwork.ir',
   siteName: 'LinuxNetwork.ir',
-  ogImage: 'https://linuxnetwork.ir/og-image.svg',
+  ogImage: 'https://linuxnetwork.ir/og-image.png',
+  ogImageSvg: 'https://linuxnetwork.ir/og-image.svg',
   twitterHandle: '@linuxnetwork_ir',
   author: 'LinuxNetwork.ir Community',
 };
@@ -381,6 +383,24 @@ export const LANDING_SEO_CONFIG: Record<Language, ToolSEOData> = {
       'تولید جفت‌کلید رمزنگاری WireGuard به صورت محلی در مرورگر و ساخت QR کد',
       'ماشین‌حساب بصری ساب‌نت و دستورات روتینگ iproute2 و فایروال',
     ],
+    faqs: [
+      {
+        question: 'آیا اجرای اسکریپت setup.sh روی سرور تازه امن است؟',
+        answer: 'بله، اسکریپت به‌صورت ماژولار و شفاف نوشته شده و تنها بسته‌های رسمی را نصب می‌کند. تمامی مراحل قبل از اعمال توسط شما در پنل پیش‌نمایش قابل مشاهده و ممیزی است.',
+      },
+      {
+        question: 'کلیدهای رمزنگاری WireGuard چگونه تولید می‌شوند؟',
+        answer: 'با استفاده از Web Crypto API مرورگر، محاسبات منحنی Curve25519 مستقیماً روی دستگاه شما انجام می‌شود و هیچ اطلاعات حساسی به هیچ سروری ارسال نخواهد شد.',
+      },
+      {
+        question: 'آیا تنظیمات BBR و sysctl بر روی سرورهای ابری ایرانی و خارجی کار می‌کند؟',
+        answer: 'بله، پروفایل‌های ارائه‌شده برای انواع مجازی‌سازهای KVM و سرورهای اختصاصی تست شده و سبب بهبود چشمگیر پهنای باند و کاهش لیتنسی می‌شوند.',
+      },
+      {
+        question: 'چگونه می‌توانم در بهبود این پروژه مشارکت کنم؟',
+        answer: 'پروژه به صورت کامل روی گیت‌هاب (SalarTaheri/LinuxNetwork) متن‌باز است و تحت مجوز MIT منتشر شده است.',
+      },
+    ],
   },
   en: {
     title: 'LinuxNetwork.ir | Linux Network Engineering & Kernel Optimization Suite',
@@ -408,6 +428,24 @@ export const LANDING_SEO_CONFIG: Record<Language, ToolSEOData> = {
       'Modular Nginx reverse proxy with Mozilla Modern SSL profiles and HTTP/3',
       'WireGuard VPN config generator with browser-native Curve25519 cryptography',
       'Visual IPv4 CIDR subnet planner and Linux iproute2 command engine',
+    ],
+    faqs: [
+      {
+        question: 'Is executing setup.sh safe on a production or fresh VPS?',
+        answer: 'Yes. The script is modular, transparent, and only pulls official upstream packages. You can preview, inspect, and customize every flag before running.',
+      },
+      {
+        question: 'How are WireGuard cryptographic keys generated?',
+        answer: 'Using the browser Web Crypto API, Curve25519 elliptic curve key calculations execute directly on your machine without transmitting any private keys.',
+      },
+      {
+        question: 'Do BBR and sysctl tweaks work reliably on cloud providers?',
+        answer: 'Yes, the presets have been benchmarked across standard KVM virtualization and bare-metal servers, offering substantial latency and throughput improvements under packet loss.',
+      },
+      {
+        question: 'How can I contribute to LinuxNetwork.ir?',
+        answer: 'The project is 100% open-source under the MIT license on GitHub (SalarTaheri/LinuxNetwork). Contributions, issues, and PRs are warmly welcomed.',
+      },
     ],
   },
 };
