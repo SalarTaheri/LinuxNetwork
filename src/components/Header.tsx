@@ -40,9 +40,9 @@ export const Header: React.FC<HeaderProps> = React.memo(({
         <button
           type="button"
           onClick={onNavigateLanding}
-          aria-label={isFa ? 'صفحه اصلی LinuxNetwork.ir' : 'LinuxNetwork.ir Home'}
+          aria-label={`LinuxNetwork.ir - ${isFa ? 'صفحه اصلی' : 'Home'}`}
           className="flex items-center gap-3 text-left rtl:text-right cursor-pointer group rounded-xl p-1 -m-1 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
-          title={isFa ? 'صفحه اصلی LinuxNetwork' : 'LinuxNetwork Home'}
+          title={`LinuxNetwork.ir - ${isFa ? 'صفحه اصلی' : 'Home'}`}
         >
           <motion.div
             whileHover={{ scale: 1.08, rotate: [0, -3, 3, 0] }}
@@ -120,9 +120,9 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             whileTap={{ scale: 0.97 }}
             id="lang-toggle-btn"
             onClick={onToggleLang}
-            aria-label={`Switch Language / تغییر زبان (${lang === 'fa' ? 'Farsi' : 'English'})`}
+            aria-label={`${t.switchLang} (${lang === 'fa' ? 'تغییر زبان به انگلیسی' : 'Switch to Persian'})`}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-slate-200 hover:text-white shadow-sm transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
-            title="Switch Language / تغییر زبان"
+            title={`${t.switchLang} (${lang === 'fa' ? 'تغییر زبان به انگلیسی' : 'Switch to Persian'})`}
           >
             <Globe className="w-3.5 h-3.5 text-cyan-400" aria-hidden="true" />
             <span className="font-semibold">{t.switchLang}</span>

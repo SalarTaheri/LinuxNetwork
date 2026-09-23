@@ -19,6 +19,12 @@
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
+# LLM Agentic Discovery File
+/llms.txt
+  Content-Type: text/markdown; charset=utf-8
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
 # Open Graph & Social Sharing Banners
 /og-image.svg
   Content-Type: image/svg+xml

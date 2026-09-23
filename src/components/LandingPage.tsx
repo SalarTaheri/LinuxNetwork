@@ -424,9 +424,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ lang, onLaunchToolbox 
                 <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold font-mono">
                   {idx === 0 ? <Lock className="w-5 h-5" /> : idx === 1 ? <Server className="w-5 h-5" /> : <Zap className="w-5 h-5" />}
                 </div>
-                <h4 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-white">
                   {pillar.title}
-                </h4>
+                </h3>
                 <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
                   {pillar.desc}
                 </p>

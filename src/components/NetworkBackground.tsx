@@ -253,7 +253,8 @@ export const NetworkBackground: React.FC = () => {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="fixed inset-0 pointer-events-none z-0 opacity-60 transition-opacity duration-1000"
+      className="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-60 transition-opacity duration-1000"
+      style={{ width: '100%', height: '100%', contain: 'strict' }}
     />
   );
 };

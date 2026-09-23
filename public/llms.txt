@@ -1,0 +1,24 @@
+# LinuxNetwork.ir
+
+> LinuxNetwork.ir is a modern, 100% client-side Linux network engineering, server setup, and kernel tuning toolbox. All calculations, configurations, cryptographic keypairs, and scripts are generated locally in the browser with zero backend telemetry or data collection.
+
+LinuxNetwork provides high-performance Linux kernel tuning (TCP BBRv3, buffer optimization), automated multi-distribution setup shell scripts, secure Nginx reverse proxy generators, in-browser WireGuard VPN configurators, CIDR subnet calculators, and Linux NAT & firewall routing studios.
+
+## Core Engineering Tools
+
+- [Server Setup Script Generator](https://linuxnetwork.ir/?tool=setup): Interactive multi-distro Bash script generator for automated server provisioning, BBR acceleration, SSH hardening, Fail2ban, Docker installation, and Iranian mirror configuration.
+- [Sysctl Kernel & TCP BBR Optimizer](https://linuxnetwork.ir/?tool=sysctl): Professional `/etc/sysctl.d/99-network-tuning.conf` tuning profiles optimized for high-concurrency web servers, proxies, gaming, and low-latency tunnels.
+- [Nginx Reverse Proxy Builder](https://linuxnetwork.ir/?tool=nginx): Modular Nginx reverse proxy and virtual host generator with WebSocket upgrades, OWASP security headers, gzip/brotli compression, and Let's Encrypt SSL.
+- [WireGuard Configurator](https://linuxnetwork.ir/?tool=wireguard): In-browser client-side Curve25519 keypair generation, `wg0.conf` server configuration, mobile QR codes, and firewall forwarding rules.
+- [CIDR Subnet Calculator](https://linuxnetwork.ir/?tool=subnet): IPv4 network calculator with CIDR mask parsing, host ranges, wildcard masks, and ready-to-run `ip route` and `iptables` Linux commands.
+- [Routing & NAT Studio](https://linuxnetwork.ir/?tool=routing): Advanced Linux network router designer for NAT gateways (internet sharing), Port Forwarding (DNAT and Hairpin NAT), Docker firewall isolation (`DOCKER-USER`), and Multi-WAN policy routing supporting dual `iptables` and modern `nftables` syntax.
+
+## Shell Scripts & Automated Installers
+
+- [Bash Setup Script (setup.sh)](https://linuxnetwork.ir/setup.sh): Production-ready one-liner automated setup script supporting Ubuntu, Debian, CentOS, AlmaLinux, Rocky Linux, Fedora, and Alpine.
+- [Standalone Offline HTML](https://linuxnetwork.ir/standalone.html): Fully self-contained, offline-compatible HTML version of the toolbox.
+
+## Open Source & Community
+
+- [GitHub Repository](https://github.com/SalarTaheri/LinuxNetwork): Official open-source repository licensed under the MIT License.
+- [Sitemap](https://linuxnetwork.ir/sitemap.xml): Complete bilingual XML sitemap for search engines and crawlers.

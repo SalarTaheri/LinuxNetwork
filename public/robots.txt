@@ -12,6 +12,7 @@ Allow: /og-image.svg
 Allow: /og-image.png
 Allow: /favicon.svg
 Allow: /site.webmanifest
+Allow: /llms.txt
 
 # Sitemaps
 Sitemap: https://linuxnetwork.ir/sitemap.xml
