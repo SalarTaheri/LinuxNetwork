@@ -62,4 +62,18 @@ describe('sysctlGenerator', () => {
     assert.equal(config1, config2);
     assert.ok(durationMemoized < durationUnmemoized);
   });
+
+  test('escapes single quotes in sysctl one-liner script to pass bash syntax validation', async () => {
+    const customConfig = `# Sysctl config with 'single quotes'\nnet.ipv4.ip_forward = 1`;
+    const oneLiner = generateSysctlOneLiner(customConfig);
+    assert.ok(oneLiner.includes("'\\''single quotes'\\''"));
+
+    const scriptWithoutSudo = oneLiner.replace(/^sudo /, '');
+    const { execFile } = await import('node:child_process');
+    const { promisify } = await import('node:util');
+    const execFileAsync = promisify(execFile);
+
+    const { stderr } = await execFileAsync('bash', ['-n', '-c', scriptWithoutSudo]);
+    assert.equal(stderr, '');
+  });
 });
