@@ -200,4 +200,42 @@ describe('Routing & NAT Generator', () => {
       assert.match(rollbackCmd, /iptables -t nat -F/);
     });
   });
+
+  describe('Security & Input Sanitization', () => {
+    test('sanitizes interface names, ports, and subnets against command injection', () => {
+      const maliciousSettings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'docker_shield',
+        wanInterface: "eth0; rm -rf / ' && echo hacked",
+        dockerPort: "5432; cat /etc/passwd",
+        dockerAllowedSubnet: "10.8.0.0/24; reboot",
+        dockerAction: "DROP; rm -rf /" as any,
+      };
+      const iptables = generateIptablesRules(maliciousSettings, 'en');
+      assert.doesNotMatch(iptables, /;\s*rm/);
+      assert.doesNotMatch(iptables, /;\s*cat/);
+      assert.doesNotMatch(iptables, /;\s*reboot/);
+      assert.match(iptables, /-j DROP/);
+
+      const nftables = generateNftablesRules(maliciousSettings, 'en');
+      assert.doesNotMatch(nftables, /;\s*rm/);
+      assert.match(nftables, /drop/);
+    });
+
+    test('sanitizes numeric parameters and handles undefined/null values without crashing', () => {
+      const maliciousSettings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'rate_limit',
+        wanInterface: undefined,
+        rateLimitPort: null as any,
+        rateLimitMaxHits: '999999' as any,
+        rateLimitWindowSeconds: -50 as any,
+        rateLimitBlockSeconds: 'invalid' as any,
+      };
+      const iptables = generateIptablesRules(maliciousSettings, 'en');
+      assert.match(iptables, /BRUTEFORCE_22/);
+      assert.match(iptables, /--seconds 300/); // falls back to default 300 for invalid string
+      assert.match(iptables, /--hitcount 4/); // falls back to default 4 for out-of-range number
+    });
+  });
 });

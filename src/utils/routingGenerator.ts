@@ -3,9 +3,17 @@ import { Language, RoutingSettings } from '../types';
 /**
  * Sanitizes input strings to prevent shell injection or malformed iptables arguments.
  */
-function sanitize(val: string, fallback: string): string {
-  const cleaned = val.trim().replace(/[^a-zA-Z0-9_.:/-]/g, '');
+function sanitize(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_.:/-]/g, '');
   return cleaned || fallback;
+}
+
+function sanitizeNumber(val: number | string | undefined | null, fallback: number, min = 1, max = 65535): number {
+  const parsed = typeof val === 'number' ? val : parseInt(String(val || ''), 10);
+  if (isNaN(parsed) || parsed < min || parsed > max) {
+    return fallback;
+  }
+  return parsed;
 }
 
 /**
@@ -59,7 +67,7 @@ ${dnsRule}${mssRule}
       const extPort = sanitize(settings.externalPort, '8080');
       const intIp = sanitize(settings.internalIp, '192.168.100.15');
       const intPort = sanitize(settings.internalPort, '80');
-      const proto = settings.protocol;
+      const proto = settings.protocol === 'udp' ? 'udp' : settings.protocol === 'both' ? 'both' : 'tcp';
 
       const protocols = proto === 'both' ? ['tcp', 'udp'] : [proto];
       const dnatRules = protocols
@@ -115,7 +123,7 @@ ${fwdRules}${hairpinRules}
     case 'docker_shield': {
       const port = sanitize(settings.dockerPort, '5432');
       const allowed = sanitize(settings.dockerAllowedSubnet, '10.8.0.0/24');
-      const action = settings.dockerAction;
+      const action = settings.dockerAction === 'REJECT' ? 'REJECT' : 'DROP';
 
       return `# ================================================================
 # 🐳 ${isFa ? 'ایمن‌سازی پورت‌های داکر با زنجیره DOCKER-USER در iptables' : 'Docker Port Isolation & Shield via DOCKER-USER Chain'}
@@ -142,7 +150,7 @@ sudo iptables -A DOCKER-USER -j RETURN
       const secIf = sanitize(settings.secondaryInterface, 'eth1');
       const secIp = sanitize(settings.secondaryIp, '192.168.2.100');
       const secGw = sanitize(settings.secondaryGateway, '192.168.2.1');
-      const tableNum = settings.pbrTableNumber || 200;
+      const tableNum = sanitizeNumber(settings.pbrTableNumber, 200, 1, 32767);
       const tableName = sanitize(settings.pbrTableName, 'isp2');
 
       const rpFilterRules = settings.enableLooseRpFilter
@@ -181,9 +189,9 @@ ip route show table ${tableName}`;
 
     case 'rate_limit': {
       const port = sanitize(settings.rateLimitPort, '22');
-      const maxHits = settings.rateLimitMaxHits || 4;
-      const winSec = settings.rateLimitWindowSeconds || 60;
-      const blockSec = settings.rateLimitBlockSeconds || 300;
+      const maxHits = sanitizeNumber(settings.rateLimitMaxHits, 4, 1, 1000);
+      const winSec = sanitizeNumber(settings.rateLimitWindowSeconds, 60, 1, 86400);
+      const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
 
       return `# ================================================================
 # 🛡️ ${isFa ? 'محدودسازی سخت‌گیرانه نرخ اتصالات و مقابله با Brute-Force با ماژول xt_recent' : 'Kernel Rate-Limiting & Anti-Brute-Force Shield (xt_recent)'}
@@ -270,7 +278,7 @@ table ip nat {
       const extPort = sanitize(settings.externalPort, '8080');
       const intIp = sanitize(settings.internalIp, '192.168.100.15');
       const intPort = sanitize(settings.internalPort, '80');
-      const proto = settings.protocol;
+      const proto = settings.protocol === 'udp' ? 'udp' : settings.protocol === 'both' ? 'both' : 'tcp';
       const protocols = proto === 'both' ? ['tcp', 'udp'] : [proto];
 
       const dnatStatements = protocols
@@ -319,7 +327,7 @@ ${fwdStatements}
     case 'docker_shield': {
       const port = sanitize(settings.dockerPort, '5432');
       const allowed = sanitize(settings.dockerAllowedSubnet, '10.8.0.0/24');
-      const action = settings.dockerAction.toLowerCase();
+      const action = settings.dockerAction === 'REJECT' ? 'reject' : 'drop';
 
       return `#!/usr/sbin/nft -f
 # ================================================================
@@ -344,7 +352,8 @@ table inet filter {
 
     case 'rate_limit': {
       const port = sanitize(settings.rateLimitPort, '22');
-      const maxHits = settings.rateLimitMaxHits || 4;
+      const maxHits = sanitizeNumber(settings.rateLimitMaxHits, 4, 1, 1000);
+      const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
 
       return `#!/usr/sbin/nft -f
 # ================================================================
@@ -366,7 +375,7 @@ table inet filter {
         ip saddr @denylist drop
 
         # Add to denylist if rate exceeded
-        tcp dport ${port} ct state new meter ssh_meter { ip saddr limit rate over ${maxHits}/minute burst ${maxHits} packets } add @denylist { ip saddr timeout ${settings.rateLimitBlockSeconds || 300}s } drop
+        tcp dport ${port} ct state new meter ssh_meter { ip saddr limit rate over ${maxHits}/minute burst ${maxHits} packets } add @denylist { ip saddr timeout ${blockSec}s } drop
 
         # Accept valid SSH
         tcp dport ${port} ct state new accept
