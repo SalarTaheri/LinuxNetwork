@@ -1,10 +1,31 @@
 import { Language, RoutingSettings } from '../types';
 
 /**
- * Sanitizes input strings to prevent shell injection or malformed iptables arguments.
+ * Context-specific input sanitizers to prevent command injection, configuration directive injection,
+ * and malformed network rule generation in iptables, nftables, and iproute2.
  */
-function sanitize(val: string | undefined | null, fallback: string): string {
-  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_.:/-]/g, '');
+function sanitizeInterface(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_.-]/g, '');
+  return cleaned || fallback;
+}
+
+function sanitizePort(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '').trim().replace(/[^0-9:]/g, '');
+  return cleaned || fallback;
+}
+
+function sanitizeTableName(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+  return cleaned || fallback;
+}
+
+function sanitizeIp(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9.:-]/g, '');
+  return cleaned || fallback;
+}
+
+function sanitizeSubnet(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9.:/-]/g, '');
   return cleaned || fallback;
 }
 
@@ -21,10 +42,10 @@ function sanitizeNumber(val: number | string | undefined | null, fallback: numbe
  */
 export function generateIptablesRules(settings: RoutingSettings, lang: Language): string {
   const isFa = lang === 'fa';
-  const wan = sanitize(settings.wanInterface, 'eth0');
-  const lan = sanitize(settings.lanInterface, 'eth1');
-  const lanSubnet = sanitize(settings.lanSubnet, '192.168.100.0/24');
-  const staticIp = sanitize(settings.staticPublicIp, '203.0.113.10');
+  const wan = sanitizeInterface(settings.wanInterface, 'eth0');
+  const lan = sanitizeInterface(settings.lanInterface, 'eth1');
+  const lanSubnet = sanitizeSubnet(settings.lanSubnet, '192.168.100.0/24');
+  const staticIp = sanitizeIp(settings.staticPublicIp, '203.0.113.10');
 
   switch (settings.scenario) {
     case 'nat_gateway': {
@@ -64,9 +85,9 @@ ${dnsRule}${mssRule}
     }
 
     case 'port_forward': {
-      const extPort = sanitize(settings.externalPort, '8080');
-      const intIp = sanitize(settings.internalIp, '192.168.100.15');
-      const intPort = sanitize(settings.internalPort, '80');
+      const extPort = sanitizePort(settings.externalPort, '8080');
+      const intIp = sanitizeIp(settings.internalIp, '192.168.100.15');
+      const intPort = sanitizePort(settings.internalPort, '80');
       const proto = settings.protocol === 'udp' ? 'udp' : settings.protocol === 'both' ? 'both' : 'tcp';
 
       const protocols = proto === 'both' ? ['tcp', 'udp'] : [proto];
@@ -121,8 +142,8 @@ ${fwdRules}${hairpinRules}
     }
 
     case 'docker_shield': {
-      const port = sanitize(settings.dockerPort, '5432');
-      const allowed = sanitize(settings.dockerAllowedSubnet, '10.8.0.0/24');
+      const port = sanitizePort(settings.dockerPort, '5432');
+      const allowed = sanitizeSubnet(settings.dockerAllowedSubnet, '10.8.0.0/24');
       const action = settings.dockerAction === 'REJECT' ? 'REJECT' : 'DROP';
 
       return `# ================================================================
@@ -147,11 +168,11 @@ sudo iptables -A DOCKER-USER -j RETURN
     }
 
     case 'pbr_multiwan': {
-      const secIf = sanitize(settings.secondaryInterface, 'eth1');
-      const secIp = sanitize(settings.secondaryIp, '192.168.2.100');
-      const secGw = sanitize(settings.secondaryGateway, '192.168.2.1');
+      const secIf = sanitizeInterface(settings.secondaryInterface, 'eth1');
+      const secIp = sanitizeIp(settings.secondaryIp, '192.168.2.100');
+      const secGw = sanitizeIp(settings.secondaryGateway, '192.168.2.1');
       const tableNum = sanitizeNumber(settings.pbrTableNumber, 200, 1, 32767);
-      const tableName = sanitize(settings.pbrTableName, 'isp2');
+      const tableName = sanitizeTableName(settings.pbrTableName, 'isp2');
 
       const rpFilterRules = settings.enableLooseRpFilter
         ? `\n# ${isFa ? 'غیرفعال‌سازی استعلام سخت‌گیرانه مسیر معکوس (Loose Reverse Path Filter)' : 'Set loose reverse path filtering (rp_filter=2) to prevent dropping asymmetric packets'}
@@ -188,7 +209,7 @@ ip route show table ${tableName}`;
     }
 
     case 'rate_limit': {
-      const port = sanitize(settings.rateLimitPort, '22');
+      const port = sanitizePort(settings.rateLimitPort, '22');
       const maxHits = sanitizeNumber(settings.rateLimitMaxHits, 4, 1, 1000);
       const winSec = sanitizeNumber(settings.rateLimitWindowSeconds, 60, 1, 86400);
       const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
@@ -220,10 +241,10 @@ sudo iptables -A INPUT -p tcp --dport ${port} -m state --state NEW -j ACCEPT
  */
 export function generateNftablesRules(settings: RoutingSettings, lang: Language): string {
   const isFa = lang === 'fa';
-  const wan = sanitize(settings.wanInterface, 'eth0');
-  const lan = sanitize(settings.lanInterface, 'eth1');
-  const lanSubnet = sanitize(settings.lanSubnet, '192.168.100.0/24');
-  const staticIp = sanitize(settings.staticPublicIp, '203.0.113.10');
+  const wan = sanitizeInterface(settings.wanInterface, 'eth0');
+  const lan = sanitizeInterface(settings.lanInterface, 'eth1');
+  const lanSubnet = sanitizeSubnet(settings.lanSubnet, '192.168.100.0/24');
+  const staticIp = sanitizeIp(settings.staticPublicIp, '203.0.113.10');
 
   switch (settings.scenario) {
     case 'nat_gateway': {
@@ -275,9 +296,9 @@ table ip nat {
     }
 
     case 'port_forward': {
-      const extPort = sanitize(settings.externalPort, '8080');
-      const intIp = sanitize(settings.internalIp, '192.168.100.15');
-      const intPort = sanitize(settings.internalPort, '80');
+      const extPort = sanitizePort(settings.externalPort, '8080');
+      const intIp = sanitizeIp(settings.internalIp, '192.168.100.15');
+      const intPort = sanitizePort(settings.internalPort, '80');
       const proto = settings.protocol === 'udp' ? 'udp' : settings.protocol === 'both' ? 'both' : 'tcp';
       const protocols = proto === 'both' ? ['tcp', 'udp'] : [proto];
 
@@ -325,8 +346,8 @@ ${fwdStatements}
     }
 
     case 'docker_shield': {
-      const port = sanitize(settings.dockerPort, '5432');
-      const allowed = sanitize(settings.dockerAllowedSubnet, '10.8.0.0/24');
+      const port = sanitizePort(settings.dockerPort, '5432');
+      const allowed = sanitizeSubnet(settings.dockerAllowedSubnet, '10.8.0.0/24');
       const action = settings.dockerAction === 'REJECT' ? 'reject' : 'drop';
 
       return `#!/usr/sbin/nft -f
@@ -351,7 +372,7 @@ table inet filter {
     }
 
     case 'rate_limit': {
-      const port = sanitize(settings.rateLimitPort, '22');
+      const port = sanitizePort(settings.rateLimitPort, '22');
       const maxHits = sanitizeNumber(settings.rateLimitMaxHits, 4, 1, 1000);
       const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
 
@@ -429,13 +450,13 @@ echo "==> [LinuxNetwork.ir] Done! All rules are active and persistent across reb
  */
 export function generateVerificationCommands(settings: RoutingSettings, lang: Language): string {
   const isFa = lang === 'fa';
-  const wan = sanitize(settings.wanInterface, 'eth0');
+  const wan = sanitizeInterface(settings.wanInterface, 'eth0');
   const port =
     settings.scenario === 'port_forward'
-      ? sanitize(settings.externalPort, '8080')
+      ? sanitizePort(settings.externalPort, '8080')
       : settings.scenario === 'docker_shield'
-      ? sanitize(settings.dockerPort, '5432')
-      : sanitize(settings.rateLimitPort, '22');
+      ? sanitizePort(settings.dockerPort, '5432')
+      : sanitizePort(settings.rateLimitPort, '22');
 
   return `# ================================================================
 # 🔍 ${isFa ? 'دستورات بررسی وضعیت، مانیتورینگ زنده و عیب‌یابی پکت‌ها' : 'Live Verification, Packet Monitoring & Diagnostic Commands'}
