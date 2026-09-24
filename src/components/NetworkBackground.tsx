@@ -158,6 +158,7 @@ export const NetworkBackground: React.FC = () => {
       }
 
       // Draw connection edges
+      ctx.lineWidth = 0.8;
       for (let i = 0; i < nodes.length; i++) {
         const n1 = nodes[i];
         for (let j = i + 1; j < nodes.length; j++) {
@@ -173,7 +174,6 @@ export const NetworkBackground: React.FC = () => {
             ctx.moveTo(n1.x, n1.y);
             ctx.lineTo(n2.x, n2.y);
             ctx.strokeStyle = `rgba(16, 185, 129, ${alpha})`;
-            ctx.lineWidth = 0.8;
             ctx.stroke();
 
             // Randomly trigger a packet across active edge
@@ -205,10 +205,11 @@ export const NetworkBackground: React.FC = () => {
         const px = s.x + (t.x - s.x) * p.progress;
         const py = s.y + (t.y - s.y) * p.progress;
 
+        ctx.fillStyle = p.color;
+
         // Outer aura circle (fast replacement for shadowBlur)
         ctx.beginPath();
         ctx.arc(px, py, 4, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
         ctx.globalAlpha = 0.25;
         ctx.fill();
 
@@ -216,26 +217,31 @@ export const NetworkBackground: React.FC = () => {
         ctx.beginPath();
         ctx.arc(px, py, 2.2, 0, Math.PI * 2);
         ctx.globalAlpha = 1.0;
-        ctx.fillStyle = p.color;
         ctx.fill();
       }
 
       // Draw nodes on top
+      // Optimization: Use static color constants and numeric globalAlpha instead of allocating RGBA string templates on every frame
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
         const pulse = Math.sin(node.pulsePhase) * 0.35 + 0.65;
 
+        // Inner node fill
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(52, 211, 153, ${0.45 * pulse})`;
+        ctx.fillStyle = '#34d399';
+        ctx.globalAlpha = 0.45 * pulse;
         ctx.fill();
 
         // Subtle node glow aura
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.radius * 2.2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(16, 185, 129, ${0.08 * pulse})`;
+        ctx.fillStyle = '#10b981';
+        ctx.globalAlpha = 0.08 * pulse;
         ctx.fill();
       }
+
+      ctx.globalAlpha = 1.0;
     };
 
     animationFrameId = requestAnimationFrame(loop);
