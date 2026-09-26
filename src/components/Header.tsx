@@ -81,6 +81,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               type="button"
               id="btn-header-launch-toolbox"
               onClick={() => onNavigateToolbox('setup')}
+              aria-label={t.nav.launchToolbox}
               className="flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md shadow-emerald-950/50 border border-emerald-400/30 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
             >
               <span>{t.nav.launchToolbox}</span>
@@ -93,6 +94,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               type="button"
               id="btn-header-go-home"
               onClick={onNavigateLanding}
+              aria-label={t.nav.home}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
             >
               <Home className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
