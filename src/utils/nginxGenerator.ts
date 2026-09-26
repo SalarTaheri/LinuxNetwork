@@ -225,7 +225,7 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
 
 export function generateNginxOneLiner(domain: string, configText: string): string {
   const safeName = (domain || 'reverse-proxy').replace(/[^a-zA-Z0-9_.-]/g, '_');
-  const safeConfig = (configText || '').trim().replace(/'/g, "'\\''");
+  const safeConfig = (configText || '').trim().replace(/^EOF$/gm, 'EOF ').replace(/'/g, "'\\''");
   return `sudo bash -c 'cat << "EOF" > /etc/nginx/sites-available/${safeName}.conf
 ${safeConfig}
 EOF
