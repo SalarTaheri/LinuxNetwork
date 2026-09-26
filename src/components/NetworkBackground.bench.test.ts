@@ -26,15 +26,20 @@ function simulateUnbatchedDraw(edges: Edge[]): { strokeCount: number; colorStrin
   return { strokeCount, colorStringAllocations };
 }
 
-function simulateBatchedDraw(edges: Edge[]): { strokeCount: number; colorStringAllocations: number } {
-  const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
+function simulateBatchedDraw(edges: Edge[], persistentBuckets?: Node[][]): { strokeCount: number; colorStringAllocations: number } {
+  const alphaBuckets = persistentBuckets || [[], [], [], [], []];
+  if (persistentBuckets) {
+    for (let b = 0; b < 5; b++) {
+      alphaBuckets[b].length = 0;
+    }
+  }
   let strokeCount = 0;
   let colorStringAllocations = 0;
 
   for (let i = 0; i < edges.length; i++) {
     const edge = edges[i];
     const bucketIndex = Math.min(4, Math.floor((edge.alpha / 0.2) * 5));
-    alphaBuckets[bucketIndex].push({ n1: edge.n1, n2: edge.n2 });
+    alphaBuckets[bucketIndex].push(edge.n1, edge.n2);
   }
 
   for (let b = 0; b < 5; b++) {
@@ -84,8 +89,9 @@ describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
     const durationUnbatched = performance.now() - startUnbatched;
 
     const startBatched = performance.now();
+    const persistentBuckets: Node[][] = [[], [], [], [], []];
     for (let f = 0; f < frames; f++) {
-      simulateBatchedDraw(edgesPerFrame);
+      simulateBatchedDraw(edgesPerFrame, persistentBuckets);
     }
     const durationBatched = performance.now() - startBatched;
 
