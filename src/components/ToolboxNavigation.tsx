@@ -381,20 +381,20 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
           })}
         </div>
 
-        {/* Quick Search Trigger (Cmd+K Button) */}
+        {/* Quick Search Trigger (Cmd+K / Ctrl+K Button) */}
         <button
           ref={searchTriggerRef}
           type="button"
           onClick={() => setSearchOpen(true)}
           aria-haspopup="dialog"
           aria-expanded={searchOpen}
-          aria-label={t.toolboxNav.searchBtn}
+          aria-label={`${t.toolboxNav.searchBtn} (${t.toolboxNav.searchHint})`}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800/90 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 text-xs transition-all shadow-sm cursor-pointer shrink-0 ml-auto rtl:ml-0 rtl:mr-auto focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
-          title={t.toolboxNav.searchHint}
+          title={`${t.toolboxNav.searchBtn} — ${t.toolboxNav.searchHint}`}
         >
           <Search className="w-3.5 h-3.5 text-emerald-400" />
           <span className="hidden sm:inline font-medium">{t.toolboxNav.searchBtn}</span>
-          <kbd className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono bg-slate-800/80 border border-slate-700 text-slate-300 rounded">
+          <kbd aria-hidden="true" className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono bg-slate-800/80 border border-slate-700 text-slate-300 rounded">
             <span className="text-[11px]">⌘</span>K
           </kbd>
         </button>
