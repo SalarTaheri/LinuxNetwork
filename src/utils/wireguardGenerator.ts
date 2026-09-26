@@ -112,7 +112,7 @@ ${keepalive > 0 ? `PersistentKeepalive = ${keepalive}` : ''}
 
 export function generateWireGuardServerOneLiner(settings: WireGuardSettings): string {
   const serverConfig = generateWireGuardServerConfig(settings);
-  const safeConfig = serverConfig.trim().replace(/'/g, "'\\''");
+  const safeConfig = serverConfig.trim().replace(/^EOF$/gm, 'EOF ').replace(/'/g, "'\\''");
 
   return `sudo bash -c 'if command -v apk &>/dev/null; then apk add -q wireguard-tools iptables qrencode; elif command -v dnf &>/dev/null; then dnf install -y -q epel-release 2>/dev/null || true; dnf install -y -q wireguard-tools iptables qrencode; elif command -v yum &>/dev/null; then yum install -y -q epel-release 2>/dev/null || true; yum install -y -q wireguard-tools iptables qrencode; elif command -v apt-get &>/dev/null; then export DEBIAN_FRONTEND=noninteractive; apt-get update -qq && apt-get install -y -qq wireguard iptables qrencode; fi
 sysctl -w net.ipv4.ip_forward=1

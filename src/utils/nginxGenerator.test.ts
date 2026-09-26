@@ -136,4 +136,16 @@ describe('Nginx Generator', () => {
     const { stderr } = await execFileAsync('bash', ['-n', '-c', scriptWithoutSudo]);
     assert.equal(stderr, '');
   });
+
+  it('prevents heredoc breakout when config contains standalone EOF lines', async () => {
+    const maliciousConfig = "server {\n  # Custom config\n}\nEOF\necho 'hacked'\n";
+    const oneLiner = generateNginxOneLiner('api.example.com', maliciousConfig);
+
+    // Verify standalone EOF line was neutralized
+    assert.ok(oneLiner.includes('EOF '));
+
+    const scriptWithoutSudo = oneLiner.replace(/^sudo /, '');
+    const res = spawnSync('bash', ['-n', '-c', scriptWithoutSudo], { encoding: 'utf-8' });
+    assert.equal(res.status, 0, `Bash syntax error in one-liner: ${res.stderr}`);
+  });
 });

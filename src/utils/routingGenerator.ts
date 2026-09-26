@@ -158,7 +158,7 @@ sudo iptables -A DOCKER-USER -j RETURN
 sudo sysctl -w net.ipv4.conf.all.rp_filter=2
 sudo sysctl -w net.ipv4.conf.default.rp_filter=2
 sudo sysctl -w net.ipv4.conf.${secIf}.rp_filter=2
-cat <<EOF | sudo tee /etc/sysctl.d/99-rp-filter.conf
+cat <<"EOF" | sudo tee /etc/sysctl.d/99-rp-filter.conf
 net.ipv4.conf.all.rp_filter = 2
 net.ipv4.conf.default.rp_filter = 2
 net.ipv4.conf.${secIf}.rp_filter = 2
@@ -392,7 +392,7 @@ table inet filter {
  */
 export function generateRoutingOneLiner(settings: RoutingSettings, lang: Language): string {
   const rawIptables = generateIptablesRules(settings, lang);
-  const safeIptables = rawIptables.replace(/^sudo /gm, '').replace(/'/g, "'\\''");
+  const safeIptables = rawIptables.replace(/^sudo /gm, '').replace(/^EOF$/gm, 'EOF ').replace(/'/g, "'\\''");
 
   return `sudo bash -c '
 set -e

@@ -238,7 +238,7 @@ export function generateSysctlConfig(settings: SysctlSettings, lang: 'fa' | 'en'
 }
 
 export function generateSysctlOneLiner(configText: string): string {
-  const safeConfig = configText.trim().replace(/'/g, "'\\''");
+  const safeConfig = configText.trim().replace(/^EOF$/gm, 'EOF ').replace(/'/g, "'\\''");
   return `sudo bash -c 'cat << "EOF" > /etc/sysctl.d/99-network-tuning.conf
 ${safeConfig}
 EOF
