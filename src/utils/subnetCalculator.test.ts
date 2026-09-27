@@ -189,6 +189,24 @@ describe('intToBinary', () => {
     assert.strictEqual(intToBinary(4294967295), '11111111.11111111.11111111.11111111');
     assert.strictEqual(intToBinary(3232235777), '11000000.10101000.00000001.00000001');
   });
+
+  it('benchmark: intToBinary formatting performance', () => {
+    const iterations = 500000;
+    const testInt = 3232235777; // 192.168.1.1
+
+    const start = performance.now();
+    for (let i = 0; i < iterations; i++) {
+      intToBinary(testInt);
+    }
+    const duration = performance.now() - start;
+
+    console.log(`\n--- INT TO BINARY BENCHMARK (${iterations} iterations) ---`);
+    console.log(`Duration: ${duration.toFixed(3)} ms`);
+    console.log(`Avg per conversion: ${((duration / iterations) * 1000).toFixed(3)} ns`);
+    console.log(`---------------------------------------------------------\n`);
+
+    assert.ok(duration < 500, '500,000 intToBinary calls should execute in under 500ms');
+  });
 });
 
 describe('cidrToNetmaskInt', () => {
