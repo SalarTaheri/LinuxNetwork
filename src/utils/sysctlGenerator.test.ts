@@ -76,4 +76,18 @@ describe('sysctlGenerator', () => {
     const { stderr } = await execFileAsync('bash', ['-n', '-c', scriptWithoutSudo]);
     assert.equal(stderr, '');
   });
+
+  test('prevents heredoc breakout when sysctl config contains EOF lines', async () => {
+    const maliciousConfig = "# sysctl\nEOF\necho INJECTED\nEOF";
+    const oneLiner = generateSysctlOneLiner(maliciousConfig);
+    assert.doesNotMatch(oneLiner, /\nEOF\necho INJECTED/);
+
+    const scriptWithoutSudo = oneLiner.replace(/^sudo /, '');
+    const { execFile } = await import('node:child_process');
+    const { promisify } = await import('node:util');
+    const execFileAsync = promisify(execFile);
+
+    const { stderr } = await execFileAsync('bash', ['-n', '-c', scriptWithoutSudo]);
+    assert.equal(stderr, '');
+  });
 });
