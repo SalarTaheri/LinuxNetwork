@@ -136,4 +136,14 @@ describe('Nginx Generator', () => {
     const { stderr } = await execFileAsync('bash', ['-n', '-c', scriptWithoutSudo]);
     assert.equal(stderr, '');
   });
+
+  it('prevents heredoc breakout when configText contains EOF lines', () => {
+    const maliciousConfig = "# custom config\nEOF\necho INJECTED\nEOF";
+    const oneLiner = generateNginxOneLiner('api.example.com', maliciousConfig);
+    assert.doesNotMatch(oneLiner, /\nEOF\necho INJECTED/);
+
+    const scriptWithoutSudo = oneLiner.replace(/^sudo /, '');
+    const res = spawnSync('bash', ['-n', '-c', scriptWithoutSudo], { encoding: 'utf-8' });
+    assert.equal(res.status, 0, `Bash syntax error: ${res.stderr}`);
+  });
 });

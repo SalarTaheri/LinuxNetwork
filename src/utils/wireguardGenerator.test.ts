@@ -104,5 +104,10 @@ describe('WireGuard Generator', () => {
       assert.doesNotMatch(oneLiner, /' &&/);
       assert.doesNotMatch(oneLiner, /'\s*;/);
     });
+
+    it('prevents heredoc breakout in one-liner script', () => {
+      const oneLiner = generateWireGuardServerOneLiner(dummySettings);
+      assert.doesNotMatch(oneLiner, /\nEOF\necho/);
+    });
   });
 });

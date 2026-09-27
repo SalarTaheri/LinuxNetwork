@@ -245,5 +245,10 @@ describe('Routing & NAT Generator', () => {
       assert.match(iptables, /--seconds 300/); // falls back to default 300 for invalid string
       assert.match(iptables, /--hitcount 4/); // falls back to default 4 for out-of-range number
     });
+
+    test('prevents heredoc breakout in routing one-liner', () => {
+      const oneLiner = generateRoutingOneLiner(defaultSettings, 'en');
+      assert.doesNotMatch(oneLiner, /\nEOF\necho/);
+    });
   });
 });
