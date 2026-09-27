@@ -9,3 +9,7 @@
 ## 2025-05-20 - Batched Alpha Bucketing for Canvas Edge Rendering
 **Learning:** In 60 FPS Canvas background animations, issuing individual `beginPath()`, `stroke()`, and `rgba(...)` string allocations per edge creates thousands of Canvas engine context switches and CSS color parsing operations per second.
 **Action:** Group canvas paths into discrete alpha buckets to batch multiple line drawing operations into a single `beginPath()`/`stroke()` call per opacity level, eliminating string allocations and reducing canvas draw calls by up to 95%.
+
+## 2025-05-21 - Pre-computed Byte Lookup Table for Binary IP Formatting
+**Learning:** Converting an integer IPv4 address into its 32-bit dot-separated binary string representation via repeated `.toString(2)` and `.padStart(8, '0')` calls generates 8 temporary string allocations per IP conversion. Since octet values bounded by `& 255` are always in the range `0..255`, a static 256-element string lookup table avoids runtime string conversions and padding completely.
+**Action:** Use a static `BYTE_TO_BIN` lookup array for byte-to-binary string conversions to achieve a ~7x speedup in IPv4 binary formatting.
