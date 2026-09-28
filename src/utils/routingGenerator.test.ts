@@ -149,6 +149,7 @@ describe('Routing & NAT Generator', () => {
       assert.match(output, /ip route replace default via 192\.168\.2\.1 dev eth2 table isp2/);
       assert.match(output, /ip rule add from 192\.168\.2\.100 table isp2 priority 1000/);
       assert.match(output, /net\.ipv4\.conf\.all\.rp_filter=2/);
+      assert.match(output, /cat <<"EOF" \| sudo tee \/etc\/sysctl\.d\/99-rp-filter\.conf/);
     });
   });
 

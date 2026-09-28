@@ -158,7 +158,7 @@ sudo iptables -A DOCKER-USER -j RETURN
 sudo sysctl -w net.ipv4.conf.all.rp_filter=2
 sudo sysctl -w net.ipv4.conf.default.rp_filter=2
 sudo sysctl -w net.ipv4.conf.${secIf}.rp_filter=2
-cat <<EOF | sudo tee /etc/sysctl.d/99-rp-filter.conf
+cat <<"EOF" | sudo tee /etc/sysctl.d/99-rp-filter.conf
 net.ipv4.conf.all.rp_filter = 2
 net.ipv4.conf.default.rp_filter = 2
 net.ipv4.conf.${secIf}.rp_filter = 2
