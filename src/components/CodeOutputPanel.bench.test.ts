@@ -82,4 +82,69 @@ describe('CodeOutputPanel Line Classification', () => {
 
     assert.ok(durationOptimized <= durationUnoptimized, 'Optimized version should be faster or equal');
   });
+
+  it('benchmark: single-pass memoized line parsing vs two-pass map iterations', () => {
+    const text = sampleLines.join('\n');
+    const iterations = 50000;
+
+    // Two-pass line processing (unoptimized pattern)
+    function twoPassProcessing(content: string) {
+      const lines = content.split('\n');
+      const len = lines.length;
+      const parsedLines = new Array(len);
+      for (let i = 0; i < len; i++) {
+        const line = lines[i];
+        parsedLines[i] = { line, lineClass: classifyLineOptimized(line) };
+      }
+      const lineNumbers = parsedLines.map((_, i) => ({ key: i, val: i + 1 }));
+      const codeLines = parsedLines.map(({ line, lineClass }, i) => ({ key: i, line, lineClass }));
+      return { lineNumbers, codeLines, linesCount: len };
+    }
+
+    // Single-pass line processing (optimized pattern)
+    function singlePassProcessing(content: string) {
+      const lines = content.split('\n');
+      const len = lines.length;
+      const lineNumbers = new Array(len);
+      const codeLines = new Array(len);
+
+      for (let i = 0; i < len; i++) {
+        const line = lines[i];
+        const lineClass = classifyLineOptimized(line);
+        lineNumbers[i] = { key: i, val: i + 1 };
+        codeLines[i] = { key: i, line, lineClass };
+      }
+
+      return { lineNumbers, codeLines, linesCount: len };
+    }
+
+    // Verify equivalency
+    assert.deepEqual(twoPassProcessing(text), singlePassProcessing(text));
+
+    // Warmup
+    for (let i = 0; i < 1000; i++) {
+      twoPassProcessing(text);
+      singlePassProcessing(text);
+    }
+
+    const startTwoPass = performance.now();
+    for (let i = 0; i < iterations; i++) {
+      twoPassProcessing(text);
+    }
+    const durationTwoPass = performance.now() - startTwoPass;
+
+    const startSinglePass = performance.now();
+    for (let i = 0; i < iterations; i++) {
+      singlePassProcessing(text);
+    }
+    const durationSinglePass = performance.now() - startSinglePass;
+
+    const improvementPct = (((durationTwoPass - durationSinglePass) / durationTwoPass) * 100).toFixed(2);
+    console.log(`\n--- CodeOutputPanel Single Pass Line Processing Benchmark (${iterations} iterations) ---`);
+    console.log(`Two-pass processing duration:   ${durationTwoPass.toFixed(3)} ms`);
+    console.log(`Single-pass processing duration: ${durationSinglePass.toFixed(3)} ms`);
+    console.log(`Improvement:                     ${improvementPct}%\n`);
+
+    assert.ok(durationSinglePass <= durationTwoPass + 5, 'Single pass line processing should be faster or equal');
+  });
 });
