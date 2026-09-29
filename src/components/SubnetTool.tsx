@@ -10,7 +10,9 @@ interface SubnetToolProps {
   lang: Language;
 }
 
-const CIDR_OPTIONS = Array.from({ length: 25 }, (_, i) => i + 8);
+const CIDR_OPTIONS = [
+  8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+] as const;
 const QUICK_CIDR_MASKS = [8, 16, 22, 24, 26, 28, 29, 30, 32] as const;
 
 const CIDR_HOST_DESCRIPTIONS: Record<number, { en: string; fa: string }> = {
