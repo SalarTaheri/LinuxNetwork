@@ -30,6 +30,15 @@ describe('Nginx Generator', () => {
     assert.match(config, /ssl_certificate \/etc\/letsencrypt\/live\/api\.example\.com\/fullchain\.pem;/);
     assert.match(config, /client_max_body_size 50M;/);
     assert.match(config, /proxy_pass http:\/\/backend_upstream;/);
+    assert.match(config, /server_tokens off;/);
+  });
+
+  it('includes server_tokens off when enableSecurityHeaders is true to hide Nginx version banner', () => {
+    const config = generateNginxConfig(defaultSettings, 'en');
+    assert.match(config, /server_tokens off;/);
+
+    const configNoSecurity = generateNginxConfig({ ...defaultSettings, enableSecurityHeaders: false }, 'en');
+    assert.doesNotMatch(configNoSecurity, /server_tokens off;/);
   });
 
   it('handles empty/undefined/null settings gracefully without crashing', () => {

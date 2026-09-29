@@ -124,9 +124,10 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
     lines.push('');
   }
 
-  // Security Headers
+  // Security Headers & Server Token Hiding
   if (settings.enableSecurityHeaders) {
-    lines.push('    # Security Headers');
+    lines.push('    # Security Headers & Version Hiding');
+    lines.push('    server_tokens off;');
     if (settings.enableSsl) {
       lines.push('    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;');
     }

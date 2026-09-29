@@ -8,6 +8,11 @@ function sanitize(val: string | undefined | null, fallback: string): string {
   return cleaned || fallback;
 }
 
+function sanitizeTableName(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+  return cleaned || fallback;
+}
+
 function sanitizeNumber(val: number | string | undefined | null, fallback: number, min = 1, max = 65535): number {
   const parsed = typeof val === 'number' ? val : parseInt(String(val || ''), 10);
   if (isNaN(parsed) || parsed < min || parsed > max) {
@@ -151,7 +156,7 @@ sudo iptables -A DOCKER-USER -j RETURN
       const secIp = sanitize(settings.secondaryIp, '192.168.2.100');
       const secGw = sanitize(settings.secondaryGateway, '192.168.2.1');
       const tableNum = sanitizeNumber(settings.pbrTableNumber, 200, 1, 32767);
-      const tableName = sanitize(settings.pbrTableName, 'isp2');
+      const tableName = sanitizeTableName(settings.pbrTableName, 'isp2');
 
       const rpFilterRules = settings.enableLooseRpFilter
         ? `\n# ${isFa ? 'غیرفعال‌سازی استعلام سخت‌گیرانه مسیر معکوس (Loose Reverse Path Filter)' : 'Set loose reverse path filtering (rp_filter=2) to prevent dropping asymmetric packets'}

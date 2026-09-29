@@ -245,5 +245,16 @@ describe('Routing & NAT Generator', () => {
       assert.match(iptables, /--seconds 300/); // falls back to default 300 for invalid string
       assert.match(iptables, /--hitcount 4/); // falls back to default 4 for out-of-range number
     });
+
+    test('sanitizes routing table names to prevent rt_tables file corruption', () => {
+      const maliciousSettings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'pbr_multiwan',
+        pbrTableName: 'isp2/evil:table.name; rm -rf /',
+      };
+      const iptables = generateIptablesRules(maliciousSettings, 'en');
+      assert.doesNotMatch(iptables, /isp2\/evil/);
+      assert.match(iptables, /isp2eviltablenamerm-rf/);
+    });
   });
 });
