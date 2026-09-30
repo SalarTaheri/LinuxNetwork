@@ -63,6 +63,26 @@ describe('sysctlGenerator', () => {
     assert.ok(durationMemoized < durationUnmemoized);
   });
 
+  test('sanitizes profile, ram, and bandwidth to prevent configuration directive injection', () => {
+    const maliciousSettings = {
+      profile: 'proxy\nnet.ipv4.ip_forward = 0' as any,
+      ram: '4GB\nmalicious_setting = 1' as any,
+      bandwidth: '1G\nEOF\n' as any,
+      enableBbr: true,
+      enableSynCookies: true,
+      enableTwReuse: true,
+      enableFastOpen: true,
+      disableIpv6: false,
+      enableIpForward: true,
+      enableMtuProbing: true,
+      increaseFileLimits: true,
+    };
+
+    const config = generateSysctlConfig(maliciousSettings, 'en');
+    assert.ok(!config.includes('malicious'));
+    assert.match(config, /Target Profile: WEB \| RAM: 4GB \| Bandwidth: 1G/);
+  });
+
   test('escapes single quotes in sysctl one-liner script to pass bash syntax validation', async () => {
     const customConfig = `# Sysctl config with 'single quotes'\nnet.ipv4.ip_forward = 1`;
     const oneLiner = generateSysctlOneLiner(customConfig);
