@@ -89,13 +89,24 @@ export function isValidPort(port: number): boolean {
   return Number.isInteger(port) && port >= 1 && port <= 65535;
 }
 
+// Static O(1) lookup table for IPv4 class determination (bounded octet byte range 0..255)
+// Pre-computing at module load eliminates up to 6 conditional comparison branches per subnet calculation.
+const IP_CLASS_TABLE: ReadonlyArray<string> = (() => {
+  const table = new Array<string>(256);
+  table[0] = 'Unknown';
+  for (let i = 1; i <= 126; i++) table[i] = 'Class A';
+  table[127] = 'Class A (Loopback)';
+  for (let i = 128; i <= 191; i++) table[i] = 'Class B';
+  for (let i = 192; i <= 223; i++) table[i] = 'Class C';
+  for (let i = 224; i <= 239; i++) table[i] = 'Class D (Multicast)';
+  for (let i = 240; i <= 255; i++) table[i] = 'Class E (Experimental)';
+  return table;
+})();
+
 export function getIpClass(firstOctet: number): string {
-  if (firstOctet >= 1 && firstOctet <= 126) return 'Class A';
-  if (firstOctet === 127) return 'Class A (Loopback)';
-  if (firstOctet >= 128 && firstOctet <= 191) return 'Class B';
-  if (firstOctet >= 192 && firstOctet <= 223) return 'Class C';
-  if (firstOctet >= 224 && firstOctet <= 239) return 'Class D (Multicast)';
-  if (firstOctet >= 240 && firstOctet <= 255) return 'Class E (Experimental)';
+  if (firstOctet >= 0 && firstOctet <= 255) {
+    return IP_CLASS_TABLE[firstOctet | 0];
+  }
   return 'Unknown';
 }
 

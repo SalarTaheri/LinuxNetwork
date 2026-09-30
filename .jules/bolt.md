@@ -9,3 +9,7 @@
 ## 2025-05-20 - Batched Alpha Bucketing for Canvas Edge Rendering
 **Learning:** In 60 FPS Canvas background animations, issuing individual `beginPath()`, `stroke()`, and `rgba(...)` string allocations per edge creates thousands of Canvas engine context switches and CSS color parsing operations per second.
 **Action:** Group canvas paths into discrete alpha buckets to batch multiple line drawing operations into a single `beginPath()`/`stroke()` call per opacity level, eliminating string allocations and reducing canvas draw calls by up to 95%.
+
+## 2025-05-21 - O(1) Pre-computed Static Lookup Table for Bounded Byte Domains
+**Learning:** Functions evaluating bounded integer ranges (such as IPv4 first octets 0..255) incur unnecessary CPU branch mispredictions and evaluation overhead when implemented via multiple `if-else` conditionals.
+**Action:** Pre-compute a static 256-element array lookup table at module load time to transform multi-branch conditional range checks into zero-branch $O(1)$ constant-time index accesses (`table[firstOctet | 0]`).
