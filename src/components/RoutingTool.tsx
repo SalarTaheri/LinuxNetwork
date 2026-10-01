@@ -73,7 +73,7 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
   // Memoize routing config generator functions and derived bash one-liners to avoid redundant string processing on UI re-renders
   const iptablesText = useMemo(() => generateIptablesRules(settings, lang), [settings, lang]);
   const nftablesText = useMemo(() => generateNftablesRules(settings, lang), [settings, lang]);
-  const oneLinerBash = useMemo(() => generateRoutingOneLiner(settings, lang), [settings, lang]);
+  const oneLinerBash = useMemo(() => generateRoutingOneLiner(settings, lang, iptablesText), [settings, lang, iptablesText]);
   const diagnosticsText = useMemo(
     () => generateVerificationCommands(settings, lang) + '\n\n' + generateRollbackCommands(settings, lang),
     [settings, lang]

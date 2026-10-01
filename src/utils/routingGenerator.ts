@@ -389,10 +389,11 @@ table inet filter {
 /**
  * Generates an automated, resilient Bash one-liner script that applies rules and sets up persistence
  * across Debian, Ubuntu, RHEL, Rocky, AlmaLinux, and Alpine Linux.
+ * Accepts optional pre-generated rawIptables string to eliminate redundant generator calls on UI updates.
  */
-export function generateRoutingOneLiner(settings: RoutingSettings, lang: Language): string {
-  const rawIptables = generateIptablesRules(settings, lang);
-  const safeIptables = rawIptables.replace(/^sudo /gm, '').replace(/'/g, "'\\''");
+export function generateRoutingOneLiner(settings: RoutingSettings, lang: Language, rawIptables?: string): string {
+  const raw = rawIptables ?? generateIptablesRules(settings, lang);
+  const safeIptables = raw.replace(/^sudo /gm, '').replace(/'/g, "'\\''");
 
   return `sudo bash -c '
 set -e

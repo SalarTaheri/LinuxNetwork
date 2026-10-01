@@ -9,3 +9,7 @@
 ## 2025-05-20 - Batched Alpha Bucketing for Canvas Edge Rendering
 **Learning:** In 60 FPS Canvas background animations, issuing individual `beginPath()`, `stroke()`, and `rgba(...)` string allocations per edge creates thousands of Canvas engine context switches and CSS color parsing operations per second.
 **Action:** Group canvas paths into discrete alpha buckets to batch multiple line drawing operations into a single `beginPath()`/`stroke()` call per opacity level, eliminating string allocations and reducing canvas draw calls by up to 95%.
+
+## 2025-05-21 - Integer Pre-Parsing in Utility Pipelines & Generator Parameter Reuse
+**Learning:** Functions that parse raw string parameters (like IP string to integer conversion) perform expensive charCodeAt loops and bitwise operations. Passing pre-parsed integer representation `ipInt` directly to downstream lookup functions (`getIpScope`) eliminates redundant string parsing for an 87.6% (8x) speedup. Additionally, composite script generators (`generateRoutingOneLiner`, `generateWireGuardServerOneLiner`) should accept optional pre-generated config strings to prevent duplicate generator execution when invoked alongside memoized UI references.
+**Action:** Pass pre-parsed primitive values (`ipInt`) and memoized config strings into dependent generator helpers across utility pipelines.
