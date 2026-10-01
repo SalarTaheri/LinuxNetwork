@@ -85,7 +85,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
   // Memoize WireGuard server/client configs and one-liner bash installer to avoid redundant generator runs on UI re-renders
   const serverConfig = useMemo(() => generateWireGuardServerConfig(settings), [settings]);
   const clientConfig = useMemo(() => generateWireGuardClientConfig(settings), [settings]);
-  const serverOneLiner = useMemo(() => generateWireGuardServerOneLiner(settings), [settings]);
+  const serverOneLiner = useMemo(() => generateWireGuardServerOneLiner(settings, serverConfig), [settings, serverConfig]);
 
   const displayedConfig = activeOutputConfig === 'server' ? serverConfig : clientConfig;
   const displayedFilename = activeOutputConfig === 'server' ? 'wg0.conf' : 'wg0-client.conf';
