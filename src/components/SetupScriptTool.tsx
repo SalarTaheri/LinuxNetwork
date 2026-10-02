@@ -5,6 +5,7 @@ import { Language, SetupScriptSettings } from '../types';
 import { translations } from '../i18n/translations';
 import { CodeOutputPanel } from './CodeOutputPanel';
 import { DistroBadges } from './DistroBadges';
+import { generateSetupFlags, sanitizeSshPort } from '../utils/setupScript';
 
 interface SetupScriptToolProps {
   lang: Language;
@@ -32,56 +33,7 @@ export const SetupScriptTool: React.FC<SetupScriptToolProps> = React.memo(({ lan
   const [copiedOneLiner, setCopiedOneLiner] = useState(false);
 
   // Generate the CLI flags string
-  const flagsList = useMemo(() => {
-    const flags: string[] = [];
-
-    if (settings.enableBbr3) {
-      flags.push('--bbr3');
-    } else if (settings.enableBbr) {
-      flags.push('--bbr');
-    }
-
-    if (settings.qdisc !== 'fq') {
-      flags.push(`--qdisc ${settings.qdisc}`);
-    }
-
-    if (settings.enableSysctlOpt) {
-      flags.push('--sysctl-opt');
-    }
-
-    if (settings.enableCustomSshPort && settings.sshPort) {
-      flags.push(`--ssh-port ${settings.sshPort}`);
-    }
-
-    if (settings.disablePasswordAuth) {
-      flags.push('--disable-pwd-auth');
-    }
-
-    if (settings.enableFail2ban) {
-      flags.push('--fail2ban');
-    }
-
-    if (settings.enableUfw) {
-      flags.push('--ufw');
-    }
-
-    if (settings.enableDocker) {
-      flags.push('--docker');
-      if (settings.enableDockerMirror) {
-        flags.push('--docker-mirror');
-      }
-    }
-
-    if (settings.enableTools) {
-      flags.push('--tools');
-    }
-
-    if (settings.enableZsh) {
-      flags.push('--zsh');
-    }
-
-    return flags;
-  }, [settings]);
+  const flagsList = useMemo(() => generateSetupFlags(settings), [settings]);
 
   // Full Live Bash Command
   const oneLinerCommand = useMemo(() => {
@@ -114,7 +66,7 @@ ${settings.enableSysctlOpt ? '#   [✔] Optimized TCP buffers: rmem_max=64MB, wm
 #   [✔] Queue Discipline: ${settings.qdisc}
 
 # 3. Server Hardening & SSH:
-${settings.enableCustomSshPort ? `#   [✔] Custom SSH Port: ${settings.sshPort} (sshd syntax checked before reload)` : '#   [ ] SSH Port default (22)'}
+${settings.enableCustomSshPort ? `#   [✔] Custom SSH Port: ${sanitizeSshPort(settings.sshPort, 2222)} (sshd syntax checked before reload)` : '#   [ ] SSH Port default (22)'}
 ${settings.disablePasswordAuth ? '#   [✔] Password authentication disabled (PubkeyAuthentication only)' : '#   [ ] Password authentication retained'}
 ${settings.enableFail2ban ? '#   [✔] Fail2ban installed and guarding SSH (3 retries = 24h ban)' : '#   [ ] Fail2ban skipped'}
 ${settings.enableUfw ? '#   [✔] Firewall enabled (UFW on Debian/Ubuntu, Firewalld on Red Hat, Iptables on Alpine; allows SSH, 80, 443)' : '#   [ ] Firewall skipped'}
