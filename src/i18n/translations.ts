@@ -261,6 +261,8 @@ export const translations = {
       natIptablesCmd: 'تنظیم فوروارد و NAT با iptables:',
       checkRouteCmd: 'بررسی روت مسیر به این مقصد:',
       invalidIpError: 'آدرس آی‌پی وارد شده معتبر نمی‌باشد (فرمت استاندارد: x.x.x.x با بازه ۰ تا ۲۵۵)',
+      gatewayLabel: 'آدرس گیت‌وی برای مسیرها (Gateway IP):',
+      egressIfaceLabel: 'اینترفیس خروجی (Egress Interface):',
     },
 
     // Routing & NAT tool
@@ -696,6 +698,8 @@ export const translations = {
       natIptablesCmd: 'NAT Masquerade with iptables:',
       checkRouteCmd: 'Verify Destination Route Lookup:',
       invalidIpError: 'Invalid IPv4 address format (expected standard x.x.x.x with octets 0-255)',
+      gatewayLabel: 'Gateway IP for routes:',
+      egressIfaceLabel: 'Egress Interface (dev):',
     },
 
     // Routing & NAT tool
