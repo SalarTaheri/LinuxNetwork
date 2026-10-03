@@ -132,6 +132,23 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
     return result;
   }, [currentDisplayContent]);
 
+  // Memoize rendered JSX elements for line numbers and code lines to prevent re-allocating 2N VNodes on panel state changes (copying, focus, animations)
+  const renderedLineNumbers = React.useMemo(() => {
+    return parsedLines.map((_, i) => (
+      <div key={i} className="leading-6">
+        {i + 1}
+      </div>
+    ));
+  }, [parsedLines]);
+
+  const renderedCodeLines = React.useMemo(() => {
+    return parsedLines.map(({ line, lineClass }, i) => (
+      <div key={i} className={`${lineClass} whitespace-pre`}>
+        {line || ' '}
+      </div>
+    ));
+  }, [parsedLines]);
+
   const linesCount = parsedLines.length;
 
   return (
@@ -333,21 +350,13 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
           >
             {/* Line Numbers */}
             <div aria-hidden="true" className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0">
-              {parsedLines.map((_, i) => (
-                <div key={i} className="leading-6">
-                  {i + 1}
-                </div>
-              ))}
+              {renderedLineNumbers}
             </div>
 
             {/* Code Lines with Syntax Coloring */}
             <pre className="font-mono flex-1 leading-6 focus:outline-none">
               <code>
-                {parsedLines.map(({ line, lineClass }, i) => (
-                  <div key={i} className={`${lineClass} whitespace-pre`}>
-                    {line || ' '}
-                  </div>
-                ))}
+                {renderedCodeLines}
               </code>
             </pre>
           </motion.div>

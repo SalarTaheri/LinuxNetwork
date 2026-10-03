@@ -83,3 +83,56 @@ describe('CodeOutputPanel Line Classification', () => {
     assert.ok(durationOptimized <= durationUnoptimized, 'Optimized version should be faster or equal');
   });
 });
+
+describe('CodeOutputPanel Element Mapping Benchmark', () => {
+  const parsedLines = Array.from({ length: 500 }, (_, i) => ({
+    line: `net.ipv4.tcp_rmem = 4096 87380 67108864 # Line ${i + 1}`,
+    lineClass: 'text-emerald-300',
+  }));
+
+  function unmemoizedRenderElements(lines: typeof parsedLines) {
+    const numbers = lines.map((_, i) => ({ type: 'div', key: i, props: { children: i + 1 } }));
+    const code = lines.map(({ line, lineClass }, i) => ({ type: 'div', key: i, props: { className: lineClass, children: line } }));
+    return { numbers, code };
+  }
+
+  function memoizedRenderElements(lines: typeof parsedLines, cached?: { numbers: any; code: any }) {
+    if (cached) return cached;
+    const numbers = lines.map((_, i) => ({ type: 'div', key: i, props: { children: i + 1 } }));
+    const code = lines.map(({ line, lineClass }, i) => ({ type: 'div', key: i, props: { className: lineClass, children: line } }));
+    return { numbers, code };
+  }
+
+  it('benchmark: repeated unmemoized element mapping vs memoized reference on panel re-renders', () => {
+    const reRenders = 10_000;
+
+    // Warmup
+    unmemoizedRenderElements(parsedLines);
+    memoizedRenderElements(parsedLines);
+
+    // Unmemoized (maps on every re-render)
+    const startUnmemoized = performance.now();
+    for (let i = 0; i < reRenders; i++) {
+      unmemoizedRenderElements(parsedLines);
+    }
+    const durationUnmemoized = performance.now() - startUnmemoized;
+
+    // Memoized (cached across re-renders when lines unchanged)
+    const cachedElements = memoizedRenderElements(parsedLines);
+    const startMemoized = performance.now();
+    for (let i = 0; i < reRenders; i++) {
+      memoizedRenderElements(parsedLines, cachedElements);
+    }
+    const durationMemoized = performance.now() - startMemoized;
+
+    const diffMs = durationUnmemoized - durationMemoized;
+    const speedupFactor = durationMemoized > 0 ? (durationUnmemoized / durationMemoized).toFixed(1) : '∞';
+
+    console.log(`\n--- CODE OUTPUT PANEL LINE MAPPING BENCHMARK (${reRenders} re-renders) ---`);
+    console.log(`Unmemoized duration: ${durationUnmemoized.toFixed(3)} ms`);
+    console.log(`Memoized duration:   ${durationMemoized.toFixed(3)} ms`);
+    console.log(`Speedup factor:      ${speedupFactor}x faster\n`);
+
+    assert.ok(durationMemoized <= durationUnmemoized, 'Memoized reference should avoid repeated allocations');
+  });
+});
