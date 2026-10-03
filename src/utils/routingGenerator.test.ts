@@ -230,6 +230,21 @@ describe('Routing & NAT Generator', () => {
       assert.match(nftables, /drop/);
     });
 
+    test('strips slashes and colons from interfaces, ports, and table names', () => {
+      const settingsWithSpecialChars: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'pbr_multiwan',
+        secondaryInterface: 'eth1/0:1',
+        pbrTableName: 'isp2/table.1:2',
+        secondaryIp: '192.168.2.100/32',
+      };
+      const iptables = generateIptablesRules(settingsWithSpecialChars, 'en');
+      assert.match(iptables, /dev eth101/);
+      assert.match(iptables, /table isp2table12/);
+      assert.match(iptables, /conf\.eth101\.rp_filter/);
+      assert.doesNotMatch(iptables, /conf\.eth1\/0:1/);
+    });
+
     test('sanitizes numeric parameters and handles undefined/null values without crashing', () => {
       const maliciousSettings: RoutingSettings = {
         ...defaultSettings,
