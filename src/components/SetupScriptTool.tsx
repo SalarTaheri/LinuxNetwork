@@ -49,8 +49,11 @@ export const SetupScriptTool: React.FC<SetupScriptToolProps> = React.memo(({ lan
       flags.push('--sysctl-opt');
     }
 
-    if (settings.enableCustomSshPort && settings.sshPort) {
-      flags.push(`--ssh-port ${settings.sshPort}`);
+    if (settings.enableCustomSshPort) {
+      const port = Math.floor(Number(settings.sshPort));
+      if (!isNaN(port) && port >= 1 && port <= 65535) {
+        flags.push(`--ssh-port ${port}`);
+      }
     }
 
     if (settings.disablePasswordAuth) {
@@ -318,7 +321,11 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   min={1}
                   max={65535}
                   disabled={!settings.enableCustomSshPort}
-                  onChange={(e) => setSettings({ ...settings, sshPort: parseInt(e.target.value, 10) || 22 })}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10);
+                    const clamped = isNaN(val) ? 22 : Math.max(1, Math.min(65535, val));
+                    setSettings({ ...settings, sshPort: clamped });
+                  }}
                   className="w-24 bg-slate-950 disabled:opacity-40 border border-slate-700 rounded px-2.5 py-1 text-xs font-mono text-cyan-300 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none"
                   dir="ltr"
                 />
