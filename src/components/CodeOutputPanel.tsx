@@ -118,21 +118,36 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
       ? (oneLinerBash || '')
       : (reloadCommand || '');
 
-  const parsedLines = React.useMemo(() => {
+  // Single-pass memoized line classification and JSX element construction.
+  // Caching line number and code line JSX arrays prevents virtual DOM re-allocations
+  // and diffing when interactive states (e.g. copied state, button hovers) update.
+  const { lineNumbersElements, codeLineElements, linesCount } = React.useMemo(() => {
     const lines = currentDisplayContent.split('\n');
     const len = lines.length;
-    const result = new Array(len);
+    const numbers = new Array(len);
+    const codeLines = new Array(len);
 
     for (let i = 0; i < len; i++) {
       const line = lines[i];
       const lineClass = classifyLineOptimized(line);
-      result[i] = { line, lineClass };
+      numbers[i] = (
+        <div key={i} className="leading-6">
+          {i + 1}
+        </div>
+      );
+      codeLines[i] = (
+        <div key={i} className={`${lineClass} whitespace-pre`}>
+          {line || ' '}
+        </div>
+      );
     }
 
-    return result;
+    return {
+      lineNumbersElements: numbers,
+      codeLineElements: codeLines,
+      linesCount: len,
+    };
   }, [currentDisplayContent]);
-
-  const linesCount = parsedLines.length;
 
   return (
     <div className="flex flex-col h-full bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
@@ -333,22 +348,12 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
           >
             {/* Line Numbers */}
             <div aria-hidden="true" className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0">
-              {parsedLines.map((_, i) => (
-                <div key={i} className="leading-6">
-                  {i + 1}
-                </div>
-              ))}
+              {lineNumbersElements}
             </div>
 
             {/* Code Lines with Syntax Coloring */}
             <pre className="font-mono flex-1 leading-6 focus:outline-none">
-              <code>
-                {parsedLines.map(({ line, lineClass }, i) => (
-                  <div key={i} className={`${lineClass} whitespace-pre`}>
-                    {line || ' '}
-                  </div>
-                ))}
-              </code>
+              <code>{codeLineElements}</code>
             </pre>
           </motion.div>
         </AnimatePresence>

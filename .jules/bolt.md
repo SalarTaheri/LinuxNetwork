@@ -9,3 +9,7 @@
 ## 2025-05-20 - Batched Alpha Bucketing for Canvas Edge Rendering
 **Learning:** In 60 FPS Canvas background animations, issuing individual `beginPath()`, `stroke()`, and `rgba(...)` string allocations per edge creates thousands of Canvas engine context switches and CSS color parsing operations per second.
 **Action:** Group canvas paths into discrete alpha buckets to batch multiple line drawing operations into a single `beginPath()`/`stroke()` call per opacity level, eliminating string allocations and reducing canvas draw calls by up to 95%.
+
+## 2025-05-21 - Single-Pass JSX Array Construction for Code Output
+**Learning:** Re-mapping line data in JSX (`parsedLines.map(...)`) during every component render pass causes React to instantiate hundreds of new JSX element objects per frame. When component state changes on interactive user events (such as clipboard copy buttons or tab switches), React must re-diff all line elements.
+**Action:** Construct line numbers and code line JSX element arrays in a single pass inside `useMemo([currentDisplayContent])` so React preserves array reference identities across interactive re-renders.
