@@ -63,6 +63,20 @@ describe('sysctlGenerator', () => {
     assert.ok(durationMemoized < durationUnmemoized);
   });
 
+  test('sanitizes malicious or unexpected enum parameters against allowlist', () => {
+    const maliciousSettings: SysctlSettings = {
+      ...sampleSettings,
+      profile: "proxy'; rm -rf / #" as any,
+      ram: "64GB; echo hacked" as any,
+      bandwidth: "10G' || reboot" as any,
+    };
+    const config = generateSysctlConfig(maliciousSettings, 'en');
+    assert.match(config, /Target Profile: WEB \| RAM: 4GB \| Bandwidth: 1G/);
+    assert.doesNotMatch(config, /rm -rf/);
+    assert.doesNotMatch(config, /echo hacked/);
+    assert.doesNotMatch(config, /reboot/);
+  });
+
   test('escapes single quotes in sysctl one-liner script to pass bash syntax validation', async () => {
     const customConfig = `# Sysctl config with 'single quotes'\nnet.ipv4.ip_forward = 1`;
     const oneLiner = generateSysctlOneLiner(customConfig);
