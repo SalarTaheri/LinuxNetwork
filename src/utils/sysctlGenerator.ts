@@ -1,7 +1,22 @@
-import { SysctlSettings } from '../types';
+import { BandwidthTier, RamSize, ServerProfile, SysctlSettings } from '../types';
+
+function sanitizeEnum<T extends string>(val: unknown, allowed: readonly T[], fallback: T): T {
+  if (typeof val === 'string' && allowed.includes(val as T)) {
+    return val as T;
+  }
+  return fallback;
+}
+
+const ALLOWED_PROFILES: readonly ServerProfile[] = ['web', 'proxy', 'download', 'lowlatency'];
+const ALLOWED_RAM: readonly RamSize[] = ['1GB', '2GB', '4GB', '8GB', '16GB', '32GB', '64GB'];
+const ALLOWED_BANDWIDTH: readonly BandwidthTier[] = ['100M', '1G', '10G'];
 
 export function generateSysctlConfig(settings: SysctlSettings, lang: 'fa' | 'en'): string {
   const isFa = lang === 'fa';
+
+  const profile = sanitizeEnum(settings.profile, ALLOWED_PROFILES, 'web');
+  const ram = sanitizeEnum(settings.ram, ALLOWED_RAM, '4GB');
+  const bandwidth = sanitizeEnum(settings.bandwidth, ALLOWED_BANDWIDTH, '1G');
 
   // Compute buffers based on RAM and Bandwidth
   let rmemMax = 16777216; // 16MB default
@@ -14,7 +29,7 @@ export function generateSysctlConfig(settings: SysctlSettings, lang: 'fa' | 'en'
   let fileMax = 1048576;
   let tcpMaxTwBuckets = 524288;
 
-  switch (settings.ram) {
+  switch (ram) {
     case '1GB':
       rmemMax = 8388608; // 8MB
       wmemMax = 8388608;
@@ -65,7 +80,7 @@ export function generateSysctlConfig(settings: SysctlSettings, lang: 'fa' | 'en'
   }
 
   // Adjust for 10G bandwidth
-  if (settings.bandwidth === '10G') {
+  if (bandwidth === '10G') {
     rmemMax = Math.max(rmemMax, 67108864);
     wmemMax = Math.max(wmemMax, 67108864);
     tcpRmemMax = Math.max(tcpRmemMax, 67108864);
@@ -76,7 +91,7 @@ export function generateSysctlConfig(settings: SysctlSettings, lang: 'fa' | 'en'
   const lines: string[] = [
     '# ==========================================================================',
     '# LinuxNetwork.ir - High-Performance Kernel & Network Tuning',
-    `# Target Profile: ${settings.profile.toUpperCase()} | RAM: ${settings.ram} | Bandwidth: ${settings.bandwidth}`,
+    `# Target Profile: ${profile.toUpperCase()} | RAM: ${ram} | Bandwidth: ${bandwidth}`,
     '# File Location: /etc/sysctl.d/99-network-tuning.conf',
     '# Generated automatically with zero telemetry in-browser',
     '# ==========================================================================',
@@ -89,7 +104,7 @@ export function generateSysctlConfig(settings: SysctlSettings, lang: 'fa' | 'en'
       ? '# --- قابلیت فوروارد بستههای شبکه (IP Forwarding) ---'
       : '# --- Packet Forwarding & Routing ---'
   );
-  if (settings.enableIpForward || settings.profile === 'proxy') {
+  if (settings.enableIpForward || profile === 'proxy') {
     lines.push('net.ipv4.ip_forward = 1');
     lines.push('net.ipv4.conf.all.forwarding = 1');
     lines.push('net.ipv4.conf.default.forwarding = 1');
@@ -101,8 +116,8 @@ export function generateSysctlConfig(settings: SysctlSettings, lang: 'fa' | 'en'
   // Queue and Socket Buffers
   lines.push(
     isFa
-      ? `# --- بهینهسازی بافر سوکتها و صفهای ورودی (RAM: ${settings.ram}) ---`
-      : `# --- Core Socket & Backlog Queue Tuning (RAM: ${settings.ram}) ---`
+      ? `# --- بهینهسازی بافر سوکتها و صفهای ورودی (RAM: ${ram}) ---`
+      : `# --- Core Socket & Backlog Queue Tuning (RAM: ${ram}) ---`
   );
   lines.push(`net.core.somaxconn = ${somaxconn}`);
   lines.push(`net.core.netdev_max_backlog = ${netdevBacklog}`);
@@ -196,7 +211,7 @@ export function generateSysctlConfig(settings: SysctlSettings, lang: 'fa' | 'en'
   }
 
   // Low latency specific
-  if (settings.profile === 'lowlatency') {
+  if (profile === 'lowlatency') {
     lines.push(
       isFa
         ? '# --- بهینهسازی اختصاصی لیتنسی و کاهش تاخیر بافر (Low Latency) ---'
