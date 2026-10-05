@@ -149,10 +149,15 @@ ip route get ${result.firstUsableIp}
 
           {/* Quick CIDR Preset Chips */}
           <div className="space-y-1.5 pt-1">
-            <div className="text-[11px] text-slate-400 font-medium">
+            <div id="quick-cidr-label" className="text-[11px] text-slate-400 font-medium">
               {t.subnet.quickPicks}
             </div>
-            <div className="flex flex-wrap gap-1.5 font-mono text-xs" dir="ltr">
+            <div
+              role="group"
+              aria-labelledby="quick-cidr-label"
+              className="flex flex-wrap gap-1.5 font-mono text-xs"
+              dir="ltr"
+            >
               {QUICK_CIDR_MASKS.map((m) => {
                 const descObj = CIDR_HOST_DESCRIPTIONS[m];
                 const descText = descObj ? (lang === 'fa' ? descObj.fa : descObj.en) : '';
@@ -164,7 +169,7 @@ ip route get ${result.firstUsableIp}
                     type="button"
                     onClick={() => setCidr(m)}
                     title={`/${m} — ${descText}`}
-                    aria-label={`Select CIDR /${m} (${descText})`}
+                    aria-label={`CIDR /${m} (${descText})`}
                     aria-pressed={cidr === m}
                     className={`px-2.5 py-1 rounded text-xs border transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                       cidr === m
