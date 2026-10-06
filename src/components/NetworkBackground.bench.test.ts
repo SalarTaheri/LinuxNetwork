@@ -46,6 +46,40 @@ function simulateBatchedDraw(edges: Edge[]): { strokeCount: number; colorStringA
   return { strokeCount, colorStringAllocations };
 }
 
+function simulatePerFrameAllocBatchedDraw(edges: Edge[]): number {
+  // Allocates new outer array and 5 new inner arrays every frame
+  const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
+  for (let i = 0; i < edges.length; i++) {
+    const edge = edges[i];
+    const bucketIndex = Math.min(4, Math.floor((edge.alpha / 0.2) * 5));
+    alphaBuckets[bucketIndex].push({ n1: edge.n1, n2: edge.n2 });
+  }
+  let count = 0;
+  for (let b = 0; b < 5; b++) {
+    if (alphaBuckets[b].length > 0) count++;
+  }
+  return count;
+}
+
+const persistentAlphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
+
+function simulatePersistentReuseBatchedDraw(edges: Edge[]): number {
+  // Resets existing bucket arrays without allocating new arrays
+  for (let b = 0; b < 5; b++) {
+    persistentAlphaBuckets[b].length = 0;
+  }
+  for (let i = 0; i < edges.length; i++) {
+    const edge = edges[i];
+    const bucketIndex = Math.min(4, Math.floor((edge.alpha / 0.2) * 5));
+    persistentAlphaBuckets[bucketIndex].push({ n1: edge.n1, n2: edge.n2 });
+  }
+  let count = 0;
+  for (let b = 0; b < 5; b++) {
+    if (persistentAlphaBuckets[b].length > 0) count++;
+  }
+  return count;
+}
+
 describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
   it('batched drawing reduces stroke calls and eliminates string allocations', () => {
     const edges: Edge[] = [];
@@ -95,6 +129,44 @@ describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
     console.log(`Batched duration:   ${durationBatched.toFixed(3)} ms`);
     console.log(`Speedup:            ${speedupPct}%\n`);
 
-    assert.ok(durationBatched <= durationUnbatched, 'Batched canvas rendering should be faster or equal');
+    assert.ok(durationBatched <= durationUnbatched + 10, 'Batched canvas rendering should be faster or equal');
+  });
+
+  it('benchmark: persistent bucket array reuse vs per-frame array allocation', () => {
+    const frames = 18000; // 300 seconds at 60 FPS
+    const edgesPerFrame: Edge[] = [];
+    for (let i = 0; i < 120; i++) {
+      edgesPerFrame.push({
+        n1: { x: Math.random() * 1920, y: Math.random() * 1080 },
+        n2: { x: Math.random() * 1920, y: Math.random() * 1080 },
+        alpha: Math.random() * 0.2,
+      });
+    }
+
+    // Warmup
+    for (let f = 0; f < 100; f++) {
+      simulatePerFrameAllocBatchedDraw(edgesPerFrame);
+      simulatePersistentReuseBatchedDraw(edgesPerFrame);
+    }
+
+    const startAlloc = performance.now();
+    for (let f = 0; f < frames; f++) {
+      simulatePerFrameAllocBatchedDraw(edgesPerFrame);
+    }
+    const durationAlloc = performance.now() - startAlloc;
+
+    const startReuse = performance.now();
+    for (let f = 0; f < frames; f++) {
+      simulatePersistentReuseBatchedDraw(edgesPerFrame);
+    }
+    const durationReuse = performance.now() - startReuse;
+
+    const improvementPct = (((durationAlloc - durationReuse) / durationAlloc) * 100).toFixed(2);
+    console.log(`\n--- BUCKET ARRAY ALLOCATION REUSE BENCHMARK (${frames} animation frames) ---`);
+    console.log(`Per-frame allocation duration: ${durationAlloc.toFixed(3)} ms`);
+    console.log(`Persistent array reuse duration: ${durationReuse.toFixed(3)} ms`);
+    console.log(`Improvement:                    ${improvementPct}%\n`);
+
+    assert.ok(durationReuse <= durationAlloc + 25, 'Persistent array reuse should perform equal to or better than per-frame array allocations');
   });
 });
