@@ -67,10 +67,11 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
         <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-4">
           {/* Domain name */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">
+            <label htmlFor="nginx-domain-input" className="text-xs font-semibold text-slate-300 cursor-pointer">
               {t.nginx.domainLabel}
             </label>
             <input
+              id="nginx-domain-input"
               type="text"
               value={settings.domain}
               onChange={(e) => setSettings({ ...settings, domain: e.target.value })}
@@ -82,10 +83,11 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
 
           {/* Server Aliases */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">
+            <label htmlFor="nginx-server-alias-input" className="text-xs font-semibold text-slate-300 cursor-pointer">
               {t.nginx.serverAliasLabel}
             </label>
             <input
+              id="nginx-server-alias-input"
               type="text"
               value={settings.serverAlias}
               onChange={(e) => setSettings({ ...settings, serverAlias: e.target.value })}
@@ -145,10 +147,11 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] text-slate-400 font-mono">
+              <label htmlFor="nginx-upstream-address-input" className="text-[11px] text-slate-400 font-mono cursor-pointer">
                 {t.nginx.upstreamAddressLabel}
               </label>
               <input
+                id="nginx-upstream-address-input"
                 type="text"
                 value={settings.upstreamAddress}
                 onChange={(e) => setSettings({ ...settings, upstreamAddress: e.target.value })}
@@ -192,10 +195,11 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] text-slate-400 font-mono">
+                  <label htmlFor="nginx-ssl-cert-path-input" className="text-[11px] text-slate-400 font-mono cursor-pointer">
                     {t.nginx.sslCertLabel}
                   </label>
                   <input
+                    id="nginx-ssl-cert-path-input"
                     type="text"
                     value={settings.sslCertPath}
                     onChange={(e) => setSettings({ ...settings, sslCertPath: e.target.value })}
@@ -205,10 +209,11 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[11px] text-slate-400 font-mono">
+                  <label htmlFor="nginx-ssl-key-path-input" className="text-[11px] text-slate-400 font-mono cursor-pointer">
                     {t.nginx.sslKeyLabel}
                   </label>
                   <input
+                    id="nginx-ssl-key-path-input"
                     type="text"
                     value={settings.sslKeyPath}
                     onChange={(e) => setSettings({ ...settings, sslKeyPath: e.target.value })}
