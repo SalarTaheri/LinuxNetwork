@@ -819,6 +819,10 @@ parse_arguments() {
                 shift
                 ;;
             --qdisc)
+                if [[ $# -lt 2 || -z "${2:-}" ]]; then
+                    log_error "Option --qdisc requires an argument (fq or cake)."
+                    exit 1
+                fi
                 if [[ "$2" != "fq" && "$2" != "cake" ]]; then
                     log_error "Invalid qdisc algorithm: $2. Must be 'fq' or 'cake'."
                     exit 1
@@ -831,6 +835,10 @@ parse_arguments() {
                 shift
                 ;;
             --ssh-port)
+                if [[ $# -lt 2 || -z "${2:-}" ]]; then
+                    log_error "Option --ssh-port requires a port number argument."
+                    exit 1
+                fi
                 FLAG_SSH_PORT="$2"
                 if ! [[ "$FLAG_SSH_PORT" =~ ^[0-9]+$ ]] || [ "$FLAG_SSH_PORT" -lt 1 ] || [ "$FLAG_SSH_PORT" -gt 65535 ]; then
                     log_error "Invalid SSH port: ${FLAG_SSH_PORT}. Must be between 1 and 65535."
