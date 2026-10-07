@@ -110,6 +110,10 @@ export const NetworkBackground: React.FC = () => {
     const maxDistance = 145;
     const maxDistanceSq = maxDistance * maxDistance;
 
+    // Pre-allocated flat alpha buckets to eliminate array and object allocations per 60 FPS frame
+    const alphaBuckets: Node[][] = [[], [], [], [], []];
+    const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
+
     const loop = (currentTime: number) => {
       if (!isVisible) return;
       animationFrameId = requestAnimationFrame(loop);
@@ -119,7 +123,7 @@ export const NetworkBackground: React.FC = () => {
 
       ctx.clearRect(0, 0, width, height);
 
-      // Update and draw nodes
+      // Update nodes position and bounds
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
 
@@ -157,10 +161,12 @@ export const NetworkBackground: React.FC = () => {
         }
       }
 
-      // Draw connection edges (batched by alpha bucket to avoid per-edge stroke() calls and string allocations)
-      const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
-      const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
+      // Reset alpha bucket lengths without re-allocating arrays
+      for (let b = 0; b < 5; b++) {
+        alphaBuckets[b].length = 0;
+      }
 
+      // Draw connection edges (batched by alpha bucket; flat node pairs avoid wrapper object allocations)
       for (let i = 0; i < nodes.length; i++) {
         const n1 = nodes[i];
         for (let j = i + 1; j < nodes.length; j++) {
@@ -173,7 +179,8 @@ export const NetworkBackground: React.FC = () => {
             const dist = Math.sqrt(distSq);
             const alpha = (1 - dist / maxDistance) * 0.2;
             const bucketIndex = Math.min(4, Math.floor((alpha / 0.2) * 5));
-            alphaBuckets[bucketIndex].push({ n1, n2 });
+            // Push node pairs directly into flat bucket array to eliminate edge object allocation
+            alphaBuckets[bucketIndex].push(n1, n2);
 
             // Randomly trigger a packet across active edge
             if (Math.random() < 0.0006 && packets.length < maxPackets) {
@@ -188,14 +195,14 @@ export const NetworkBackground: React.FC = () => {
 
       for (let b = 0; b < 5; b++) {
         const bucket = alphaBuckets[b];
-        if (bucket.length === 0) continue;
+        const len = bucket.length;
+        if (len === 0) continue;
 
         ctx.globalAlpha = bucketAlphas[b];
         ctx.beginPath();
-        for (let idx = 0; idx < bucket.length; idx++) {
-          const edge = bucket[idx];
-          ctx.moveTo(edge.n1.x, edge.n1.y);
-          ctx.lineTo(edge.n2.x, edge.n2.y);
+        for (let idx = 0; idx < len; idx += 2) {
+          ctx.moveTo(bucket[idx].x, bucket[idx].y);
+          ctx.lineTo(bucket[idx + 1].x, bucket[idx + 1].y);
         }
         ctx.stroke();
       }
@@ -237,22 +244,26 @@ export const NetworkBackground: React.FC = () => {
         ctx.fill();
       }
 
-      // Draw nodes on top
+      // Draw nodes on top (using globalAlpha and static hex colors to avoid string template allocations)
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
         const pulse = Math.sin(node.pulsePhase) * 0.35 + 0.65;
 
+        // Core node dot
+        ctx.fillStyle = '#34d399';
+        ctx.globalAlpha = 0.45 * pulse;
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(52, 211, 153, ${0.45 * pulse})`;
         ctx.fill();
 
         // Subtle node glow aura
+        ctx.fillStyle = '#10b981';
+        ctx.globalAlpha = 0.08 * pulse;
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.radius * 2.2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(16, 185, 129, ${0.08 * pulse})`;
         ctx.fill();
       }
+      ctx.globalAlpha = 1.0;
     };
 
     animationFrameId = requestAnimationFrame(loop);
