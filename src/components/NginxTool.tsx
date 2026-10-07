@@ -67,30 +67,32 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
         <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-4">
           {/* Domain name */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">
+            <label htmlFor="nginx-domain-input" className="text-xs font-semibold text-slate-300 cursor-pointer">
               {t.nginx.domainLabel}
             </label>
             <input
+              id="nginx-domain-input"
               type="text"
               value={settings.domain}
               onChange={(e) => setSettings({ ...settings, domain: e.target.value })}
               placeholder={t.nginx.domainPlaceholder}
-              className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30"
+              className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
               dir="ltr"
             />
           </div>
 
           {/* Server Aliases */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">
+            <label htmlFor="nginx-server-alias-input" className="text-xs font-semibold text-slate-300 cursor-pointer">
               {t.nginx.serverAliasLabel}
             </label>
             <input
+              id="nginx-server-alias-input"
               type="text"
               value={settings.serverAlias}
               onChange={(e) => setSettings({ ...settings, serverAlias: e.target.value })}
               placeholder={t.nginx.serverAliasPlaceholder}
-              className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30"
+              className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
               dir="ltr"
             />
           </div>
@@ -145,10 +147,11 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] text-slate-400 font-mono">
+              <label htmlFor="nginx-upstream-address-input" className="text-[11px] text-slate-400 font-mono cursor-pointer">
                 {t.nginx.upstreamAddressLabel}
               </label>
               <input
+                id="nginx-upstream-address-input"
                 type="text"
                 value={settings.upstreamAddress}
                 onChange={(e) => setSettings({ ...settings, upstreamAddress: e.target.value })}
@@ -157,7 +160,7 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
                     ? t.nginx.upstreamPlaceholderUnix
                     : t.nginx.upstreamPlaceholderHttp
                 }
-                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-cyan-300 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30"
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-cyan-300 placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
                 dir="ltr"
               />
             </div>
@@ -176,7 +179,7 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
                 type="checkbox"
                 checked={settings.enableSsl}
                 onChange={(e) => setSettings({ ...settings, enableSsl: e.target.checked })}
-                className="rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                className="rounded bg-slate-800 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none cursor-pointer"
               />
               <span className="text-xs font-medium text-emerald-400">
                 {settings.enableSsl ? 'SSL On' : 'Plain HTTP'}
@@ -192,28 +195,30 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] text-slate-400 font-mono">
+                  <label htmlFor="nginx-ssl-cert-path-input" className="text-[11px] text-slate-400 font-mono cursor-pointer">
                     {t.nginx.sslCertLabel}
                   </label>
                   <input
+                    id="nginx-ssl-cert-path-input"
                     type="text"
                     value={settings.sslCertPath}
                     onChange={(e) => setSettings({ ...settings, sslCertPath: e.target.value })}
                     placeholder={`/etc/letsencrypt/live/${settings.domain || 'domain'}/fullchain.pem`}
-                    className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-300 placeholder-slate-600 focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-300 placeholder-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
                     dir="ltr"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[11px] text-slate-400 font-mono">
+                  <label htmlFor="nginx-ssl-key-path-input" className="text-[11px] text-slate-400 font-mono cursor-pointer">
                     {t.nginx.sslKeyLabel}
                   </label>
                   <input
+                    id="nginx-ssl-key-path-input"
                     type="text"
                     value={settings.sslKeyPath}
                     onChange={(e) => setSettings({ ...settings, sslKeyPath: e.target.value })}
                     placeholder={`/etc/letsencrypt/live/${settings.domain || 'domain'}/privkey.pem`}
-                    className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-300 placeholder-slate-600 focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-300 placeholder-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
                     dir="ltr"
                   />
                 </div>
@@ -224,7 +229,7 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
                   type="checkbox"
                   checked={settings.enableHttp2}
                   onChange={(e) => setSettings({ ...settings, enableHttp2: e.target.checked })}
-                  className="rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/30"
+                  className="rounded bg-slate-800 border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none cursor-pointer"
                 />
                 <span className="text-xs text-slate-200 font-mono">{t.nginx.http2}</span>
               </label>
@@ -245,7 +250,7 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
               type="checkbox"
               checked={settings.enableWebsockets}
               onChange={(e) => setSettings({ ...settings, enableWebsockets: e.target.checked })}
-              className="mt-0.5 rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-cyan-500/30"
+              className="mt-0.5 rounded bg-slate-800 border-slate-700 text-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none cursor-pointer"
             />
             <div className="text-xs">
               <div className="font-semibold text-slate-200 font-mono">{t.nginx.websockets}</div>
@@ -309,7 +314,7 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
                 type="checkbox"
                 checked={settings.enableRealIpHeaders}
                 onChange={(e) => setSettings({ ...settings, enableRealIpHeaders: e.target.checked })}
-                className="rounded bg-slate-800 border-slate-700 text-cyan-500"
+                className="rounded bg-slate-800 border-slate-700 text-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none cursor-pointer"
               />
               <span className="text-xs text-slate-200 font-mono">{t.nginx.realIpHeaders}</span>
             </label>
@@ -319,7 +324,7 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
                 type="checkbox"
                 checked={settings.enableGzip}
                 onChange={(e) => setSettings({ ...settings, enableGzip: e.target.checked })}
-                className="rounded bg-slate-800 border-slate-700 text-cyan-500"
+                className="rounded bg-slate-800 border-slate-700 text-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none cursor-pointer"
               />
               <span className="text-xs text-slate-200 font-mono">{t.nginx.gzip}</span>
             </label>
@@ -329,7 +334,7 @@ export const NginxTool: React.FC<NginxToolProps> = React.memo(({ lang }) => {
                 type="checkbox"
                 checked={settings.enableSecurityHeaders}
                 onChange={(e) => setSettings({ ...settings, enableSecurityHeaders: e.target.checked })}
-                className="rounded bg-slate-800 border-slate-700 text-cyan-500"
+                className="rounded bg-slate-800 border-slate-700 text-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none cursor-pointer"
               />
               <span className="text-xs text-slate-200 font-mono">{t.nginx.securityHeaders}</span>
             </label>
