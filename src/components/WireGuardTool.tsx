@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Shield, Key, RefreshCw, Smartphone, Server } from 'lucide-react';
+import { Shield, Key, RefreshCw, Smartphone, Server, Copy, Check } from 'lucide-react';
 import { Language, WireGuardSettings } from '../types';
 import { translations } from '../i18n/translations';
 import { generateWireGuardKeyPair } from '../utils/crypto';
@@ -30,6 +30,8 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
   const [activeOutputConfig, setActiveOutputConfig] = useState<'server' | 'client'>('server');
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [keyFlash, setKeyFlash] = useState(false);
+  const [copiedServerPub, setCopiedServerPub] = useState(false);
+  const [copiedClientPub, setCopiedClientPub] = useState(false);
 
   const [settings, setSettings] = useState<WireGuardSettings>({
     serverEndpoint: '203.0.113.10',
@@ -80,6 +82,28 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
     }));
     setTimeout(() => setIsRegenerating(false), 500);
     setTimeout(() => setKeyFlash(false), 800);
+  };
+
+  const handleCopyServerPub = async () => {
+    if (!settings.serverPublicKey) return;
+    try {
+      await navigator.clipboard.writeText(settings.serverPublicKey);
+      setCopiedServerPub(true);
+      setTimeout(() => setCopiedServerPub(false), 2000);
+    } catch (err) {
+      console.error('Copy server public key failed', err);
+    }
+  };
+
+  const handleCopyClientPub = async () => {
+    if (!settings.clientPublicKey) return;
+    try {
+      await navigator.clipboard.writeText(settings.clientPublicKey);
+      setCopiedClientPub(true);
+      setTimeout(() => setCopiedClientPub(false), 2000);
+    } catch (err) {
+      console.error('Copy client public key failed', err);
+    }
   };
 
   // Memoize WireGuard server/client configs and one-liner bash installer to avoid redundant generator runs on UI re-renders
@@ -148,7 +172,18 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                 <span>{t.wireguard.serverKeys}</span>
               </div>
               <div className="space-y-1">
-                <div className="text-[10px] text-slate-500">Public Key:</div>
+                <div className="flex items-center justify-between text-[10px] text-slate-500">
+                  <span>Public Key:</span>
+                  <button
+                    type="button"
+                    onClick={handleCopyServerPub}
+                    aria-label={copiedServerPub ? (lang === 'fa' ? 'کلید عمومی سرور کپی شد' : 'Server public key copied') : (lang === 'fa' ? 'کپی کلید عمومی سرور' : 'Copy server public key')}
+                    className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1 cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none rounded px-1 transition-colors"
+                  >
+                    {copiedServerPub ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedServerPub ? (lang === 'fa' ? 'کپی شد' : 'Copied') : (lang === 'fa' ? 'کپی' : 'Copy')}</span>
+                  </button>
+                </div>
                 <div className="text-slate-300 select-all truncate bg-slate-900/80 px-2 py-1 rounded border border-slate-800">
                   {settings.serverPublicKey || 'Computing...'}
                 </div>
@@ -162,7 +197,18 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                 <span>{t.wireguard.clientKeys}</span>
               </div>
               <div className="space-y-1">
-                <div className="text-[10px] text-slate-500">Public Key:</div>
+                <div className="flex items-center justify-between text-[10px] text-slate-500">
+                  <span>Public Key:</span>
+                  <button
+                    type="button"
+                    onClick={handleCopyClientPub}
+                    aria-label={copiedClientPub ? (lang === 'fa' ? 'کلید عمومی کلاینت کپی شد' : 'Client public key copied') : (lang === 'fa' ? 'کپی کلید عمومی کلاینت' : 'Copy client public key')}
+                    className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none rounded px-1 transition-colors"
+                  >
+                    {copiedClientPub ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedClientPub ? (lang === 'fa' ? 'کپی شد' : 'Copied') : (lang === 'fa' ? 'کپی' : 'Copy')}</span>
+                  </button>
+                </div>
                 <div className="text-slate-300 select-all truncate bg-slate-900/80 px-2 py-1 rounded border border-slate-800">
                   {settings.clientPublicKey || 'Computing...'}
                 </div>
@@ -284,6 +330,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                     type="button"
                     onClick={() => setSettings({ ...settings, mtu: m })}
                     aria-pressed={settings.mtu === m}
+                    aria-label={`Select MTU size ${m}`}
                     className={`flex-1 py-1 rounded border text-xs cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                       settings.mtu === m
                         ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
@@ -385,9 +432,11 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
           </button>
         </div>
 
-        {/* Screen reader notification for key regeneration */}
+        {/* Screen reader notification for key regeneration & key copy actions */}
         <div className="sr-only" aria-live="polite">
           {keyFlash && (lang === 'fa' ? 'کلیدهای جدید وایرگارد تولید شدند' : 'New WireGuard keys generated successfully')}
+          {copiedServerPub && (lang === 'fa' ? 'کلید عمومی سرور کپی شد' : 'Server public key copied')}
+          {copiedClientPub && (lang === 'fa' ? 'کلید عمومی کلاینت کپی شد' : 'Client public key copied')}
         </div>
 
         <CodeOutputPanel
