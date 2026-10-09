@@ -70,6 +70,20 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
 
   const [outputFormat, setOutputFormat] = useState<'iptables' | 'nftables' | 'diagnostics'>('iptables');
 
+  const availableOutputTabs: ('iptables' | 'nftables' | 'diagnostics')[] = ['iptables', 'nftables', 'diagnostics'];
+
+  const handleTabKeyDown = (e: React.KeyboardEvent, currentTab: 'iptables' | 'nftables' | 'diagnostics') => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const currentIndex = availableOutputTabs.indexOf(currentTab);
+      const direction = e.key === 'ArrowRight' ? 1 : -1;
+      const nextIndex = (currentIndex + direction + availableOutputTabs.length) % availableOutputTabs.length;
+      const nextTab = availableOutputTabs[nextIndex];
+      setOutputFormat(nextTab);
+      document.getElementById(`routing-tab-${nextTab}`)?.focus();
+    }
+  };
+
   // Memoize routing config generator functions and derived bash one-liners to avoid redundant string processing on UI re-renders
   const iptablesText = useMemo(() => generateIptablesRules(settings, lang), [settings, lang]);
   const nftablesText = useMemo(() => generateNftablesRules(settings, lang), [settings, lang]);
@@ -611,10 +625,13 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
         {/* Output Selector Tabs */}
         <div role="tablist" aria-label="Routing Output Format View" className="flex items-center gap-1.5 p-1 bg-slate-900/80 border border-slate-800 rounded-xl">
           <button
+            id="routing-tab-iptables"
             type="button"
             role="tab"
             aria-selected={outputFormat === 'iptables'}
+            aria-controls="routing-code-output"
             onClick={() => setOutputFormat('iptables')}
+            onKeyDown={(e) => handleTabKeyDown(e, 'iptables')}
             className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
               outputFormat === 'iptables'
                 ? 'bg-emerald-600 text-white shadow-sm'
@@ -625,10 +642,13 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
             <span>{t.routing.outputTabs.iptables}</span>
           </button>
           <button
+            id="routing-tab-nftables"
             type="button"
             role="tab"
             aria-selected={outputFormat === 'nftables'}
+            aria-controls="routing-code-output"
             onClick={() => setOutputFormat('nftables')}
+            onKeyDown={(e) => handleTabKeyDown(e, 'nftables')}
             className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
               outputFormat === 'nftables'
                 ? 'bg-emerald-600 text-white shadow-sm'
@@ -639,10 +659,13 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
             <span>{t.routing.outputTabs.nftables}</span>
           </button>
           <button
+            id="routing-tab-diagnostics"
             type="button"
             role="tab"
             aria-selected={outputFormat === 'diagnostics'}
+            aria-controls="routing-code-output"
             onClick={() => setOutputFormat('diagnostics')}
+            onKeyDown={(e) => handleTabKeyDown(e, 'diagnostics')}
             className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
               outputFormat === 'diagnostics'
                 ? 'bg-emerald-600 text-white shadow-sm'
