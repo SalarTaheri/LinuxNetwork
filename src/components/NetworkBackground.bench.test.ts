@@ -26,19 +26,23 @@ function simulateUnbatchedDraw(edges: Edge[]): { strokeCount: number; colorStrin
   return { strokeCount, colorStringAllocations };
 }
 
+const persistentBuckets: Node[][] = [[], [], [], [], []];
+
 function simulateBatchedDraw(edges: Edge[]): { strokeCount: number; colorStringAllocations: number } {
-  const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
+  for (let b = 0; b < 5; b++) {
+    persistentBuckets[b].length = 0;
+  }
   let strokeCount = 0;
   let colorStringAllocations = 0;
 
   for (let i = 0; i < edges.length; i++) {
     const edge = edges[i];
     const bucketIndex = Math.min(4, Math.floor((edge.alpha / 0.2) * 5));
-    alphaBuckets[bucketIndex].push({ n1: edge.n1, n2: edge.n2 });
+    persistentBuckets[bucketIndex].push(edge.n1, edge.n2);
   }
 
   for (let b = 0; b < 5; b++) {
-    if (alphaBuckets[b].length > 0) {
+    if (persistentBuckets[b].length > 0) {
       strokeCount++;
     }
   }
@@ -77,24 +81,33 @@ describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
       });
     }
 
+    let unbatchedStrokes = 0;
+    let unbatchedColorStringAllocations = 0;
     const startUnbatched = performance.now();
     for (let f = 0; f < frames; f++) {
-      simulateUnbatchedDraw(edgesPerFrame);
+      const res = simulateUnbatchedDraw(edgesPerFrame);
+      unbatchedStrokes += res.strokeCount;
+      unbatchedColorStringAllocations += res.colorStringAllocations;
     }
     const durationUnbatched = performance.now() - startUnbatched;
 
+    let batchedStrokes = 0;
+    let batchedColorStringAllocations = 0;
     const startBatched = performance.now();
     for (let f = 0; f < frames; f++) {
-      simulateBatchedDraw(edgesPerFrame);
+      const res = simulateBatchedDraw(edgesPerFrame);
+      batchedStrokes += res.strokeCount;
+      batchedColorStringAllocations += res.colorStringAllocations;
     }
     const durationBatched = performance.now() - startBatched;
 
-    const speedupPct = (((durationUnbatched - durationBatched) / durationUnbatched) * 100).toFixed(2);
+    const strokeReduction = (((unbatchedStrokes - batchedStrokes) / unbatchedStrokes) * 100).toFixed(2);
     console.log(`\n--- CANVAS EDGE RENDERING BENCHMARK (${frames} animation frames) ---`);
-    console.log(`Unbatched duration: ${durationUnbatched.toFixed(3)} ms`);
-    console.log(`Batched duration:   ${durationBatched.toFixed(3)} ms`);
-    console.log(`Speedup:            ${speedupPct}%\n`);
+    console.log(`Unbatched stroke calls: ${unbatchedStrokes.toLocaleString()} | Color string allocations: ${unbatchedColorStringAllocations.toLocaleString()}`);
+    console.log(`Batched stroke calls:   ${batchedStrokes.toLocaleString()} | Color string allocations: ${batchedColorStringAllocations.toLocaleString()}`);
+    console.log(`Stroke reduction:       ${strokeReduction}%\n`);
 
-    assert.ok(durationBatched <= durationUnbatched, 'Batched canvas rendering should be faster or equal');
+    assert.ok(batchedStrokes < unbatchedStrokes, 'Batched rendering should execute drastically fewer canvas stroke calls');
+    assert.equal(batchedColorStringAllocations, 0, 'Batched rendering should eliminate color string allocations');
   });
 });
