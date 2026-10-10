@@ -43,4 +43,30 @@ describe('setup.sh CLI Argument Validation Security', () => {
       }
     );
   });
+
+  it('rejects --qdisc when argument is missing', async () => {
+    await assert.rejects(
+      async () => {
+        await execFileAsync('bash', [setupScriptPath, '--qdisc']);
+      },
+      (err: any) => {
+        assert.equal(err.code, 1);
+        assert.match(err.stderr, /Option --qdisc requires an argument/);
+        return true;
+      }
+    );
+  });
+
+  it('rejects --ssh-port when argument is missing', async () => {
+    await assert.rejects(
+      async () => {
+        await execFileAsync('bash', [setupScriptPath, '--ssh-port']);
+      },
+      (err: any) => {
+        assert.equal(err.code, 1);
+        assert.match(err.stderr, /Option --ssh-port requires a port number argument/);
+        return true;
+      }
+    );
+  });
 });
