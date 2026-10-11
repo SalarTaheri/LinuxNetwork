@@ -110,10 +110,10 @@ ip route get ${result.firstUsableIp}
                   placeholder={t.subnet.ipPlaceholder}
                   aria-invalid={!isValid}
                   aria-describedby={!isValid ? 'subnet-ip-error' : undefined}
-                  className={`w-full bg-slate-950/80 border rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none transition-colors ${
+                  className={`w-full bg-slate-950/80 border rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus-visible:outline-none focus-visible:ring-2 transition-colors ${
                     isValid
-                      ? 'border-slate-700/80 focus:border-emerald-500'
-                      : 'border-rose-500/80 text-rose-300 focus:border-rose-500'
+                      ? 'border-slate-700/80 focus-visible:ring-emerald-500'
+                      : 'border-rose-500/80 text-rose-300 focus-visible:ring-rose-500'
                   }`}
                   dir="ltr"
                 />
@@ -135,7 +135,7 @@ ip route get ${result.firstUsableIp}
                 id="subnet-cidr-select"
                 value={cidr}
                 onChange={(e) => setCidr(parseInt(e.target.value, 10))}
-                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-2 text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500 cursor-pointer transition-colors"
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-2 text-xs font-mono text-emerald-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 cursor-pointer transition-colors"
                 dir="ltr"
               >
                 {CIDR_OPTIONS.map((mask) => (
@@ -190,7 +190,7 @@ ip route get ${result.firstUsableIp}
                 type="text"
                 value={gatewayIp}
                 onChange={(e) => setGatewayIp(e.target.value)}
-                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500"
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
                 dir="ltr"
               />
             </div>
@@ -203,7 +203,7 @@ ip route get ${result.firstUsableIp}
                 type="text"
                 value={iface}
                 onChange={(e) => setIface(e.target.value)}
-                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500"
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
                 dir="ltr"
               />
             </div>
