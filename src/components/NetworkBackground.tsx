@@ -110,6 +110,11 @@ export const NetworkBackground: React.FC = () => {
     const maxDistance = 145;
     const maxDistanceSq = maxDistance * maxDistance;
 
+    // Zero-allocation persistent parallel arrays for alpha bucket edge rendering
+    const bucketN1s: Node[][] = [[], [], [], [], []];
+    const bucketN2s: Node[][] = [[], [], [], [], []];
+    const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
+
     const loop = (currentTime: number) => {
       if (!isVisible) return;
       animationFrameId = requestAnimationFrame(loop);
@@ -157,9 +162,11 @@ export const NetworkBackground: React.FC = () => {
         }
       }
 
-      // Draw connection edges (batched by alpha bucket to avoid per-edge stroke() calls and string allocations)
-      const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
-      const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
+      // Reset persistent edge bucket lengths (0 allocations per frame)
+      for (let b = 0; b < 5; b++) {
+        bucketN1s[b].length = 0;
+        bucketN2s[b].length = 0;
+      }
 
       for (let i = 0; i < nodes.length; i++) {
         const n1 = nodes[i];
@@ -173,7 +180,8 @@ export const NetworkBackground: React.FC = () => {
             const dist = Math.sqrt(distSq);
             const alpha = (1 - dist / maxDistance) * 0.2;
             const bucketIndex = Math.min(4, Math.floor((alpha / 0.2) * 5));
-            alphaBuckets[bucketIndex].push({ n1, n2 });
+            bucketN1s[bucketIndex].push(n1);
+            bucketN2s[bucketIndex].push(n2);
 
             // Randomly trigger a packet across active edge
             if (Math.random() < 0.0006 && packets.length < maxPackets) {
@@ -187,15 +195,16 @@ export const NetworkBackground: React.FC = () => {
       ctx.lineWidth = 0.8;
 
       for (let b = 0; b < 5; b++) {
-        const bucket = alphaBuckets[b];
-        if (bucket.length === 0) continue;
+        const n1s = bucketN1s[b];
+        const n2s = bucketN2s[b];
+        const count = n1s.length;
+        if (count === 0) continue;
 
         ctx.globalAlpha = bucketAlphas[b];
         ctx.beginPath();
-        for (let idx = 0; idx < bucket.length; idx++) {
-          const edge = bucket[idx];
-          ctx.moveTo(edge.n1.x, edge.n1.y);
-          ctx.lineTo(edge.n2.x, edge.n2.y);
+        for (let idx = 0; idx < count; idx++) {
+          ctx.moveTo(n1s[idx].x, n1s[idx].y);
+          ctx.lineTo(n2s[idx].x, n2s[idx].y);
         }
         ctx.stroke();
       }
