@@ -358,6 +358,7 @@ backup_file() {
     local target="$1"
     if [[ -f "$target" ]]; then
         mkdir -p "$BACKUP_DIR"
+        chmod 700 "$BACKUP_DIR" 2>/dev/null || true
         local backup_path="${BACKUP_DIR}/$(basename "$target").bak"
         cp -a "$target" "$backup_path"
         log_info "Backup created: ${target} -> ${backup_path}"

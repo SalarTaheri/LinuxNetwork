@@ -214,7 +214,7 @@ describe('Routing & NAT Generator', () => {
       const maliciousSettings: RoutingSettings = {
         ...defaultSettings,
         scenario: 'docker_shield',
-        wanInterface: "eth0; rm -rf / ' && echo hacked",
+        wanInterface: "eth0/bar:1; rm -rf / ' && echo hacked",
         dockerPort: "5432; cat /etc/passwd",
         dockerAllowedSubnet: "10.8.0.0/24; reboot",
         dockerAction: "DROP; rm -rf /" as any,
@@ -223,11 +223,24 @@ describe('Routing & NAT Generator', () => {
       assert.doesNotMatch(iptables, /;\s*rm/);
       assert.doesNotMatch(iptables, /;\s*cat/);
       assert.doesNotMatch(iptables, /;\s*reboot/);
+      assert.match(iptables, /--dport 5432/);
       assert.match(iptables, /-j DROP/);
 
       const nftables = generateNftablesRules(maliciousSettings, 'en');
       assert.doesNotMatch(nftables, /;\s*rm/);
+      assert.doesNotMatch(nftables, /eth0\/bar:1/);
       assert.match(nftables, /drop/);
+    });
+
+    test('sanitizes routing table names restricting invalid characters like slashes and colons', () => {
+      const maliciousSettings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'pbr_multiwan',
+        pbrTableName: 'isp2/bad:table; rm -rf /',
+      };
+      const iptables = generateIptablesRules(maliciousSettings, 'en');
+      assert.doesNotMatch(iptables, /isp2\/bad:table/);
+      assert.match(iptables, /isp2badtablerm-rf/);
     });
 
     test('sanitizes numeric parameters and handles undefined/null values without crashing', () => {
