@@ -64,9 +64,9 @@ ${dnsRule}${mssRule}
     }
 
     case 'port_forward': {
-      const extPort = sanitize(settings.externalPort, '8080');
+      const extPort = sanitizeNumber(settings.externalPort, 8080, 1, 65535);
       const intIp = sanitize(settings.internalIp, '192.168.100.15');
-      const intPort = sanitize(settings.internalPort, '80');
+      const intPort = sanitizeNumber(settings.internalPort, 80, 1, 65535);
       const proto = settings.protocol === 'udp' ? 'udp' : settings.protocol === 'both' ? 'both' : 'tcp';
 
       const protocols = proto === 'both' ? ['tcp', 'udp'] : [proto];
@@ -121,7 +121,7 @@ ${fwdRules}${hairpinRules}
     }
 
     case 'docker_shield': {
-      const port = sanitize(settings.dockerPort, '5432');
+      const port = sanitizeNumber(settings.dockerPort, 5432, 1, 65535);
       const allowed = sanitize(settings.dockerAllowedSubnet, '10.8.0.0/24');
       const action = settings.dockerAction === 'REJECT' ? 'REJECT' : 'DROP';
 
@@ -188,7 +188,7 @@ ip route show table ${tableName}`;
     }
 
     case 'rate_limit': {
-      const port = sanitize(settings.rateLimitPort, '22');
+      const port = sanitizeNumber(settings.rateLimitPort, 22, 1, 65535);
       const maxHits = sanitizeNumber(settings.rateLimitMaxHits, 4, 1, 1000);
       const winSec = sanitizeNumber(settings.rateLimitWindowSeconds, 60, 1, 86400);
       const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
@@ -275,9 +275,9 @@ table ip nat {
     }
 
     case 'port_forward': {
-      const extPort = sanitize(settings.externalPort, '8080');
+      const extPort = sanitizeNumber(settings.externalPort, 8080, 1, 65535);
       const intIp = sanitize(settings.internalIp, '192.168.100.15');
-      const intPort = sanitize(settings.internalPort, '80');
+      const intPort = sanitizeNumber(settings.internalPort, 80, 1, 65535);
       const proto = settings.protocol === 'udp' ? 'udp' : settings.protocol === 'both' ? 'both' : 'tcp';
       const protocols = proto === 'both' ? ['tcp', 'udp'] : [proto];
 
@@ -325,7 +325,7 @@ ${fwdStatements}
     }
 
     case 'docker_shield': {
-      const port = sanitize(settings.dockerPort, '5432');
+      const port = sanitizeNumber(settings.dockerPort, 5432, 1, 65535);
       const allowed = sanitize(settings.dockerAllowedSubnet, '10.8.0.0/24');
       const action = settings.dockerAction === 'REJECT' ? 'reject' : 'drop';
 
@@ -351,7 +351,7 @@ table inet filter {
     }
 
     case 'rate_limit': {
-      const port = sanitize(settings.rateLimitPort, '22');
+      const port = sanitizeNumber(settings.rateLimitPort, 22, 1, 65535);
       const maxHits = sanitizeNumber(settings.rateLimitMaxHits, 4, 1, 1000);
       const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
 
@@ -432,10 +432,10 @@ export function generateVerificationCommands(settings: RoutingSettings, lang: La
   const wan = sanitize(settings.wanInterface, 'eth0');
   const port =
     settings.scenario === 'port_forward'
-      ? sanitize(settings.externalPort, '8080')
+      ? sanitizeNumber(settings.externalPort, 8080, 1, 65535)
       : settings.scenario === 'docker_shield'
-      ? sanitize(settings.dockerPort, '5432')
-      : sanitize(settings.rateLimitPort, '22');
+      ? sanitizeNumber(settings.dockerPort, 5432, 1, 65535)
+      : sanitizeNumber(settings.rateLimitPort, 22, 1, 65535);
 
   return `# ================================================================
 # 🔍 ${isFa ? 'دستورات بررسی وضعیت، مانیتورینگ زنده و عیب‌یابی پکت‌ها' : 'Live Verification, Packet Monitoring & Diagnostic Commands'}
