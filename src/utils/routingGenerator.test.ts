@@ -245,5 +245,27 @@ describe('Routing & NAT Generator', () => {
       assert.match(iptables, /--seconds 300/); // falls back to default 300 for invalid string
       assert.match(iptables, /--hitcount 4/); // falls back to default 4 for out-of-range number
     });
+
+    test('validates and falls back on malformed or out-of-range port strings across scenarios', () => {
+      const invalidPortSettings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'port_forward',
+        externalPort: '-8080',
+        internalPort: '99999',
+        dockerPort: 'invalid_port',
+        rateLimitPort: '22; drop table',
+      };
+      const pfIptables = generateIptablesRules(invalidPortSettings, 'en');
+      assert.match(pfIptables, /--dport 8080/);
+      assert.match(pfIptables, /:80/);
+
+      const dsSettings = { ...invalidPortSettings, scenario: 'docker_shield' as const };
+      const dsIptables = generateIptablesRules(dsSettings, 'en');
+      assert.match(dsIptables, /--dport 5432/);
+
+      const rlSettings = { ...invalidPortSettings, scenario: 'rate_limit' as const };
+      const rlIptables = generateIptablesRules(rlSettings, 'en');
+      assert.match(rlIptables, /BRUTEFORCE_22/);
+    });
   });
 });
