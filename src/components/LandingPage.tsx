@@ -528,7 +528,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ lang, onLaunchToolbox 
             <button
               type="button"
               onClick={() => onLaunchToolbox('setup')}
-              className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-base shadow-xl shadow-emerald-950/80 transition-all duration-200 transform hover:-translate-y-0.5 cursor-pointer border border-emerald-400/40"
+              className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-base shadow-xl shadow-emerald-950/80 transition-all duration-200 transform hover:-translate-y-0.5 cursor-pointer border border-emerald-400/40 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
             >
               <span>{l.ctaSection.button}</span>
               <ArrowIcon className="w-5 h-5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
