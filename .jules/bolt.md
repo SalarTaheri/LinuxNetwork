@@ -9,3 +9,7 @@
 ## 2025-05-20 - Batched Alpha Bucketing for Canvas Edge Rendering
 **Learning:** In 60 FPS Canvas background animations, issuing individual `beginPath()`, `stroke()`, and `rgba(...)` string allocations per edge creates thousands of Canvas engine context switches and CSS color parsing operations per second.
 **Action:** Group canvas paths into discrete alpha buckets to batch multiple line drawing operations into a single `beginPath()`/`stroke()` call per opacity level, eliminating string allocations and reducing canvas draw calls by up to 95%.
+
+## 2025-05-21 - Zero-Allocation Flat Array Buffering for Animated Canvas Rendering
+**Learning:** Re-instantiating array instances and edge object literals `{ n1, n2 }` every frame in a 60 FPS Canvas `requestAnimationFrame` loop creates thousands of intermediate short-lived objects per second. In standard benchmark simulations without heavy Canvas WebGL/2D context overhead, the memory allocation and GC churn from creating temporary objects per frame outweighs drawing execution time.
+**Action:** Pre-allocate persistent flat array buffers outside the animation loop, reset lengths (`.length = 0`) each frame to reuse allocated buffer memory, and push node references in flat pairs (`push(n1, n2)`) to eliminate frame-level GC allocations.
