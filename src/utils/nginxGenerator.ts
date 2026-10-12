@@ -23,7 +23,10 @@ function sanitizeUpstream(val: string | undefined | null, fallback: string): str
 }
 
 function sanitizePath(val: string | undefined | null, fallback: string): string {
-  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_.:/-]/g, '');
+  let cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_.:/-]/g, '');
+  while (cleaned.includes('..')) {
+    cleaned = cleaned.replace(/\.\./g, '');
+  }
   return cleaned || fallback;
 }
 
