@@ -86,6 +86,30 @@ describe('Nginx Generator', () => {
     assert.match(config, /ssl_certificate_key \/etc\/key\.pemreturn500;/);
   });
 
+  it('sanitizes sslCertPath and sslKeyPath against path traversal attacks', () => {
+    const maliciousSettings: NginxSettings = {
+      ...defaultSettings,
+      sslCertPath: '/etc/letsencrypt/../../etc/passwd',
+      sslKeyPath: '../../../etc/shadow',
+    };
+    const config = generateNginxConfig(maliciousSettings, 'en');
+    assert.doesNotMatch(config, /\.\./);
+    assert.match(config, /ssl_certificate \/etc\/letsencrypt\/\/\/etc\/passwd;/);
+    assert.match(config, /ssl_certificate_key \/\/\/etc\/shadow;/);
+  });
+
+  it('prevents order-of-operations and nested path traversal bypass attempts', () => {
+    const bypassSettings: NginxSettings = {
+      ...defaultSettings,
+      sslCertPath: '.!..!./etc/passwd',
+      sslKeyPath: '....//etc/shadow',
+    };
+    const config = generateNginxConfig(bypassSettings, 'en');
+    assert.doesNotMatch(config, /\.\./);
+    assert.match(config, /ssl_certificate \/etc\/passwd;/);
+    assert.match(config, /ssl_certificate_key \/\/etc\/shadow;/);
+  });
+
   it('sanitizes listenPort and clientMaxBodySize against non-numeric injection', () => {
     const maliciousSettings: NginxSettings = {
       ...defaultSettings,
