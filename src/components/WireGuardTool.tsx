@@ -176,10 +176,11 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Endpoint */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-300">
+              <label htmlFor="wg-server-endpoint" className="text-xs font-semibold text-slate-300 cursor-pointer">
                 {t.wireguard.endpointLabel}
               </label>
               <input
+                id="wg-server-endpoint"
                 type="text"
                 value={settings.serverEndpoint}
                 onChange={(e) => setSettings({ ...settings, serverEndpoint: e.target.value })}
@@ -191,10 +192,11 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
 
             {/* Port */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-300">
+              <label htmlFor="wg-server-port" className="text-xs font-semibold text-slate-300 cursor-pointer">
                 {t.wireguard.portLabel}
               </label>
               <input
+                id="wg-server-port"
                 type="number"
                 min="1"
                 max="65535"
@@ -209,10 +211,11 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Server IP */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-300 font-mono">
+              <label htmlFor="wg-server-ip" className="text-xs font-semibold text-slate-300 font-mono cursor-pointer">
                 {t.wireguard.serverIpLabel}
               </label>
               <input
+                id="wg-server-ip"
                 type="text"
                 value={settings.serverIp}
                 onChange={(e) => setSettings({ ...settings, serverIp: e.target.value })}
@@ -223,10 +226,11 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
 
             {/* Client IP */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-300 font-mono">
+              <label htmlFor="wg-client-ip" className="text-xs font-semibold text-slate-300 font-mono cursor-pointer">
                 {t.wireguard.clientIpLabel}
               </label>
               <input
+                id="wg-client-ip"
                 type="text"
                 value={settings.clientIp}
                 onChange={(e) => setSettings({ ...settings, clientIp: e.target.value })}
@@ -238,7 +242,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
 
           {/* DNS Resolver Presets */}
           <div className="space-y-2 pt-2 border-t border-slate-800/80">
-            <label className="text-xs font-semibold text-slate-300">
+            <label htmlFor="wg-dns-resolver" className="text-xs font-semibold text-slate-300 cursor-pointer">
               {t.wireguard.dnsLabel}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-xs font-mono" dir="ltr">
@@ -248,6 +252,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                   type="button"
                   onClick={() => setSettings({ ...settings, dnsResolver: dns.val })}
                   aria-pressed={settings.dnsResolver === dns.val}
+                  aria-label={`DNS Preset ${dns.name} (${dns.val})`}
                   className={`px-2 py-1.5 rounded text-[11px] border transition-all cursor-pointer truncate focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                     settings.dnsResolver === dns.val
                       ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-semibold'
@@ -260,6 +265,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
               ))}
             </div>
             <input
+              id="wg-dns-resolver"
               type="text"
               value={settings.dnsResolver}
               onChange={(e) => setSettings({ ...settings, dnsResolver: e.target.value })}
@@ -272,9 +278,9 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800/80">
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-slate-300 font-mono">
+                <span className="text-xs font-semibold text-slate-300 font-mono">
                   {t.wireguard.mtuLabel}
-                </label>
+                </span>
                 <span className="text-xs font-mono text-emerald-400 font-bold">{settings.mtu}</span>
               </div>
               <div className="flex gap-1 font-mono text-xs" dir="ltr">
@@ -284,6 +290,7 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
                     type="button"
                     onClick={() => setSettings({ ...settings, mtu: m })}
                     aria-pressed={settings.mtu === m}
+                    aria-label={`MTU ${m}`}
                     className={`flex-1 py-1 rounded border text-xs cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                       settings.mtu === m
                         ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
@@ -300,10 +307,11 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-300 font-mono">
+              <label htmlFor="wg-keepalive" className="text-xs font-semibold text-slate-300 font-mono cursor-pointer">
                 {t.wireguard.keepaliveLabel}
               </label>
               <input
+                id="wg-keepalive"
                 type="number"
                 value={settings.persistentKeepalive}
                 onChange={(e) => setSettings({ ...settings, persistentKeepalive: parseInt(e.target.value, 10) || 0 })}
@@ -318,10 +326,11 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
 
           {/* Interface name */}
           <div className="space-y-1 pt-2 border-t border-slate-800/80">
-            <label className="text-xs font-semibold text-slate-300 font-mono">
+            <label htmlFor="wg-server-interface" className="text-xs font-semibold text-slate-300 font-mono cursor-pointer">
               {t.wireguard.serverIfaceLabel}
             </label>
             <input
+              id="wg-server-interface"
               type="text"
               value={settings.serverInterface}
               onChange={(e) => setSettings({ ...settings, serverInterface: e.target.value })}
@@ -341,9 +350,11 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
         {/* Output Profile Switcher */}
         <div role="tablist" aria-label="WireGuard Configuration View" className="flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
           <button
+            id="tab-wg-server"
             type="button"
             role="tab"
             aria-selected={activeOutputConfig === 'server'}
+            aria-controls="code-output-body"
             onClick={() => setActiveOutputConfig('server')}
             className={`relative flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
               activeOutputConfig === 'server'
@@ -363,9 +374,11 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
           </button>
 
           <button
+            id="tab-wg-client"
             type="button"
             role="tab"
             aria-selected={activeOutputConfig === 'client'}
+            aria-controls="code-output-body"
             onClick={() => setActiveOutputConfig('client')}
             className={`relative flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none ${
               activeOutputConfig === 'client'
