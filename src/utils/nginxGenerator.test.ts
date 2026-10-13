@@ -136,4 +136,20 @@ describe('Nginx Generator', () => {
     const { stderr } = await execFileAsync('bash', ['-n', '-c', scriptWithoutSudo]);
     assert.equal(stderr, '');
   });
+
+  it('sanitizes domain in generateNginxOneLiner to prevent command injection', async () => {
+    const maliciousDomain = "api.example.com' && touch /tmp/pwned && '";
+    const oneLiner = generateNginxOneLiner(maliciousDomain, 'server {}');
+
+    assert.doesNotMatch(oneLiner, /touch \/tmp\/pwned/);
+    assert.match(oneLiner, /sites-available\/api\.example\.comtouchtmppwned\.conf/);
+
+    const scriptWithoutSudo = oneLiner.replace(/^sudo /, '');
+    const { execFile } = await import('node:child_process');
+    const { promisify } = await import('node:util');
+    const execFileAsync = promisify(execFile);
+
+    const { stderr } = await execFileAsync('bash', ['-n', '-c', scriptWithoutSudo]);
+    assert.equal(stderr, '');
+  });
 });
