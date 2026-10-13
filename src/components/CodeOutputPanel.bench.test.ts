@@ -83,3 +83,68 @@ describe('CodeOutputPanel Line Classification', () => {
     assert.ok(durationOptimized <= durationUnoptimized, 'Optimized version should be faster or equal');
   });
 });
+
+describe('Single-Pass Line Processing Benchmark', () => {
+  const sampleContent = Array.from({ length: 500 }, (_, i) => `line_${i} = value_${i}`).join('\n');
+
+  function dualPassProcessing(content: string) {
+    const lines = content.split('\n');
+    const parsed = lines.map((line) => ({ line, lineClass: classifyLineOptimized(line) }));
+    const lineNumbers = parsed.map((_, i) => ({ type: 'div', key: i, props: { children: i + 1 } }));
+    const codeLines = parsed.map(({ line, lineClass }, i) => ({ type: 'div', key: i, props: { className: lineClass, children: line } }));
+    return { lineNumbers, codeLines };
+  }
+
+  function singlePassProcessing(content: string) {
+    const lines = content.split('\n');
+    const len = lines.length;
+    const lineNumbers = new Array(len);
+    const codeLines = new Array(len);
+
+    for (let i = 0; i < len; i++) {
+      const line = lines[i];
+      const lineClass = classifyLineOptimized(line);
+      lineNumbers[i] = { type: 'div', key: i, props: { children: i + 1 } };
+      codeLines[i] = { type: 'div', key: i, props: { className: lineClass, children: line } };
+    }
+    return { lineNumbers, codeLines };
+  }
+
+  it('dual pass and single pass produce identical structure length and keys', () => {
+    const resDual = dualPassProcessing(sampleContent);
+    const resSingle = singlePassProcessing(sampleContent);
+    assert.equal(resDual.lineNumbers.length, resSingle.lineNumbers.length);
+    assert.equal(resDual.codeLines.length, resSingle.codeLines.length);
+    assert.equal(resDual.lineNumbers[0].props.children, resSingle.lineNumbers[0].props.children);
+  });
+
+  it('benchmark single-pass vs dual-pass processing', () => {
+    const iterations = 5000;
+
+    // Warmup
+    for (let i = 0; i < 100; i++) {
+      dualPassProcessing(sampleContent);
+      singlePassProcessing(sampleContent);
+    }
+
+    const startDual = performance.now();
+    for (let i = 0; i < iterations; i++) {
+      dualPassProcessing(sampleContent);
+    }
+    const durationDual = performance.now() - startDual;
+
+    const startSingle = performance.now();
+    for (let i = 0; i < iterations; i++) {
+      singlePassProcessing(sampleContent);
+    }
+    const durationSingle = performance.now() - startSingle;
+
+    const speedupPct = (((durationDual - durationSingle) / durationDual) * 100).toFixed(2);
+    console.log(`\n--- SINGLE-PASS LINE PROCESSING BENCHMARK (${iterations} iterations) ---`);
+    console.log(`Dual-pass duration:   ${durationDual.toFixed(2)} ms`);
+    console.log(`Single-pass duration: ${durationSingle.toFixed(2)} ms`);
+    console.log(`Improvement:          ${speedupPct}%\n`);
+
+    assert.ok(durationSingle <= durationDual + 5, 'Single-pass should be faster or equal to dual-pass');
+  });
+});

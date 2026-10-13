@@ -9,3 +9,7 @@
 ## 2025-05-20 - Batched Alpha Bucketing for Canvas Edge Rendering
 **Learning:** In 60 FPS Canvas background animations, issuing individual `beginPath()`, `stroke()`, and `rgba(...)` string allocations per edge creates thousands of Canvas engine context switches and CSS color parsing operations per second.
 **Action:** Group canvas paths into discrete alpha buckets to batch multiple line drawing operations into a single `beginPath()`/`stroke()` call per opacity level, eliminating string allocations and reducing canvas draw calls by up to 95%.
+
+## 2025-05-21 - Single-Pass Line & JSX Node Memoization in CodeOutputPanel
+**Learning:** In multi-line code display panels, performing separate `.map()` passes for line numbers and syntax-highlighted code lines in the JSX render body causes double-loop traversals and hundreds of duplicate JSX node allocations on every component re-render frame (e.g. state toggles like copy feedback).
+**Action:** Generate both line classification metadata and pre-allocated JSX node arrays (`lineNumbers` and `codeLines`) in a single-pass `useMemo` block keyed on content updates to eliminate redundant traversals and GC pressure.
