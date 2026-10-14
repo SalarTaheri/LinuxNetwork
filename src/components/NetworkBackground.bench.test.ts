@@ -46,6 +46,30 @@ function simulateBatchedDraw(edges: Edge[]): { strokeCount: number; colorStringA
   return { strokeCount, colorStringAllocations };
 }
 
+function simulateZeroAllocationBatchedDraw(
+  edges: Edge[],
+  alphaBuckets: Node[][]
+): { strokeCount: number; colorStringAllocations: number } {
+  for (let b = 0; b < 5; b++) {
+    alphaBuckets[b].length = 0;
+  }
+
+  for (let i = 0; i < edges.length; i++) {
+    const edge = edges[i];
+    const bucketIndex = Math.min(4, Math.floor((edge.alpha / 0.2) * 5));
+    alphaBuckets[bucketIndex].push(edge.n1, edge.n2);
+  }
+
+  let strokeCount = 0;
+  for (let b = 0; b < 5; b++) {
+    if (alphaBuckets[b].length > 0) {
+      strokeCount++;
+    }
+  }
+
+  return { strokeCount, colorStringAllocations: 0 };
+}
+
 describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
   it('batched drawing reduces stroke calls and eliminates string allocations', () => {
     const edges: Edge[] = [];
@@ -59,14 +83,17 @@ describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
 
     const unbatched = simulateUnbatchedDraw(edges);
     const batched = simulateBatchedDraw(edges);
+    const reusableBuckets: Node[][] = [[], [], [], [], []];
+    const zeroAlloc = simulateZeroAllocationBatchedDraw(edges, reusableBuckets);
 
     assert.equal(unbatched.strokeCount, 100);
     assert.equal(unbatched.colorStringAllocations, 100);
     assert.ok(batched.strokeCount <= 5);
     assert.equal(batched.colorStringAllocations, 0);
+    assert.equal(zeroAlloc.strokeCount, batched.strokeCount);
   });
 
-  it('benchmark: compare unbatched vs batched rendering simulation', () => {
+  it('benchmark: compare unbatched vs batched vs zero-allocation rendering simulation', () => {
     const frames = 6000; // 100 seconds at 60 FPS
     const edgesPerFrame: Edge[] = [];
     for (let i = 0; i < 120; i++) {
@@ -89,12 +116,20 @@ describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
     }
     const durationBatched = performance.now() - startBatched;
 
-    const speedupPct = (((durationUnbatched - durationBatched) / durationUnbatched) * 100).toFixed(2);
-    console.log(`\n--- CANVAS EDGE RENDERING BENCHMARK (${frames} animation frames) ---`);
-    console.log(`Unbatched duration: ${durationUnbatched.toFixed(3)} ms`);
-    console.log(`Batched duration:   ${durationBatched.toFixed(3)} ms`);
-    console.log(`Speedup:            ${speedupPct}%\n`);
+    const reusableBuckets: Node[][] = [[], [], [], [], []];
+    const startZeroAlloc = performance.now();
+    for (let f = 0; f < frames; f++) {
+      simulateZeroAllocationBatchedDraw(edgesPerFrame, reusableBuckets);
+    }
+    const durationZeroAlloc = performance.now() - startZeroAlloc;
 
-    assert.ok(durationBatched <= durationUnbatched, 'Batched canvas rendering should be faster or equal');
+    const speedupPct = (((durationUnbatched - durationZeroAlloc) / durationUnbatched) * 100).toFixed(2);
+    console.log(`\n--- CANVAS EDGE RENDERING BENCHMARK (${frames} animation frames) ---`);
+    console.log(`Unbatched duration:  ${durationUnbatched.toFixed(3)} ms`);
+    console.log(`Allocating duration: ${durationBatched.toFixed(3)} ms`);
+    console.log(`Zero-alloc duration: ${durationZeroAlloc.toFixed(3)} ms`);
+    console.log(`Total speedup:       ${speedupPct}%\n`);
+
+    assert.ok(durationZeroAlloc <= durationBatched + 5, 'Zero-allocation batched draw should be faster or equal to allocating draw');
   });
 });

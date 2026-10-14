@@ -17,6 +17,8 @@ interface Packet {
   color: string;
 }
 
+const BUCKET_ALPHAS = [0.04, 0.08, 0.12, 0.16, 0.20] as const;
+
 export const NetworkBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -110,6 +112,9 @@ export const NetworkBackground: React.FC = () => {
     const maxDistance = 145;
     const maxDistanceSq = maxDistance * maxDistance;
 
+    // Pre-allocate flat alpha bucket arrays to eliminate object/array allocations during 60 FPS animation frames
+    const alphaBuckets: Node[][] = [[], [], [], [], []];
+
     const loop = (currentTime: number) => {
       if (!isVisible) return;
       animationFrameId = requestAnimationFrame(loop);
@@ -157,10 +162,14 @@ export const NetworkBackground: React.FC = () => {
         }
       }
 
-      // Draw connection edges (batched by alpha bucket to avoid per-edge stroke() calls and string allocations)
-      const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
-      const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
+      // Clear flat alpha bucket arrays without re-allocating memory
+      alphaBuckets[0].length = 0;
+      alphaBuckets[1].length = 0;
+      alphaBuckets[2].length = 0;
+      alphaBuckets[3].length = 0;
+      alphaBuckets[4].length = 0;
 
+      // Draw connection edges (batched by alpha bucket with 0 heap allocations per frame)
       for (let i = 0; i < nodes.length; i++) {
         const n1 = nodes[i];
         for (let j = i + 1; j < nodes.length; j++) {
@@ -173,7 +182,7 @@ export const NetworkBackground: React.FC = () => {
             const dist = Math.sqrt(distSq);
             const alpha = (1 - dist / maxDistance) * 0.2;
             const bucketIndex = Math.min(4, Math.floor((alpha / 0.2) * 5));
-            alphaBuckets[bucketIndex].push({ n1, n2 });
+            alphaBuckets[bucketIndex].push(n1, n2);
 
             // Randomly trigger a packet across active edge
             if (Math.random() < 0.0006 && packets.length < maxPackets) {
@@ -188,14 +197,14 @@ export const NetworkBackground: React.FC = () => {
 
       for (let b = 0; b < 5; b++) {
         const bucket = alphaBuckets[b];
-        if (bucket.length === 0) continue;
+        const len = bucket.length;
+        if (len === 0) continue;
 
-        ctx.globalAlpha = bucketAlphas[b];
+        ctx.globalAlpha = BUCKET_ALPHAS[b];
         ctx.beginPath();
-        for (let idx = 0; idx < bucket.length; idx++) {
-          const edge = bucket[idx];
-          ctx.moveTo(edge.n1.x, edge.n1.y);
-          ctx.lineTo(edge.n2.x, edge.n2.y);
+        for (let idx = 0; idx < len; idx += 2) {
+          ctx.moveTo(bucket[idx].x, bucket[idx].y);
+          ctx.lineTo(bucket[idx + 1].x, bucket[idx + 1].y);
         }
         ctx.stroke();
       }
