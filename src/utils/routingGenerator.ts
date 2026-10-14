@@ -1,11 +1,24 @@
 import { Language, RoutingSettings } from '../types';
 
 /**
- * Sanitizes input strings to prevent shell injection or malformed iptables arguments.
+ * Sanitizes input strings to prevent shell option injection or malformed iptables arguments.
+ * Removes leading hyphens to ensure inputs cannot be parsed as command options/flags.
  */
 function sanitize(val: string | undefined | null, fallback: string): string {
-  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_.:/-]/g, '');
+  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_.:/-]/g, '').replace(/^-+/, '');
   return cleaned || fallback;
+}
+
+/**
+ * Validates and sanitizes port numbers or port ranges (e.g. "8080" or "8000:8010")
+ * to prevent CLI option injection (e.g. "-j ACCEPT" or "--dport").
+ */
+function sanitizePortRange(val: string | number | undefined | null, fallback: string): string {
+  const str = String(val || '').trim();
+  if (/^[0-9]+(:[0-9]+)?$/.test(str)) {
+    return str;
+  }
+  return fallback;
 }
 
 function sanitizeNumber(val: number | string | undefined | null, fallback: number, min = 1, max = 65535): number {
@@ -64,9 +77,9 @@ ${dnsRule}${mssRule}
     }
 
     case 'port_forward': {
-      const extPort = sanitize(settings.externalPort, '8080');
+      const extPort = sanitizePortRange(settings.externalPort, '8080');
       const intIp = sanitize(settings.internalIp, '192.168.100.15');
-      const intPort = sanitize(settings.internalPort, '80');
+      const intPort = sanitizePortRange(settings.internalPort, '80');
       const proto = settings.protocol === 'udp' ? 'udp' : settings.protocol === 'both' ? 'both' : 'tcp';
 
       const protocols = proto === 'both' ? ['tcp', 'udp'] : [proto];
@@ -121,7 +134,7 @@ ${fwdRules}${hairpinRules}
     }
 
     case 'docker_shield': {
-      const port = sanitize(settings.dockerPort, '5432');
+      const port = sanitizePortRange(settings.dockerPort, '5432');
       const allowed = sanitize(settings.dockerAllowedSubnet, '10.8.0.0/24');
       const action = settings.dockerAction === 'REJECT' ? 'REJECT' : 'DROP';
 
@@ -158,7 +171,7 @@ sudo iptables -A DOCKER-USER -j RETURN
 sudo sysctl -w net.ipv4.conf.all.rp_filter=2
 sudo sysctl -w net.ipv4.conf.default.rp_filter=2
 sudo sysctl -w net.ipv4.conf.${secIf}.rp_filter=2
-cat <<EOF | sudo tee /etc/sysctl.d/99-rp-filter.conf
+cat << "EOF" | sudo tee /etc/sysctl.d/99-rp-filter.conf
 net.ipv4.conf.all.rp_filter = 2
 net.ipv4.conf.default.rp_filter = 2
 net.ipv4.conf.${secIf}.rp_filter = 2
@@ -188,7 +201,7 @@ ip route show table ${tableName}`;
     }
 
     case 'rate_limit': {
-      const port = sanitize(settings.rateLimitPort, '22');
+      const port = sanitizePortRange(settings.rateLimitPort, '22');
       const maxHits = sanitizeNumber(settings.rateLimitMaxHits, 4, 1, 1000);
       const winSec = sanitizeNumber(settings.rateLimitWindowSeconds, 60, 1, 86400);
       const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
@@ -275,9 +288,9 @@ table ip nat {
     }
 
     case 'port_forward': {
-      const extPort = sanitize(settings.externalPort, '8080');
+      const extPort = sanitizePortRange(settings.externalPort, '8080');
       const intIp = sanitize(settings.internalIp, '192.168.100.15');
-      const intPort = sanitize(settings.internalPort, '80');
+      const intPort = sanitizePortRange(settings.internalPort, '80');
       const proto = settings.protocol === 'udp' ? 'udp' : settings.protocol === 'both' ? 'both' : 'tcp';
       const protocols = proto === 'both' ? ['tcp', 'udp'] : [proto];
 
@@ -325,7 +338,7 @@ ${fwdStatements}
     }
 
     case 'docker_shield': {
-      const port = sanitize(settings.dockerPort, '5432');
+      const port = sanitizePortRange(settings.dockerPort, '5432');
       const allowed = sanitize(settings.dockerAllowedSubnet, '10.8.0.0/24');
       const action = settings.dockerAction === 'REJECT' ? 'reject' : 'drop';
 
@@ -351,7 +364,7 @@ table inet filter {
     }
 
     case 'rate_limit': {
-      const port = sanitize(settings.rateLimitPort, '22');
+      const port = sanitizePortRange(settings.rateLimitPort, '22');
       const maxHits = sanitizeNumber(settings.rateLimitMaxHits, 4, 1, 1000);
       const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
 
@@ -432,10 +445,10 @@ export function generateVerificationCommands(settings: RoutingSettings, lang: La
   const wan = sanitize(settings.wanInterface, 'eth0');
   const port =
     settings.scenario === 'port_forward'
-      ? sanitize(settings.externalPort, '8080')
+      ? sanitizePortRange(settings.externalPort, '8080')
       : settings.scenario === 'docker_shield'
-      ? sanitize(settings.dockerPort, '5432')
-      : sanitize(settings.rateLimitPort, '22');
+      ? sanitizePortRange(settings.dockerPort, '5432')
+      : sanitizePortRange(settings.rateLimitPort, '22');
 
   return `# ================================================================
 # 🔍 ${isFa ? 'دستورات بررسی وضعیت، مانیتورینگ زنده و عیب‌یابی پکت‌ها' : 'Live Verification, Packet Monitoring & Diagnostic Commands'}

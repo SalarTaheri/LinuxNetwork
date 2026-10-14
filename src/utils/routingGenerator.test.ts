@@ -245,5 +245,29 @@ describe('Routing & NAT Generator', () => {
       assert.match(iptables, /--seconds 300/); // falls back to default 300 for invalid string
       assert.match(iptables, /--hitcount 4/); // falls back to default 4 for out-of-range number
     });
+
+    test('strips leading hyphens and option injection in port and interface fields', () => {
+      const maliciousSettings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'port_forward',
+        wanInterface: '-o eth0',
+        externalPort: '-j ACCEPT',
+        internalPort: '--dport 80',
+      };
+      const iptables = generateIptablesRules(maliciousSettings, 'en');
+      assert.doesNotMatch(iptables, /--dport -j ACCEPT/);
+      assert.match(iptables, /--dport 8080/); // falls back to default port on invalid option string
+      assert.match(iptables, /-i oeth0/); // leading hyphen stripped
+    });
+
+    test('quotes heredoc delimiters in pbr_multiwan scenario', () => {
+      const pbrSettings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'pbr_multiwan',
+        enableLooseRpFilter: true,
+      };
+      const iptables = generateIptablesRules(pbrSettings, 'en');
+      assert.match(iptables, /cat << "EOF"/);
+    });
   });
 });
