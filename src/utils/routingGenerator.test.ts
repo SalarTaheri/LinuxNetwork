@@ -210,7 +210,7 @@ describe('Routing & NAT Generator', () => {
   });
 
   describe('Security & Input Sanitization', () => {
-    test('sanitizes interface names, ports, and subnets against command injection', () => {
+    test('sanitizes interface names, ports, subnets, and table names against injection and path traversal', () => {
       const maliciousSettings: RoutingSettings = {
         ...defaultSettings,
         scenario: 'docker_shield',
@@ -221,13 +221,31 @@ describe('Routing & NAT Generator', () => {
       };
       const iptables = generateIptablesRules(maliciousSettings, 'en');
       assert.doesNotMatch(iptables, /;\s*rm/);
-      assert.doesNotMatch(iptables, /;\s*cat/);
+      assert.doesNotMatch(iptables, /cat/);
+      assert.doesNotMatch(iptables, /passwd/);
       assert.doesNotMatch(iptables, /;\s*reboot/);
+      assert.match(iptables, /--dport 5432/);
       assert.match(iptables, /-j DROP/);
 
       const nftables = generateNftablesRules(maliciousSettings, 'en');
       assert.doesNotMatch(nftables, /;\s*rm/);
+      assert.doesNotMatch(nftables, /cat/);
+      assert.match(nftables, /dport 5432/);
       assert.match(nftables, /drop/);
+    });
+
+    test('sanitizes routing table names and interfaces against sysctl path traversal', () => {
+      const maliciousSettings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'pbr_multiwan',
+        secondaryInterface: 'eth1/../proc/sys',
+        pbrTableName: 'table; shutdown /',
+      };
+      const iptables = generateIptablesRules(maliciousSettings, 'en');
+      assert.doesNotMatch(iptables, /\/proc\/sys/);
+      assert.doesNotMatch(iptables, /;\s*shutdown/);
+      assert.match(iptables, /dev eth1\.\.procsys/);
+      assert.match(iptables, /table tableshutdown/);
     });
 
     test('sanitizes numeric parameters and handles undefined/null values without crashing', () => {
