@@ -212,7 +212,7 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
                     value={settings.wanInterface}
                     onChange={(e) => setSettings({ ...settings, wanInterface: e.target.value })}
                     placeholder="eth0"
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full bg-slate-950 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 focus-visible:outline-none font-mono"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -224,7 +224,7 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
                     value={settings.lanInterface}
                     onChange={(e) => setSettings({ ...settings, lanInterface: e.target.value })}
                     placeholder="eth1"
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full bg-slate-950 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 focus-visible:outline-none font-mono"
                   />
                 </div>
               </div>
@@ -239,7 +239,7 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
                     value={settings.lanSubnet}
                     onChange={(e) => setSettings({ ...settings, lanSubnet: e.target.value })}
                     placeholder="192.168.100.0/24"
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full bg-slate-950 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 focus-visible:outline-none font-mono"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -249,7 +249,7 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
                   <select
                     value={settings.natMode}
                     onChange={(e) => setSettings({ ...settings, natMode: e.target.value as NatMode })}
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-slate-950 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 focus-visible:outline-none cursor-pointer"
                   >
                     <option value="masquerade">{t.routing.natModeMasq}</option>
                     <option value="snat">{t.routing.natModeSnat}</option>
@@ -267,7 +267,7 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
                     value={settings.staticPublicIp}
                     onChange={(e) => setSettings({ ...settings, staticPublicIp: e.target.value })}
                     placeholder="203.0.113.10"
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full bg-slate-950 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 focus-visible:outline-none font-mono"
                   />
                 </div>
               )}
@@ -279,7 +279,7 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
                     type="checkbox"
                     checked={settings.enableDnsForwarding}
                     onChange={(e) => setSettings({ ...settings, enableDnsForwarding: e.target.checked })}
-                    className="rounded border-slate-700 text-emerald-500 focus:ring-emerald-500/20 bg-slate-950 h-4 w-4"
+                    className="rounded border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none bg-slate-950 h-4 w-4 cursor-pointer"
                   />
                   <span>{t.routing.dnsFwdLabel}</span>
                 </label>
@@ -289,7 +289,7 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
                     type="checkbox"
                     checked={settings.enableMssClamping}
                     onChange={(e) => setSettings({ ...settings, enableMssClamping: e.target.checked })}
-                    className="rounded border-slate-700 text-emerald-500 focus:ring-emerald-500/20 bg-slate-950 h-4 w-4"
+                    className="rounded border-slate-700 text-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none bg-slate-950 h-4 w-4 cursor-pointer"
                   />
                   <span>{t.routing.mssClampLabel}</span>
                 </label>
