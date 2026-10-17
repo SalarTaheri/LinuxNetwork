@@ -230,6 +230,30 @@ describe('Routing & NAT Generator', () => {
       assert.match(nftables, /drop/);
     });
 
+    test('sanitizes whitespace, newlines, and option injection in interface, IP, subnet, and port fields', () => {
+      const injectionSettings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'port_forward',
+        wanInterface: 'eth0 -j ACCEPT\ncat /etc/passwd',
+        externalPort: '8080 --to-destination 1.1.1.1:22',
+        internalIp: '192.168.100.15 -j ACCEPT',
+        internalPort: '80\nmalicious_cmd',
+        lanSubnet: '192.168.100.0/24\nPOSTROUTING',
+      };
+
+      const iptables = generateIptablesRules(injectionSettings, 'en');
+      assert.doesNotMatch(iptables, /eth0 -j ACCEPT/);
+      assert.doesNotMatch(iptables, /8080 --to-destination/);
+      assert.doesNotMatch(iptables, /192\.168\.100\.15 -j ACCEPT/);
+      assert.doesNotMatch(iptables, /malicious_cmd/);
+      assert.doesNotMatch(iptables, /POSTROUTING -s 192\.168\.100\.0\/24POSTROUTING\n/);
+
+      const nftables = generateNftablesRules(injectionSettings, 'en');
+      assert.doesNotMatch(nftables, /eth0 -j ACCEPT/);
+      assert.doesNotMatch(nftables, /8080 --to-destination/);
+      assert.doesNotMatch(nftables, /malicious_cmd/);
+    });
+
     test('sanitizes numeric parameters and handles undefined/null values without crashing', () => {
       const maliciousSettings: RoutingSettings = {
         ...defaultSettings,
