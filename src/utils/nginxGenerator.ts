@@ -124,9 +124,10 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
     lines.push('');
   }
 
-  // Security Headers
+  // Security Headers & Version Suppression
   if (settings.enableSecurityHeaders) {
-    lines.push('    # Security Headers');
+    lines.push('    # Security Headers & Version Suppression');
+    lines.push('    server_tokens off;');
     if (settings.enableSsl) {
       lines.push('    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;');
     }
@@ -134,6 +135,7 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
     lines.push('    add_header X-Content-Type-Options "nosniff" always;');
     lines.push('    add_header X-XSS-Protection "1; mode=block" always;');
     lines.push('    add_header Referrer-Policy "strict-origin-when-cross-origin" always;');
+    lines.push('    add_header Permissions-Policy "geolocation=(), camera=(), microphone=()" always;');
     lines.push('');
   }
 
