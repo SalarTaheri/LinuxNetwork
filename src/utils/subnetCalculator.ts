@@ -19,12 +19,12 @@ export function intToIp(int: number): string {
   return `${(int >>> 24) & 255}.${(int >>> 16) & 255}.${(int >>> 8) & 255}.${int & 255}`;
 }
 
+// Pre-computed 8-bit binary string lookup table (0 to 255)
+// Eliminates 4x .toString(2).padStart(8, '0') radix conversions and string allocations per IP integer conversion
+const BYTE_TO_BINARY = Array.from({ length: 256 }, (_, i) => i.toString(2).padStart(8, '0'));
+
 export function intToBinary(int: number): string {
-  const b1 = ((int >>> 24) & 255).toString(2).padStart(8, '0');
-  const b2 = ((int >>> 16) & 255).toString(2).padStart(8, '0');
-  const b3 = ((int >>> 8) & 255).toString(2).padStart(8, '0');
-  const b4 = (int & 255).toString(2).padStart(8, '0');
-  return `${b1}.${b2}.${b3}.${b4}`;
+  return `${BYTE_TO_BINARY[(int >>> 24) & 255]}.${BYTE_TO_BINARY[(int >>> 16) & 255]}.${BYTE_TO_BINARY[(int >>> 8) & 255]}.${BYTE_TO_BINARY[int & 255]}`;
 }
 
 export function cidrToNetmaskInt(cidr: number): number {
