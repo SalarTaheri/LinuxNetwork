@@ -30,6 +30,8 @@ describe('Nginx Generator', () => {
     assert.match(config, /ssl_certificate \/etc\/letsencrypt\/live\/api\.example\.com\/fullchain\.pem;/);
     assert.match(config, /client_max_body_size 50M;/);
     assert.match(config, /proxy_pass http:\/\/backend_upstream;/);
+    assert.match(config, /server_tokens off;/);
+    assert.match(config, /add_header Permissions-Policy "geolocation=\(\), camera=\(\), microphone=\(\)" always;/);
   });
 
   it('handles empty/undefined/null settings gracefully without crashing', () => {
