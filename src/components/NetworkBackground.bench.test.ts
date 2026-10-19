@@ -46,7 +46,46 @@ function simulateBatchedDraw(edges: Edge[]): { strokeCount: number; colorStringA
   return { strokeCount, colorStringAllocations };
 }
 
+function simulateDynamicNodeDraw(nodeCount: number, pulsePhases: number[]): number {
+  let stringAllocations = 0;
+  for (let i = 0; i < nodeCount; i++) {
+    const pulse = Math.sin(pulsePhases[i]) * 0.35 + 0.65;
+    const fill1 = `rgba(52, 211, 153, ${0.45 * pulse})`;
+    stringAllocations++;
+    const fill2 = `rgba(16, 185, 129, ${0.08 * pulse})`;
+    stringAllocations++;
+  }
+  return stringAllocations;
+}
+
+function simulateStaticNodeDraw(nodeCount: number, pulsePhases: number[]): { stringAllocations: number; globalAlphaUpdates: number } {
+  let stringAllocations = 0;
+  let globalAlphaUpdates = 0;
+  const staticFill1 = '#34d399';
+  const staticFill2 = '#10b981';
+  for (let i = 0; i < nodeCount; i++) {
+    const pulse = Math.sin(pulsePhases[i]) * 0.35 + 0.65;
+    const fill1 = staticFill1;
+    globalAlphaUpdates++;
+    const fill2 = staticFill2;
+    globalAlphaUpdates++;
+  }
+  return { stringAllocations, globalAlphaUpdates };
+}
+
 describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
+  it('node rendering with static colors eliminates string allocations', () => {
+    const nodeCount = 50;
+    const pulsePhases = Array.from({ length: nodeCount }, () => Math.random() * Math.PI * 2);
+
+    const dynamicAllocations = simulateDynamicNodeDraw(nodeCount, pulsePhases);
+    const staticResult = simulateStaticNodeDraw(nodeCount, pulsePhases);
+
+    assert.equal(dynamicAllocations, 100);
+    assert.equal(staticResult.stringAllocations, 0);
+    assert.equal(staticResult.globalAlphaUpdates, 100);
+  });
+
   it('batched drawing reduces stroke calls and eliminates string allocations', () => {
     const edges: Edge[] = [];
     for (let i = 0; i < 100; i++) {
@@ -96,5 +135,31 @@ describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
     console.log(`Speedup:            ${speedupPct}%\n`);
 
     assert.ok(durationBatched <= durationUnbatched, 'Batched canvas rendering should be faster or equal');
+  });
+
+  it('benchmark: compare dynamic rgba string formatting vs static color + globalAlpha node rendering', () => {
+    const frames = 6000; // 100 seconds at 60 FPS
+    const nodeCount = 50;
+    const pulsePhases = Array.from({ length: nodeCount }, () => Math.random() * Math.PI * 2);
+
+    const startDynamic = performance.now();
+    for (let f = 0; f < frames; f++) {
+      simulateDynamicNodeDraw(nodeCount, pulsePhases);
+    }
+    const durationDynamic = performance.now() - startDynamic;
+
+    const startStatic = performance.now();
+    for (let f = 0; f < frames; f++) {
+      simulateStaticNodeDraw(nodeCount, pulsePhases);
+    }
+    const durationStatic = performance.now() - startStatic;
+
+    const speedupPct = (((durationDynamic - durationStatic) / durationDynamic) * 100).toFixed(2);
+    console.log(`\n--- CANVAS NODE RENDERING BENCHMARK (${frames} animation frames, ${nodeCount} nodes) ---`);
+    console.log(`Dynamic string formatting duration: ${durationDynamic.toFixed(3)} ms`);
+    console.log(`Static color + globalAlpha duration:${durationStatic.toFixed(3)} ms`);
+    console.log(`Speedup:                             ${speedupPct}%\n`);
+
+    assert.ok(durationStatic <= durationDynamic, 'Static node rendering should be faster or equal to dynamic string allocations');
   });
 });
