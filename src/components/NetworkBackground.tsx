@@ -110,6 +110,9 @@ export const NetworkBackground: React.FC = () => {
     const maxDistance = 145;
     const maxDistanceSq = maxDistance * maxDistance;
 
+    // Reuse edge bucket arrays across animation frames to prevent memory allocation in 60 FPS loop
+    const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
+
     const loop = (currentTime: number) => {
       if (!isVisible) return;
       animationFrameId = requestAnimationFrame(loop);
@@ -157,8 +160,10 @@ export const NetworkBackground: React.FC = () => {
         }
       }
 
-      // Draw connection edges (batched by alpha bucket to avoid per-edge stroke() calls and string allocations)
-      const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
+      // Pre-allocated bucket arrays for edges and static constants to prevent heap allocations & GC pressure in 60 FPS loop
+      for (let b = 0; b < 5; b++) {
+        alphaBuckets[b].length = 0;
+      }
       const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
 
       for (let i = 0; i < nodes.length; i++) {
@@ -237,22 +242,25 @@ export const NetworkBackground: React.FC = () => {
         ctx.fill();
       }
 
-      // Draw nodes on top
+      // Draw nodes on top using static hex colors + globalAlpha to eliminate ~6,000 string allocations/sec
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
         const pulse = Math.sin(node.pulsePhase) * 0.35 + 0.65;
 
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(52, 211, 153, ${0.45 * pulse})`;
+        ctx.fillStyle = '#34d399';
+        ctx.globalAlpha = 0.45 * pulse;
         ctx.fill();
 
         // Subtle node glow aura
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.radius * 2.2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(16, 185, 129, ${0.08 * pulse})`;
+        ctx.fillStyle = '#10b981';
+        ctx.globalAlpha = 0.08 * pulse;
         ctx.fill();
       }
+      ctx.globalAlpha = 1.0;
     };
 
     animationFrameId = requestAnimationFrame(loop);
