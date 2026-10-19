@@ -10,6 +10,24 @@ interface SetupScriptToolProps {
   lang: Language;
 }
 
+/**
+ * Sanitizes SSH port numbers to ensure valid integer range [1..65535].
+ */
+export function sanitizeSshPort(val: number | string | undefined | null, fallback = 2222): number {
+  const parsed = typeof val === 'number' ? val : parseInt(String(val || ''), 10);
+  if (isNaN(parsed) || !Number.isInteger(parsed) || parsed < 1 || parsed > 65535) {
+    return fallback;
+  }
+  return parsed;
+}
+
+/**
+ * Sanitizes queue discipline algorithm string to prevent argument injection.
+ */
+export function sanitizeQdisc(val: string | undefined | null): 'fq' | 'cake' {
+  return val === 'cake' ? 'cake' : 'fq';
+}
+
 export const SetupScriptTool: React.FC<SetupScriptToolProps> = React.memo(({ lang }) => {
   const t = translations[lang];
 
@@ -41,16 +59,18 @@ export const SetupScriptTool: React.FC<SetupScriptToolProps> = React.memo(({ lan
       flags.push('--bbr');
     }
 
-    if (settings.qdisc !== 'fq') {
-      flags.push(`--qdisc ${settings.qdisc}`);
+    const safeQdisc = sanitizeQdisc(settings.qdisc);
+    if (safeQdisc !== 'fq') {
+      flags.push(`--qdisc ${safeQdisc}`);
     }
 
     if (settings.enableSysctlOpt) {
       flags.push('--sysctl-opt');
     }
 
-    if (settings.enableCustomSshPort && settings.sshPort) {
-      flags.push(`--ssh-port ${settings.sshPort}`);
+    if (settings.enableCustomSshPort) {
+      const safePort = sanitizeSshPort(settings.sshPort, 2222);
+      flags.push(`--ssh-port ${safePort}`);
     }
 
     if (settings.disablePasswordAuth) {
@@ -318,7 +338,7 @@ ${settings.enableZsh ? '#   [✔] ZSH shell installed' : '#   [ ] ZSH skipped'}
                   min={1}
                   max={65535}
                   disabled={!settings.enableCustomSshPort}
-                  onChange={(e) => setSettings({ ...settings, sshPort: parseInt(e.target.value, 10) || 22 })}
+                  onChange={(e) => setSettings({ ...settings, sshPort: sanitizeSshPort(e.target.value, 2222) })}
                   className="w-24 bg-slate-950 disabled:opacity-40 border border-slate-700 rounded px-2.5 py-1 text-xs font-mono text-cyan-300 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none"
                   dir="ltr"
                 />
