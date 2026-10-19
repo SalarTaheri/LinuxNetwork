@@ -152,10 +152,15 @@ ip route get ${result.firstUsableIp}
             <div className="text-[11px] text-slate-400 font-medium">
               {t.subnet.quickPicks}
             </div>
-            <div className="flex flex-wrap gap-1.5 font-mono text-xs" dir="ltr">
+            <div className="flex flex-wrap gap-1.5 font-mono text-xs" dir="ltr" role="group" aria-label={t.subnet.quickPicks}>
               {QUICK_CIDR_MASKS.map((m) => {
                 const descObj = CIDR_HOST_DESCRIPTIONS[m];
                 const descText = descObj ? (lang === 'fa' ? descObj.fa : descObj.en) : '';
+                const isSelected = cidr === m;
+                const labelText = lang === 'fa'
+                  ? `انتخاب ساب‌نت /${m} (${descText})`
+                  : `Select CIDR /${m} (${descText})`;
+
                 return (
                   <motion.button
                     key={m}
@@ -164,12 +169,12 @@ ip route get ${result.firstUsableIp}
                     type="button"
                     onClick={() => setCidr(m)}
                     title={`/${m} — ${descText}`}
-                    aria-label={`Select CIDR /${m} (${descText})`}
-                    aria-pressed={cidr === m}
+                    aria-label={labelText}
+                    aria-pressed={isSelected}
                     className={`px-2.5 py-1 rounded text-xs border transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
-                      cidr === m
-                        ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold'
-                        : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-slate-200'
+                      isSelected
+                        ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold shadow-sm shadow-emerald-950/40'
+                        : 'bg-slate-800/40 border-slate-700/60 text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'
                     }`}
                   >
                     /{m}
