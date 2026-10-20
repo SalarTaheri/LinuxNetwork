@@ -51,6 +51,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
   const [copiedConfig, setCopiedConfig] = useState(false);
   const [copiedBash, setCopiedBash] = useState(false);
   const [copiedReload, setCopiedReload] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
   const [activeTab, setActiveTab] = useState<'config' | 'bash' | 'reload'>('config');
 
   const availableTabs = (['config', oneLinerBash && 'bash', reloadCommand && 'reload'].filter(Boolean) as ('config' | 'bash' | 'reload')[]);
@@ -100,15 +101,21 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
   };
 
   const handleDownload = () => {
-    const blob = new Blob([configText], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    try {
+      const blob = new Blob([configText], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      setDownloaded(true);
+      setTimeout(() => setDownloaded(false), 2000);
+    } catch (err) {
+      console.error('Download failed', err);
+    }
   };
 
   const currentDisplayContent =
@@ -292,12 +299,41 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
             whileTap={{ scale: 0.95 }}
             id="download-conf-btn"
             onClick={handleDownload}
-            aria-label={`${t.output.download} ${filename}`}
-            className="px-2.5 py-1.5 rounded-lg text-xs font-mono text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 transition-colors flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
+            aria-label={downloaded ? `${filename} downloaded` : `${t.output.download} ${filename}`}
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
+              downloaded
+                ? 'bg-cyan-600 text-white border border-cyan-500 shadow-cyan-900/50 shadow-md'
+                : 'text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80'
+            }`}
             title={t.output.download}
           >
-            <Download className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">{t.output.download}</span>
+            <AnimatePresence mode="wait" initial={false}>
+              {downloaded ? (
+                <motion.span
+                  key="check-download"
+                  initial={{ scale: 0.6, rotate: -20, opacity: 0 }}
+                  animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                  exit={{ scale: 0.6, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                  className="flex items-center gap-1.5 text-cyan-200"
+                >
+                  <Check className="w-3.5 h-3.5 text-white" />
+                  <span className="hidden sm:inline">{lang === 'fa' ? 'دانلود شد!' : 'Downloaded!'}</span>
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="download-icon"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex items-center gap-1.5"
+                >
+                  <Download className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className="hidden sm:inline">{t.output.download}</span>
+                </motion.span>
+              )}
+            </AnimatePresence>
           </motion.button>
         </div>
       </div>
@@ -375,9 +411,10 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
         </div>
       )}
 
-      {/* Screen Reader Live Region for Copy Announcements */}
+      {/* Screen Reader Live Region for Copy & Download Announcements */}
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {(copiedConfig || copiedBash || copiedReload) && t.output.copied}
+        {downloaded && (lang === 'fa' ? 'فایل با موفقیت دانلود شد' : 'File downloaded successfully')}
       </div>
     </div>
   );
