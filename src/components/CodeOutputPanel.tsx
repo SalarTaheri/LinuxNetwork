@@ -132,6 +132,24 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
     return result;
   }, [currentDisplayContent]);
 
+  // Memoize line number JSX elements to avoid re-mapping N elements on every panel re-render (e.g. copy feedback state updates)
+  const lineNumbersElements = React.useMemo(() => {
+    return parsedLines.map((_, i) => (
+      <div key={i} className="leading-6">
+        {i + 1}
+      </div>
+    ));
+  }, [parsedLines]);
+
+  // Memoize syntax-highlighted code line JSX elements to preserve object references and skip DOM diffing during non-content re-renders
+  const codeLinesElements = React.useMemo(() => {
+    return parsedLines.map(({ line, lineClass }, i) => (
+      <div key={i} className={`${lineClass} whitespace-pre`}>
+        {line || ' '}
+      </div>
+    ));
+  }, [parsedLines]);
+
   const linesCount = parsedLines.length;
 
   return (
@@ -333,21 +351,13 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
           >
             {/* Line Numbers */}
             <div aria-hidden="true" className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0">
-              {parsedLines.map((_, i) => (
-                <div key={i} className="leading-6">
-                  {i + 1}
-                </div>
-              ))}
+              {lineNumbersElements}
             </div>
 
             {/* Code Lines with Syntax Coloring */}
             <pre className="font-mono flex-1 leading-6 focus:outline-none">
               <code>
-                {parsedLines.map(({ line, lineClass }, i) => (
-                  <div key={i} className={`${lineClass} whitespace-pre`}>
-                    {line || ' '}
-                  </div>
-                ))}
+                {codeLinesElements}
               </code>
             </pre>
           </motion.div>
