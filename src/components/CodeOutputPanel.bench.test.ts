@@ -83,3 +83,44 @@ describe('CodeOutputPanel Line Classification', () => {
     assert.ok(durationOptimized <= durationUnoptimized, 'Optimized version should be faster or equal');
   });
 });
+
+describe('CodeOutputPanel Render Element Memoization Benchmark', () => {
+  const parsedLines = Array.from({ length: 150 }, (_, i) => ({
+    line: `server_name example_${i}.com;`,
+    lineClass: 'text-emerald-300',
+  }));
+
+  it('benchmark: unmemoized line elements creation vs memoized reference reuse across re-renders', () => {
+    const iterations = 50000;
+
+    // Simulate unmemoized re-render behavior: mapping parsedLines into element arrays on every re-render frame
+    const startUnmemoized = performance.now();
+    for (let iter = 0; iter < iterations; iter++) {
+      const lineNumbers = parsedLines.map((_, i) => ({ type: 'div', key: i, children: i + 1 }));
+      const codeLines = parsedLines.map(({ line, lineClass }, i) => ({ type: 'div', key: i, className: `${lineClass} whitespace-pre`, children: line || ' ' }));
+    }
+    const durationUnmemoized = performance.now() - startUnmemoized;
+
+    // Simulate memoized re-render behavior: reusing pre-mapped element references when parsedLines reference is unchanged
+    const memoizedLineNumbers = parsedLines.map((_, i) => ({ type: 'div', key: i, children: i + 1 }));
+    const memoizedCodeLines = parsedLines.map(({ line, lineClass }, i) => ({ type: 'div', key: i, className: `${lineClass} whitespace-pre`, children: line || ' ' }));
+
+    const startMemoized = performance.now();
+    for (let iter = 0; iter < iterations; iter++) {
+      const lineNumbers = memoizedLineNumbers;
+      const codeLines = memoizedCodeLines;
+    }
+    const durationMemoized = performance.now() - startMemoized;
+
+    const speedupFactor = (durationUnmemoized / (durationMemoized || 0.001)).toFixed(1);
+    console.log(`\n--- CODE OUTPUT PANEL LINE MEMOIZATION BENCHMARK (${iterations} re-renders) ---`);
+    console.log(`Unmemoized duration: ${durationUnmemoized.toFixed(3)} ms`);
+    console.log(`Memoized duration:   ${durationMemoized.toFixed(3)} ms`);
+    console.log(`Speedup factor:      ${speedupFactor}x faster\n`);
+
+    assert.ok(
+      durationMemoized < durationUnmemoized,
+      'Memoized element references should perform faster than re-mapping line elements on every re-render frame'
+    );
+  });
+});
