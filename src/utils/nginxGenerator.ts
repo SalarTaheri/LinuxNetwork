@@ -8,6 +8,15 @@ function sanitizeDomain(val: string | undefined | null, fallback: string): strin
   return cleaned || fallback;
 }
 
+function sanitizeFilename(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '')
+    .trim()
+    .replace(/\.{2,}/g, '_')
+    .replace(/[^a-zA-Z0-9_.-]/g, '_')
+    .replace(/^[._]+/, '');
+  return cleaned || fallback;
+}
+
 function sanitizeServerAlias(val: string | undefined | null): string {
   return (val || '')
     .trim()
@@ -54,7 +63,7 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
   const lines: string[] = [
     '# ==========================================================================',
     `# LinuxNetwork.ir - Nginx Reverse Proxy Config for ${domain}`,
-    '# Target File: /etc/nginx/sites-available/' + domain.replace(/[^a-zA-Z0-9_.-]/g, '_') + '.conf',
+    '# Target File: /etc/nginx/sites-available/' + sanitizeFilename(domain, 'api.example.com') + '.conf',
     '# ==========================================================================',
     '',
   ];
@@ -224,7 +233,7 @@ export function generateNginxConfig(settings: NginxSettings, lang: 'fa' | 'en'):
 }
 
 export function generateNginxOneLiner(domain: string, configText: string): string {
-  const safeName = (domain || 'reverse-proxy').replace(/[^a-zA-Z0-9_.-]/g, '_');
+  const safeName = sanitizeFilename(domain, 'reverse-proxy');
   const safeConfig = (configText || '').trim().replace(/'/g, "'\\''");
   return `sudo bash -c 'cat << "EOF" > /etc/nginx/sites-available/${safeName}.conf
 ${safeConfig}
