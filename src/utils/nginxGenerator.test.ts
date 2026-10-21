@@ -136,4 +136,16 @@ describe('Nginx Generator', () => {
     const { stderr } = await execFileAsync('bash', ['-n', '-c', scriptWithoutSudo]);
     assert.equal(stderr, '');
   });
+
+  it('sanitizes domain in generateNginxOneLiner against path traversal and command injection', () => {
+    const maliciousDomain = "../../../etc/passwd; echo 'hacked'";
+    const config = "server { listen 80; }";
+    const oneLiner = generateNginxOneLiner(maliciousDomain, config);
+
+    assert.doesNotMatch(oneLiner, /\.\.\/\.\.\//);
+    assert.match(oneLiner, /\/etc\/nginx\/sites-available\/etc_passwd__echo__hacked_\.conf/);
+
+    const res = spawnSync('bash', ['-n', '-c', oneLiner], { encoding: 'utf-8' });
+    assert.equal(res.status, 0, `Bash syntax error in one-liner: ${res.stderr}`);
+  });
 });
