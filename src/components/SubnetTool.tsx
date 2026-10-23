@@ -182,15 +182,28 @@ ip route get ${result.firstUsableIp}
           {/* Gateway & Interface for Command Generator */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-800/80">
             <div className="space-y-1">
-              <label htmlFor="subnet-gateway-ip" className="text-[11px] text-slate-400 font-mono cursor-pointer">
-                Gateway IP for routes:
-              </label>
+              <div className="flex items-center justify-between gap-1">
+                <label htmlFor="subnet-gateway-ip" className="text-[11px] text-slate-400 font-mono cursor-pointer">
+                  Gateway IP for routes:
+                </label>
+                {result && result.firstUsableIp && gatewayIp !== result.firstUsableIp && (
+                  <button
+                    type="button"
+                    onClick={() => setGatewayIp(result.firstUsableIp)}
+                    title={`Use first usable IP (${result.firstUsableIp}) as Gateway`}
+                    aria-label={`Set Gateway IP to first usable IP ${result.firstUsableIp}`}
+                    className="text-[10px] font-mono text-cyan-400 hover:text-cyan-300 underline cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none rounded px-0.5"
+                  >
+                    Use {result.firstUsableIp}
+                  </button>
+                )}
+              </div>
               <input
                 id="subnet-gateway-ip"
                 type="text"
                 value={gatewayIp}
                 onChange={(e) => setGatewayIp(e.target.value)}
-                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500"
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none"
                 dir="ltr"
               />
             </div>
@@ -203,7 +216,7 @@ ip route get ${result.firstUsableIp}
                 type="text"
                 value={iface}
                 onChange={(e) => setIface(e.target.value)}
-                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500"
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none"
                 dir="ltr"
               />
             </div>
