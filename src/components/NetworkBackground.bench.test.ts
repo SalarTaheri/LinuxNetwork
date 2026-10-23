@@ -26,19 +26,24 @@ function simulateUnbatchedDraw(edges: Edge[]): { strokeCount: number; colorStrin
   return { strokeCount, colorStringAllocations };
 }
 
+// Persistent buckets reused across animation frames to eliminate heap allocations
+const persistentAlphaBuckets: Node[][] = [[], [], [], [], []];
+
 function simulateBatchedDraw(edges: Edge[]): { strokeCount: number; colorStringAllocations: number } {
-  const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
+  for (let b = 0; b < 5; b++) {
+    persistentAlphaBuckets[b].length = 0;
+  }
   let strokeCount = 0;
   let colorStringAllocations = 0;
 
   for (let i = 0; i < edges.length; i++) {
     const edge = edges[i];
     const bucketIndex = Math.min(4, Math.floor((edge.alpha / 0.2) * 5));
-    alphaBuckets[bucketIndex].push({ n1: edge.n1, n2: edge.n2 });
+    persistentAlphaBuckets[bucketIndex].push(edge.n1, edge.n2);
   }
 
   for (let b = 0; b < 5; b++) {
-    if (alphaBuckets[b].length > 0) {
+    if (persistentAlphaBuckets[b].length > 0) {
       strokeCount++;
     }
   }
