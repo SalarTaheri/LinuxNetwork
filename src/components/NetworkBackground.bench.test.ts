@@ -12,38 +12,59 @@ interface Edge {
   alpha: number;
 }
 
-function simulateUnbatchedDraw(edges: Edge[]): { strokeCount: number; colorStringAllocations: number } {
-  let strokeCount = 0;
-  let colorStringAllocations = 0;
+class MockCanvasContext {
+  strokeStyle = '';
+  globalAlpha = 1.0;
+  strokeCalls = 0;
+  colorStringAllocations = 0;
 
-  for (let i = 0; i < edges.length; i++) {
-    const edge = edges[i];
-    const colorStr = `rgba(16, 185, 129, ${edge.alpha})`;
-    colorStringAllocations++;
-    strokeCount++;
+  beginPath() {}
+  moveTo(x: number, y: number) {}
+  lineTo(x: number, y: number) {}
+  stroke() {
+    this.strokeCalls++;
   }
-
-  return { strokeCount, colorStringAllocations };
 }
 
-function simulateBatchedDraw(edges: Edge[]): { strokeCount: number; colorStringAllocations: number } {
-  const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
-  let strokeCount = 0;
-  let colorStringAllocations = 0;
+function simulateUnbatchedDraw(edges: Edge[], ctx: MockCanvasContext): void {
+  for (let i = 0; i < edges.length; i++) {
+    const edge = edges[i];
+    ctx.strokeStyle = `rgba(16, 185, 129, ${edge.alpha})`;
+    ctx.colorStringAllocations++;
+    ctx.beginPath();
+    ctx.moveTo(edge.n1.x, edge.n1.y);
+    ctx.lineTo(edge.n2.x, edge.n2.y);
+    ctx.stroke();
+  }
+}
+
+// Persistent bucket array for zero-allocation batched rendering simulation
+const persistentAlphaBuckets: Node[][] = [[], [], [], [], []];
+
+function simulateBatchedDraw(edges: Edge[], ctx: MockCanvasContext): void {
+  for (let b = 0; b < 5; b++) {
+    persistentAlphaBuckets[b].length = 0;
+  }
 
   for (let i = 0; i < edges.length; i++) {
     const edge = edges[i];
     const bucketIndex = Math.min(4, Math.floor((edge.alpha / 0.2) * 5));
-    alphaBuckets[bucketIndex].push({ n1: edge.n1, n2: edge.n2 });
+    persistentAlphaBuckets[bucketIndex].push(edge.n1, edge.n2);
   }
 
+  ctx.strokeStyle = '#10b981';
   for (let b = 0; b < 5; b++) {
-    if (alphaBuckets[b].length > 0) {
-      strokeCount++;
-    }
-  }
+    const bucket = persistentAlphaBuckets[b];
+    if (bucket.length === 0) continue;
 
-  return { strokeCount, colorStringAllocations };
+    ctx.globalAlpha = 0.04 * (b + 1);
+    ctx.beginPath();
+    for (let idx = 0; idx < bucket.length; idx += 2) {
+      ctx.moveTo(bucket[idx].x, bucket[idx].y);
+      ctx.lineTo(bucket[idx + 1].x, bucket[idx + 1].y);
+    }
+    ctx.stroke();
+  }
 }
 
 describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
@@ -57,13 +78,16 @@ describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
       });
     }
 
-    const unbatched = simulateUnbatchedDraw(edges);
-    const batched = simulateBatchedDraw(edges);
+    const unbatchedCtx = new MockCanvasContext();
+    simulateUnbatchedDraw(edges, unbatchedCtx);
 
-    assert.equal(unbatched.strokeCount, 100);
-    assert.equal(unbatched.colorStringAllocations, 100);
-    assert.ok(batched.strokeCount <= 5);
-    assert.equal(batched.colorStringAllocations, 0);
+    const batchedCtx = new MockCanvasContext();
+    simulateBatchedDraw(edges, batchedCtx);
+
+    assert.equal(unbatchedCtx.strokeCalls, 100);
+    assert.equal(unbatchedCtx.colorStringAllocations, 100);
+    assert.ok(batchedCtx.strokeCalls <= 5);
+    assert.equal(batchedCtx.colorStringAllocations, 0);
   });
 
   it('benchmark: compare unbatched vs batched rendering simulation', () => {
@@ -77,15 +101,17 @@ describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
       });
     }
 
+    const unbatchedCtx = new MockCanvasContext();
     const startUnbatched = performance.now();
     for (let f = 0; f < frames; f++) {
-      simulateUnbatchedDraw(edgesPerFrame);
+      simulateUnbatchedDraw(edgesPerFrame, unbatchedCtx);
     }
     const durationUnbatched = performance.now() - startUnbatched;
 
+    const batchedCtx = new MockCanvasContext();
     const startBatched = performance.now();
     for (let f = 0; f < frames; f++) {
-      simulateBatchedDraw(edgesPerFrame);
+      simulateBatchedDraw(edgesPerFrame, batchedCtx);
     }
     const durationBatched = performance.now() - startBatched;
 
