@@ -195,6 +195,21 @@ describe('Routing & NAT Generator', () => {
       assert.equal(stderr, '');
     });
 
+    test('pbr_multiwan one-liner generates valid bash syntax', async () => {
+      const pbrSettings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'pbr_multiwan',
+      };
+      const oneLiner = generateRoutingOneLiner(pbrSettings, 'en');
+      const scriptWithoutSudo = oneLiner.replace(/^sudo /, '');
+      const { execFile } = await import('node:child_process');
+      const { promisify } = await import('node:util');
+      const execFileAsync = promisify(execFile);
+
+      const { stderr } = await execFileAsync('bash', ['-n', '-c', scriptWithoutSudo]);
+      assert.equal(stderr, '');
+    });
+
     test('verification commands output tcpdump and iptables query commands', () => {
       const verifyCmd = generateVerificationCommands(defaultSettings, 'fa');
       assert.match(verifyCmd, /iptables -t nat -nvL/);
@@ -244,6 +259,20 @@ describe('Routing & NAT Generator', () => {
       assert.match(iptables, /BRUTEFORCE_22/);
       assert.match(iptables, /--seconds 300/); // falls back to default 300 for invalid string
       assert.match(iptables, /--hitcount 4/); // falls back to default 4 for out-of-range number
+    });
+
+    test('strictly sanitizes port parameters against non-numeric payloads', () => {
+      const maliciousPortSettings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'port_forward',
+        externalPort: '8080; echo bad',
+        internalPort: '80/tcp',
+      };
+      const output = generateIptablesRules(maliciousPortSettings, 'en');
+      assert.match(output, /--dport 8080/);
+      assert.match(output, /:80\b/);
+      assert.doesNotMatch(output, /echobad/);
+      assert.doesNotMatch(output, /:80\/tcp/);
     });
   });
 });

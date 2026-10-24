@@ -8,6 +8,14 @@ function sanitize(val: string | undefined | null, fallback: string): string {
   return cleaned || fallback;
 }
 
+/**
+ * Sanitizes network port numbers and port ranges to prevent non-numeric parameter injection.
+ */
+function sanitizePortString(val: string | number | undefined | null, fallback: string): string {
+  const cleaned = String(val || '').trim().replace(/[^0-9:-]/g, '');
+  return cleaned || fallback;
+}
+
 function sanitizeNumber(val: number | string | undefined | null, fallback: number, min = 1, max = 65535): number {
   const parsed = typeof val === 'number' ? val : parseInt(String(val || ''), 10);
   if (isNaN(parsed) || parsed < min || parsed > max) {
@@ -64,9 +72,9 @@ ${dnsRule}${mssRule}
     }
 
     case 'port_forward': {
-      const extPort = sanitize(settings.externalPort, '8080');
+      const extPort = sanitizePortString(settings.externalPort, '8080');
       const intIp = sanitize(settings.internalIp, '192.168.100.15');
-      const intPort = sanitize(settings.internalPort, '80');
+      const intPort = sanitizePortString(settings.internalPort, '80');
       const proto = settings.protocol === 'udp' ? 'udp' : settings.protocol === 'both' ? 'both' : 'tcp';
 
       const protocols = proto === 'both' ? ['tcp', 'udp'] : [proto];
@@ -121,7 +129,7 @@ ${fwdRules}${hairpinRules}
     }
 
     case 'docker_shield': {
-      const port = sanitize(settings.dockerPort, '5432');
+      const port = sanitizePortString(settings.dockerPort, '5432');
       const allowed = sanitize(settings.dockerAllowedSubnet, '10.8.0.0/24');
       const action = settings.dockerAction === 'REJECT' ? 'REJECT' : 'DROP';
 
@@ -158,7 +166,7 @@ sudo iptables -A DOCKER-USER -j RETURN
 sudo sysctl -w net.ipv4.conf.all.rp_filter=2
 sudo sysctl -w net.ipv4.conf.default.rp_filter=2
 sudo sysctl -w net.ipv4.conf.${secIf}.rp_filter=2
-cat <<EOF | sudo tee /etc/sysctl.d/99-rp-filter.conf
+cat << "EOF" | sudo tee /etc/sysctl.d/99-rp-filter.conf
 net.ipv4.conf.all.rp_filter = 2
 net.ipv4.conf.default.rp_filter = 2
 net.ipv4.conf.${secIf}.rp_filter = 2
@@ -188,7 +196,7 @@ ip route show table ${tableName}`;
     }
 
     case 'rate_limit': {
-      const port = sanitize(settings.rateLimitPort, '22');
+      const port = sanitizePortString(settings.rateLimitPort, '22');
       const maxHits = sanitizeNumber(settings.rateLimitMaxHits, 4, 1, 1000);
       const winSec = sanitizeNumber(settings.rateLimitWindowSeconds, 60, 1, 86400);
       const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
@@ -275,9 +283,9 @@ table ip nat {
     }
 
     case 'port_forward': {
-      const extPort = sanitize(settings.externalPort, '8080');
+      const extPort = sanitizePortString(settings.externalPort, '8080');
       const intIp = sanitize(settings.internalIp, '192.168.100.15');
-      const intPort = sanitize(settings.internalPort, '80');
+      const intPort = sanitizePortString(settings.internalPort, '80');
       const proto = settings.protocol === 'udp' ? 'udp' : settings.protocol === 'both' ? 'both' : 'tcp';
       const protocols = proto === 'both' ? ['tcp', 'udp'] : [proto];
 
@@ -325,7 +333,7 @@ ${fwdStatements}
     }
 
     case 'docker_shield': {
-      const port = sanitize(settings.dockerPort, '5432');
+      const port = sanitizePortString(settings.dockerPort, '5432');
       const allowed = sanitize(settings.dockerAllowedSubnet, '10.8.0.0/24');
       const action = settings.dockerAction === 'REJECT' ? 'reject' : 'drop';
 
@@ -351,7 +359,7 @@ table inet filter {
     }
 
     case 'rate_limit': {
-      const port = sanitize(settings.rateLimitPort, '22');
+      const port = sanitizePortString(settings.rateLimitPort, '22');
       const maxHits = sanitizeNumber(settings.rateLimitMaxHits, 4, 1, 1000);
       const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
 
@@ -392,7 +400,7 @@ table inet filter {
  */
 export function generateRoutingOneLiner(settings: RoutingSettings, lang: Language): string {
   const rawIptables = generateIptablesRules(settings, lang);
-  const safeIptables = rawIptables.replace(/^sudo /gm, '').replace(/'/g, "'\\''");
+  const safeIptables = rawIptables.replace(/\bsudo\s+/g, '').replace(/'/g, "'\\''");
 
   return `sudo bash -c '
 set -e
@@ -432,10 +440,10 @@ export function generateVerificationCommands(settings: RoutingSettings, lang: La
   const wan = sanitize(settings.wanInterface, 'eth0');
   const port =
     settings.scenario === 'port_forward'
-      ? sanitize(settings.externalPort, '8080')
+      ? sanitizePortString(settings.externalPort, '8080')
       : settings.scenario === 'docker_shield'
-      ? sanitize(settings.dockerPort, '5432')
-      : sanitize(settings.rateLimitPort, '22');
+      ? sanitizePortString(settings.dockerPort, '5432')
+      : sanitizePortString(settings.rateLimitPort, '22');
 
   return `# ================================================================
 # 🔍 ${isFa ? 'دستورات بررسی وضعیت، مانیتورینگ زنده و عیب‌یابی پکت‌ها' : 'Live Verification, Packet Monitoring & Diagnostic Commands'}
