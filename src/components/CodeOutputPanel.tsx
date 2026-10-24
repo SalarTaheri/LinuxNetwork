@@ -51,7 +51,9 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
   const [copiedConfig, setCopiedConfig] = useState(false);
   const [copiedBash, setCopiedBash] = useState(false);
   const [copiedReload, setCopiedReload] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
   const [activeTab, setActiveTab] = useState<'config' | 'bash' | 'reload'>('config');
+  const [statusMessage, setStatusMessage] = useState<string>('');
 
   const availableTabs = (['config', oneLinerBash && 'bash', reloadCommand && 'reload'].filter(Boolean) as ('config' | 'bash' | 'reload')[]);
 
@@ -67,10 +69,16 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
     }
   };
 
+  const announceStatus = (msg: string) => {
+    setStatusMessage(msg);
+    setTimeout(() => setStatusMessage(''), 3000);
+  };
+
   const handleCopyConfig = async () => {
     try {
       await navigator.clipboard.writeText(configText);
       setCopiedConfig(true);
+      announceStatus(`${filename} - ${t.output.copied}`);
       setTimeout(() => setCopiedConfig(false), 2000);
     } catch (err) {
       console.error('Copy failed', err);
@@ -82,6 +90,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
     try {
       await navigator.clipboard.writeText(oneLinerBash);
       setCopiedBash(true);
+      announceStatus(t.output.bashCopied || t.output.copied);
       setTimeout(() => setCopiedBash(false), 2000);
     } catch (err) {
       console.error('Copy failed', err);
@@ -93,6 +102,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
     try {
       await navigator.clipboard.writeText(reloadCommand);
       setCopiedReload(true);
+      announceStatus(t.output.copied);
       setTimeout(() => setCopiedReload(false), 2000);
     } catch (err) {
       console.error('Copy failed', err);
@@ -100,15 +110,22 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
   };
 
   const handleDownload = () => {
-    const blob = new Blob([configText], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    try {
+      const blob = new Blob([configText], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      setDownloaded(true);
+      announceStatus(`${filename} ${t.output.download}`);
+      setTimeout(() => setDownloaded(false), 2000);
+    } catch (err) {
+      console.error('Download failed', err);
+    }
   };
 
   const currentDisplayContent =
@@ -293,11 +310,40 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
             id="download-conf-btn"
             onClick={handleDownload}
             aria-label={`${t.output.download} ${filename}`}
-            className="px-2.5 py-1.5 rounded-lg text-xs font-mono text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 transition-colors flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
+              downloaded
+                ? 'bg-cyan-600 text-white border border-cyan-400 shadow-cyan-900/50 shadow-md'
+                : 'text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80'
+            }`}
             title={t.output.download}
           >
-            <Download className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">{t.output.download}</span>
+            <AnimatePresence mode="wait" initial={false}>
+              {downloaded ? (
+                <motion.span
+                  key="download-check"
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.6, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                  className="flex items-center gap-1.5"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{t.output.download}</span>
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="download-icon"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex items-center gap-1.5"
+                >
+                  <Download className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className="hidden sm:inline">{t.output.download}</span>
+                </motion.span>
+              )}
+            </AnimatePresence>
           </motion.button>
         </div>
       </div>
@@ -375,9 +421,9 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
         </div>
       )}
 
-      {/* Screen Reader Live Region for Copy Announcements */}
+      {/* Screen Reader Live Region for Status & Copy Announcements */}
       <div className="sr-only" aria-live="polite" aria-atomic="true">
-        {(copiedConfig || copiedBash || copiedReload) && t.output.copied}
+        {statusMessage}
       </div>
     </div>
   );
