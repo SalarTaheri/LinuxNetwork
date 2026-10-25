@@ -9,3 +9,7 @@
 ## 2025-05-20 - Batched Alpha Bucketing for Canvas Edge Rendering
 **Learning:** In 60 FPS Canvas background animations, issuing individual `beginPath()`, `stroke()`, and `rgba(...)` string allocations per edge creates thousands of Canvas engine context switches and CSS color parsing operations per second.
 **Action:** Group canvas paths into discrete alpha buckets to batch multiple line drawing operations into a single `beginPath()`/`stroke()` call per opacity level, eliminating string allocations and reducing canvas draw calls by up to 95%.
+
+## 2025-05-21 - Pre-formatted Text for Line Numbers in Code Panels
+**Learning:** Mapping an array of length N to render N individual `<div>` React elements for line numbers in multi-hundred line code output panels creates N Fiber nodes and DOM elements per render. Rendering a single pre-formatted text string in a `<pre>` element with line-height matching the code lines eliminates N - 1 VDOM element allocations and reduces React reconciliation work.
+**Action:** Replace `array.map()` for line numbers with a single memoized pre-formatted text string in a `<pre>` element.

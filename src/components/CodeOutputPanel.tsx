@@ -134,6 +134,15 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
 
   const linesCount = parsedLines.length;
 
+  // Memoize pre-formatted line numbers text block to eliminate N - 1 VDOM element allocations per render
+  const lineNumbersText = React.useMemo(() => {
+    let result = '';
+    for (let i = 1; i <= linesCount; i++) {
+      result += i + '\n';
+    }
+    return result;
+  }, [linesCount]);
+
   return (
     <div className="flex flex-col h-full bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
       {/* Header bar */}
@@ -332,13 +341,9 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
             className="flex gap-3 min-w-max"
           >
             {/* Line Numbers */}
-            <div aria-hidden="true" className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0">
-              {parsedLines.map((_, i) => (
-                <div key={i} className="leading-6">
-                  {i + 1}
-                </div>
-              ))}
-            </div>
+            <pre aria-hidden="true" className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0 leading-6">
+              {lineNumbersText}
+            </pre>
 
             {/* Code Lines with Syntax Coloring */}
             <pre className="font-mono flex-1 leading-6 focus:outline-none">
