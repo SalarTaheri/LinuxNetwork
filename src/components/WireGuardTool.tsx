@@ -341,10 +341,19 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
         {/* Output Profile Switcher */}
         <div role="tablist" aria-label="WireGuard Configuration View" className="flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
           <button
+            id="tab-wg-server"
             type="button"
             role="tab"
             aria-selected={activeOutputConfig === 'server'}
+            tabIndex={activeOutputConfig === 'server' ? 0 : -1}
             onClick={() => setActiveOutputConfig('server')}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'Home' || e.key === 'End') {
+                e.preventDefault();
+                setActiveOutputConfig('client');
+                document.getElementById('tab-wg-client')?.focus();
+              }
+            }}
             className={`relative flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
               activeOutputConfig === 'server'
                 ? 'text-white'
@@ -363,10 +372,19 @@ export const WireGuardTool: React.FC<WireGuardToolProps> = React.memo(({ lang })
           </button>
 
           <button
+            id="tab-wg-client"
             type="button"
             role="tab"
             aria-selected={activeOutputConfig === 'client'}
+            tabIndex={activeOutputConfig === 'client' ? 0 : -1}
             onClick={() => setActiveOutputConfig('client')}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'Home' || e.key === 'End') {
+                e.preventDefault();
+                setActiveOutputConfig('server');
+                document.getElementById('tab-wg-server')?.focus();
+              }
+            }}
             className={`relative flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none ${
               activeOutputConfig === 'client'
                 ? 'text-white'
