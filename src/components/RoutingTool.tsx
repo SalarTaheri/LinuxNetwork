@@ -610,48 +610,84 @@ export const RoutingTool: React.FC<RoutingToolProps> = React.memo(({ lang }) => 
       <div className="lg:col-span-6 space-y-4">
         {/* Output Selector Tabs */}
         <div role="tablist" aria-label="Routing Output Format View" className="flex items-center gap-1.5 p-1 bg-slate-900/80 border border-slate-800 rounded-xl">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={outputFormat === 'iptables'}
-            onClick={() => setOutputFormat('iptables')}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
-              outputFormat === 'iptables'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-            }`}
-          >
-            <Terminal className="w-3.5 h-3.5" />
-            <span>{t.routing.outputTabs.iptables}</span>
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={outputFormat === 'nftables'}
-            onClick={() => setOutputFormat('nftables')}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
-              outputFormat === 'nftables'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-            }`}
-          >
-            <Route className="w-3.5 h-3.5" />
-            <span>{t.routing.outputTabs.nftables}</span>
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={outputFormat === 'diagnostics'}
-            onClick={() => setOutputFormat('diagnostics')}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
-              outputFormat === 'diagnostics'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-            }`}
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>{t.routing.outputTabs.diagnostics}</span>
-          </button>
+          {(() => {
+            const formats: ('iptables' | 'nftables' | 'diagnostics')[] = ['iptables', 'nftables', 'diagnostics'];
+            const isRtl = lang === 'fa';
+            const handleRoutingTabKeyDown = (e: React.KeyboardEvent, currentFmt: 'iptables' | 'nftables' | 'diagnostics') => {
+              if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const idx = formats.indexOf(currentFmt);
+                const forward = e.key === 'ArrowRight' ? (isRtl ? -1 : 1) : (isRtl ? 1 : -1);
+                const nextIdx = (idx + forward + formats.length) % formats.length;
+                const nextFmt = formats[nextIdx];
+                setOutputFormat(nextFmt);
+                document.getElementById(`tab-routing-${nextFmt}`)?.focus();
+              } else if (e.key === 'Home') {
+                e.preventDefault();
+                setOutputFormat('iptables');
+                document.getElementById('tab-routing-iptables')?.focus();
+              } else if (e.key === 'End') {
+                e.preventDefault();
+                setOutputFormat('diagnostics');
+                document.getElementById('tab-routing-diagnostics')?.focus();
+              }
+            };
+            return (
+              <>
+                <button
+                  id="tab-routing-iptables"
+                  type="button"
+                  role="tab"
+                  aria-selected={outputFormat === 'iptables'}
+                  tabIndex={outputFormat === 'iptables' ? 0 : -1}
+                  onClick={() => setOutputFormat('iptables')}
+                  onKeyDown={(e) => handleRoutingTabKeyDown(e, 'iptables')}
+                  className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
+                    outputFormat === 'iptables'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  }`}
+                >
+                  <Terminal className="w-3.5 h-3.5" />
+                  <span>{t.routing.outputTabs.iptables}</span>
+                </button>
+                <button
+                  id="tab-routing-nftables"
+                  type="button"
+                  role="tab"
+                  aria-selected={outputFormat === 'nftables'}
+                  tabIndex={outputFormat === 'nftables' ? 0 : -1}
+                  onClick={() => setOutputFormat('nftables')}
+                  onKeyDown={(e) => handleRoutingTabKeyDown(e, 'nftables')}
+                  className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
+                    outputFormat === 'nftables'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  }`}
+                >
+                  <Route className="w-3.5 h-3.5" />
+                  <span>{t.routing.outputTabs.nftables}</span>
+                </button>
+                <button
+                  id="tab-routing-diagnostics"
+                  type="button"
+                  role="tab"
+                  aria-selected={outputFormat === 'diagnostics'}
+                  tabIndex={outputFormat === 'diagnostics' ? 0 : -1}
+                  onClick={() => setOutputFormat('diagnostics')}
+                  onKeyDown={(e) => handleRoutingTabKeyDown(e, 'diagnostics')}
+                  className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
+                    outputFormat === 'diagnostics'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  }`}
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>{t.routing.outputTabs.diagnostics}</span>
+                </button>
+              </>
+            );
+          })()}
         </div>
 
         {/* Output Code Panel */}

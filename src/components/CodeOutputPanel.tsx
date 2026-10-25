@@ -56,12 +56,23 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
   const availableTabs = (['config', oneLinerBash && 'bash', reloadCommand && 'reload'].filter(Boolean) as ('config' | 'bash' | 'reload')[]);
 
   const handleTabKeyDown = (e: React.KeyboardEvent, currentTab: 'config' | 'bash' | 'reload') => {
+    const isRtl = lang === 'fa';
     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
       e.preventDefault();
       const currentIndex = availableTabs.indexOf(currentTab);
-      const direction = e.key === 'ArrowRight' ? 1 : -1;
+      const direction = e.key === 'ArrowRight' ? (isRtl ? -1 : 1) : (isRtl ? 1 : -1);
       const nextIndex = (currentIndex + direction + availableTabs.length) % availableTabs.length;
       const nextTab = availableTabs[nextIndex];
+      setActiveTab(nextTab);
+      document.getElementById(`tab-view-${nextTab}`)?.focus();
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      const nextTab = availableTabs[0];
+      setActiveTab(nextTab);
+      document.getElementById(`tab-view-${nextTab}`)?.focus();
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      const nextTab = availableTabs[availableTabs.length - 1];
       setActiveTab(nextTab);
       document.getElementById(`tab-view-${nextTab}`)?.focus();
     }
@@ -166,6 +177,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
             id="tab-view-config"
             role="tab"
             aria-selected={activeTab === 'config'}
+            tabIndex={activeTab === 'config' ? 0 : -1}
             aria-controls="code-output-body"
             type="button"
             onClick={() => setActiveTab('config')}
@@ -190,6 +202,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
               id="tab-view-bash"
               role="tab"
               aria-selected={activeTab === 'bash'}
+              tabIndex={activeTab === 'bash' ? 0 : -1}
               aria-controls="code-output-body"
               type="button"
               onClick={() => setActiveTab('bash')}
@@ -215,6 +228,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
               id="tab-view-reload"
               role="tab"
               aria-selected={activeTab === 'reload'}
+              tabIndex={activeTab === 'reload' ? 0 : -1}
               aria-controls="code-output-body"
               type="button"
               onClick={() => setActiveTab('reload')}

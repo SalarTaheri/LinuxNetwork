@@ -312,6 +312,33 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
     scrollContainerRef.current.scrollBy({ left: offset * sign, behavior: 'smooth' });
   };
 
+  const handleToolTabKeyDown = (e: React.KeyboardEvent, currentId: ToolTab) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const currentIndex = filteredTools.findIndex((t) => t.id === currentId);
+      if (currentIndex === -1) return;
+      const forward = e.key === 'ArrowRight' ? (isFa ? -1 : 1) : (isFa ? 1 : -1);
+      const nextIndex = (currentIndex + forward + filteredTools.length) % filteredTools.length;
+      const nextTool = filteredTools[nextIndex];
+      handleSelectTool(nextTool.id);
+      document.getElementById(`tab-nav-${nextTool.id}`)?.focus();
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      if (filteredTools.length > 0) {
+        const nextTool = filteredTools[0];
+        handleSelectTool(nextTool.id);
+        document.getElementById(`tab-nav-${nextTool.id}`)?.focus();
+      }
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      if (filteredTools.length > 0) {
+        const nextTool = filteredTools[filteredTools.length - 1];
+        handleSelectTool(nextTool.id);
+        document.getElementById(`tab-nav-${nextTool.id}`)?.focus();
+      }
+    }
+  };
+
   // Memoize categories config to avoid array and object re-creations during search or scroll interactions
   const categories = useMemo<{ id: ToolCategory; label: string; icon: React.ReactNode; count: number }[]>(
     () => [
@@ -450,9 +477,11 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
                 id={`tab-nav-${tool.id}`}
                 role="tab"
                 aria-selected={active}
+                tabIndex={active ? 0 : -1}
                 aria-controls={`tabpanel-${tool.id}`}
                 type="button"
                 onClick={() => handleSelectTool(tool.id)}
+                onKeyDown={(e) => handleToolTabKeyDown(e, tool.id)}
                 onMouseEnter={() => onPreloadTool?.(tool.id)}
                 onFocus={() => onPreloadTool?.(tool.id)}
                 onTouchStart={() => onPreloadTool?.(tool.id)}
