@@ -138,11 +138,21 @@ ip route get ${result.firstUsableIp}
                 className="w-full bg-slate-950/80 border border-slate-700/80 rounded-lg px-2.5 py-2 text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500 cursor-pointer transition-colors"
                 dir="ltr"
               >
-                {CIDR_OPTIONS.map((mask) => (
-                  <option key={mask} value={mask}>
-                    /{mask}
-                  </option>
-                ))}
+                {CIDR_OPTIONS.map((mask) => {
+                  const desc = CIDR_HOST_DESCRIPTIONS[mask];
+                  let label = `/${mask}`;
+                  if (desc) {
+                    label += ` (${lang === 'fa' ? desc.fa : desc.en})`;
+                  } else {
+                    const hosts = mask === 32 ? 1 : mask === 31 ? 2 : Math.pow(2, 32 - mask) - 2;
+                    label += ` (${hosts.toLocaleString()} ${lang === 'fa' ? 'میزبان' : 'hosts'})`;
+                  }
+                  return (
+                    <option key={mask} value={mask}>
+                      {label}
+                    </option>
+                  );
+                })}
               </select>
             </div>
           </div>
