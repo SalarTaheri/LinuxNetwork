@@ -99,8 +99,7 @@ export function getIpClass(firstOctet: number): string {
   return 'Unknown';
 }
 
-export function getIpScope(ip: string): string {
-  const ipInt = ipToInt(ip);
+export function getIpScopeFromInt(ipInt: number): string {
   const o1 = (ipInt >>> 24) & 255;
   const o2 = (ipInt >>> 16) & 255;
 
@@ -113,6 +112,10 @@ export function getIpScope(ip: string): string {
   if (o1 >= 224 && o1 <= 239) return 'Multicast';
   if (o1 >= 240) return 'Reserved / Experimental';
   return 'Global Public Unicast';
+}
+
+export function getIpScope(ip: string): string {
+  return getIpScopeFromInt(ipToInt(ip));
 }
 
 export function calculateSubnet(ipStr: string, cidr: number): SubnetCalculation | null {
@@ -164,7 +167,7 @@ export function calculateSubnet(ipStr: string, cidr: number): SubnetCalculation 
     totalHosts: cidrInfo.totalHosts,
     usableHosts,
     ipClass: getIpClass(o1),
-    ipScope: getIpScope(ipStr),
+    ipScope: getIpScopeFromInt(ipInt),
     binaryIp: intToBinary(ipInt),
     ptrRecord,
   };

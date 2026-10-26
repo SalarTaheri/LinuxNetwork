@@ -9,6 +9,7 @@ import {
   isValidPort,
   getIpClass,
   getIpScope,
+  getIpScopeFromInt,
   calculateSubnet,
 } from './subnetCalculator';
 
@@ -401,6 +402,46 @@ describe('getIpScope', () => {
       assert.strictEqual(getIpScope('8.8.8.8'), 'Global Public Unicast');
       assert.strictEqual(getIpScope('11.0.0.1'), 'Global Public Unicast');
       assert.strictEqual(getIpScope('223.255.255.255'), 'Global Public Unicast');
+    });
+  });
+
+  describe('getIpScopeFromInt direct integer evaluation', () => {
+    it('returns accurate RFC scope without string parsing', () => {
+      assert.strictEqual(getIpScopeFromInt(ipToInt('10.0.0.1')), 'RFC 1918 Private (10.0.0.0/8)');
+      assert.strictEqual(getIpScopeFromInt(ipToInt('172.16.0.1')), 'RFC 1918 Private (172.16.0.0/12)');
+      assert.strictEqual(getIpScopeFromInt(ipToInt('192.168.1.1')), 'RFC 1918 Private (192.168.0.0/16)');
+      assert.strictEqual(getIpScopeFromInt(ipToInt('127.0.0.1')), 'RFC 1122 Loopback (127.0.0.0/8)');
+      assert.strictEqual(getIpScopeFromInt(ipToInt('1.1.1.1')), 'Global Public Unicast');
+    });
+  });
+
+  describe('getIpScope vs getIpScopeFromInt benchmark', () => {
+    it('benchmark: string parsing getIpScope vs direct integer getIpScopeFromInt', () => {
+      const iterations = 500000;
+      const testIps = ['192.168.1.100', '10.0.0.1', '172.16.50.2', '100.64.12.34', '8.8.8.8'];
+      const testInts = testIps.map(ipToInt);
+
+      const startString = performance.now();
+      for (let i = 0; i < iterations; i++) {
+        const ipStr = testIps[i % testIps.length];
+        getIpScope(ipStr);
+      }
+      const durationString = performance.now() - startString;
+
+      const startInt = performance.now();
+      for (let i = 0; i < iterations; i++) {
+        const ipIntVal = testInts[i % testInts.length];
+        getIpScopeFromInt(ipIntVal);
+      }
+      const durationInt = performance.now() - startInt;
+
+      const speedupPct = (((durationString - durationInt) / durationString) * 100).toFixed(2);
+      console.log(`\n--- IP SCOPE BENCHMARK (${iterations} iterations) ---`);
+      console.log(`getIpScope(ipStr) duration:       ${durationString.toFixed(3)} ms`);
+      console.log(`getIpScopeFromInt(ipInt) duration: ${durationInt.toFixed(3)} ms`);
+      console.log(`Speedup:                          ${speedupPct}%\n`);
+
+      assert.ok(durationInt <= durationString, 'Direct integer scope evaluation should be faster or equal');
     });
   });
 });

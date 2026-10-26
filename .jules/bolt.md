@@ -9,3 +9,7 @@
 ## 2025-05-20 - Batched Alpha Bucketing for Canvas Edge Rendering
 **Learning:** In 60 FPS Canvas background animations, issuing individual `beginPath()`, `stroke()`, and `rgba(...)` string allocations per edge creates thousands of Canvas engine context switches and CSS color parsing operations per second.
 **Action:** Group canvas paths into discrete alpha buckets to batch multiple line drawing operations into a single `beginPath()`/`stroke()` call per opacity level, eliminating string allocations and reducing canvas draw calls by up to 95%.
+
+## 2025-05-21 - Integer-Based IP Scope Evaluation in Subnet Calculator
+**Learning:** Passing IP address strings into calculation routines causes redundant string parsing (e.g. `ipToInt` string loops over char codes) when the 32-bit integer representation of the IP is already computed in the scope.
+**Action:** Accept pre-computed 32-bit integer IPs (`getIpScopeFromInt`) in subnet evaluation pipelines to eliminate duplicate string parsing and charCode loops.
