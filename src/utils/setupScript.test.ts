@@ -43,4 +43,11 @@ describe('setup.sh CLI Argument Validation Security', () => {
       }
     );
   });
+
+  it('enforces secure file permissions on backup directory and files', async () => {
+    const fs = await import('node:fs/promises');
+    const content = await fs.readFile(setupScriptPath, 'utf8');
+    assert.match(content, /chmod 700 "\$BACKUP_DIR"/);
+    assert.match(content, /chmod 600 "\$backup_path"/);
+  });
 });
