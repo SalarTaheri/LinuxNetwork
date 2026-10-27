@@ -118,18 +118,22 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
       ? (oneLinerBash || '')
       : (reloadCommand || '');
 
-  const parsedLines = React.useMemo(() => {
+  // Pre-compute syntax-classified lines and single lineNumbersText block in useMemo
+  // to avoid rendering N separate <div> DOM nodes for line numbers on every render pass.
+  const { parsedLines, lineNumbersText } = React.useMemo(() => {
     const lines = currentDisplayContent.split('\n');
     const len = lines.length;
     const result = new Array(len);
+    let lineNums = '';
 
     for (let i = 0; i < len; i++) {
       const line = lines[i];
       const lineClass = classifyLineOptimized(line);
       result[i] = { line, lineClass };
+      lineNums += (i === 0 ? '' : '\n') + (i + 1);
     }
 
-    return result;
+    return { parsedLines: result, lineNumbersText: lineNums };
   }, [currentDisplayContent]);
 
   const linesCount = parsedLines.length;
@@ -331,14 +335,13 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
             transition={{ duration: 0.15 }}
             className="flex gap-3 min-w-max"
           >
-            {/* Line Numbers */}
-            <div aria-hidden="true" className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0">
-              {parsedLines.map((_, i) => (
-                <div key={i} className="leading-6">
-                  {i + 1}
-                </div>
-              ))}
-            </div>
+            {/* Line Numbers - Pre-computed single <pre> block eliminates N div element allocations per render */}
+            <pre
+              aria-hidden="true"
+              className="select-none text-right text-slate-600 font-mono pr-2 border-r border-slate-800/80 shrink-0 leading-6 whitespace-pre"
+            >
+              {lineNumbersText}
+            </pre>
 
             {/* Code Lines with Syntax Coloring */}
             <pre className="font-mono flex-1 leading-6 focus:outline-none">
