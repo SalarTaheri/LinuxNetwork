@@ -193,19 +193,23 @@ ip route show table ${tableName}`;
       const winSec = sanitizeNumber(settings.rateLimitWindowSeconds, 60, 1, 86400);
       const blockSec = sanitizeNumber(settings.rateLimitBlockSeconds, 300, 1, 86400);
 
+      // Enforce 20-character maximum kernel limit (XT_RECENT_NAME_LEN) and sanitize table name
+      const safePortName = port.replace(/[^a-zA-Z0-9_]/g, '') || '22';
+      const recentName = `BRUTEFORCE_${safePortName}`.slice(0, 20);
+
       return `# ================================================================
 # 🛡️ ${isFa ? 'محدودسازی سخت‌گیرانه نرخ اتصالات و مقابله با Brute-Force با ماژول xt_recent' : 'Kernel Rate-Limiting & Anti-Brute-Force Shield (xt_recent)'}
 # ================================================================
 # ${isFa ? `سیاست: اگر آی‌پی بیش از ${maxHits} اتصال در ${winSec} ثانیه به پورت ${port} ثبت کند، برای ${blockSec} ثانیه بلاک می‌شود.` : `Policy: More than ${maxHits} new connections within ${winSec}s to port ${port} triggers a ${blockSec}s temporary ban.`}
 
 # 1. ${isFa ? 'بررسی آی‌پی‌های خاطی و دراپ فوری' : 'Check blacklisted offenders and immediately drop'}
-sudo iptables -A INPUT -p tcp --dport ${port} -m state --state NEW -m recent --update --seconds ${blockSec} --name BRUTEFORCE_${port} --rsource -j DROP
+sudo iptables -A INPUT -p tcp --dport ${port} -m state --state NEW -m recent --update --seconds ${blockSec} --name ${recentName} --rsource -j DROP
 
 # 2. ${isFa ? 'ثبت اتصال جدید در حافظه کرنل' : 'Record new connection attempt into kernel tracking memory'}
-sudo iptables -A INPUT -p tcp --dport ${port} -m state --state NEW -m recent --set --name BRUTEFORCE_${port} --rsource
+sudo iptables -A INPUT -p tcp --dport ${port} -m state --state NEW -m recent --set --name ${recentName} --rsource
 
 # 3. ${isFa ? `بررسی آستانه تجاوز (بیش از ${maxHits} تلاش در ${winSec} ثانیه)` : `Check hit threshold (over ${maxHits} hits in ${winSec}s)`}
-sudo iptables -A INPUT -p tcp --dport ${port} -m state --state NEW -m recent --rcheck --seconds ${winSec} --hitcount ${maxHits} --name BRUTEFORCE_${port} --rsource -j DROP
+sudo iptables -A INPUT -p tcp --dport ${port} -m state --state NEW -m recent --rcheck --seconds ${winSec} --hitcount ${maxHits} --name ${recentName} --rsource -j DROP
 
 # 4. ${isFa ? 'اجازه به اتصالات عادی و مجاز' : 'Accept legitimate new connections'}
 sudo iptables -A INPUT -p tcp --dport ${port} -m state --state NEW -j ACCEPT
