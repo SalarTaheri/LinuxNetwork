@@ -50,7 +50,10 @@ export const SetupScriptTool: React.FC<SetupScriptToolProps> = React.memo(({ lan
     }
 
     if (settings.enableCustomSshPort && settings.sshPort) {
-      flags.push(`--ssh-port ${settings.sshPort}`);
+      const portNum = Number(settings.sshPort);
+      if (Number.isInteger(portNum) && portNum >= 1 && portNum <= 65535) {
+        flags.push(`--ssh-port ${portNum}`);
+      }
     }
 
     if (settings.disablePasswordAuth) {

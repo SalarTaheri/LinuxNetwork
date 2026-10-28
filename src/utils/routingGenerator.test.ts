@@ -168,6 +168,20 @@ describe('Routing & NAT Generator', () => {
       assert.match(output, /-m recent --rcheck --seconds 60 --hitcount 5 --name BRUTEFORCE_22 --rsource -j DROP/);
     });
 
+    test('truncates and sanitizes xt_recent table name to max 20 characters', () => {
+      const settings: RoutingSettings = {
+        ...defaultSettings,
+        scenario: 'rate_limit',
+        rateLimitPort: '10000-20000',
+      };
+      const output = generateIptablesRules(settings, 'en');
+      const nameMatch = output.match(/--name\s+([^\s]+)/);
+      assert.ok(nameMatch);
+      const name = nameMatch[1];
+      assert.ok(name.length <= 20, `Table name length (${name.length}) exceeds kernel limit of 20`);
+      assert.match(name, /^[a-zA-Z0-9_]+$/);
+    });
+
     test('generates nftables meter rate limiting', () => {
       const settings: RoutingSettings = {
         ...defaultSettings,
