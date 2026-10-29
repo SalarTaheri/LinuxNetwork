@@ -5,3 +5,7 @@
 ## 2025-05-21 - Line Number Screen Reader Isolation and Focus-Visible Ring Polish
 **Learning:** In code preview components, screen readers read line numbers sequentially as body text unless line number blocks have `aria-hidden="true"`. Furthermore, modal dialogs must lock background scrolling with `document.body.style.overflow = 'hidden'` and maintain clear `focus-visible:ring-2` focus rings across all interactive controls.
 **Action:** Always apply `aria-hidden="true"` to line number columns in code view panels and enforce explicit `focus-visible:ring-2` on all buttons, range sliders, and inputs.
+
+## 2025-05-22 - Form Label Association for Generator Tool Inputs
+**Learning:** Form inputs in configuration tools require explicit `id` attributes matched with `<label htmlFor="...">` and `cursor-pointer` to allow screen readers to associate label text with inputs and enable clicking labels to focus input elements directly.
+**Action:** Always pair form inputs with explicit `id` and `htmlFor` attributes on their respective `<label>` elements.
