@@ -1,7 +1,18 @@
 import { SysctlSettings } from '../types';
 
+/**
+ * Sanitizes setting values to prevent sysctl comment/directive injection.
+ */
+function sanitizeSetting(val: string | undefined | null, fallback: string): string {
+  const cleaned = (val || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+  return cleaned || fallback;
+}
+
 export function generateSysctlConfig(settings: SysctlSettings, lang: 'fa' | 'en'): string {
   const isFa = lang === 'fa';
+  const safeProfile = sanitizeSetting(settings.profile, 'general');
+  const safeRam = sanitizeSetting(settings.ram, '4GB');
+  const safeBandwidth = sanitizeSetting(settings.bandwidth, '1G');
 
   // Compute buffers based on RAM and Bandwidth
   let rmemMax = 16777216; // 16MB default
@@ -76,7 +87,7 @@ export function generateSysctlConfig(settings: SysctlSettings, lang: 'fa' | 'en'
   const lines: string[] = [
     '# ==========================================================================',
     '# LinuxNetwork.ir - High-Performance Kernel & Network Tuning',
-    `# Target Profile: ${settings.profile.toUpperCase()} | RAM: ${settings.ram} | Bandwidth: ${settings.bandwidth}`,
+    `# Target Profile: ${safeProfile.toUpperCase()} | RAM: ${safeRam} | Bandwidth: ${safeBandwidth}`,
     '# File Location: /etc/sysctl.d/99-network-tuning.conf',
     '# Generated automatically with zero telemetry in-browser',
     '# ==========================================================================',
@@ -101,8 +112,8 @@ export function generateSysctlConfig(settings: SysctlSettings, lang: 'fa' | 'en'
   // Queue and Socket Buffers
   lines.push(
     isFa
-      ? `# --- بهینهسازی بافر سوکتها و صفهای ورودی (RAM: ${settings.ram}) ---`
-      : `# --- Core Socket & Backlog Queue Tuning (RAM: ${settings.ram}) ---`
+      ? `# --- بهینهسازی بافر سوکتها و صفهای ورودی (RAM: ${safeRam}) ---`
+      : `# --- Core Socket & Backlog Queue Tuning (RAM: ${safeRam}) ---`
   );
   lines.push(`net.core.somaxconn = ${somaxconn}`);
   lines.push(`net.core.netdev_max_backlog = ${netdevBacklog}`);
