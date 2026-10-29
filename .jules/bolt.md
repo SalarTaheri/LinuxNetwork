@@ -9,3 +9,7 @@
 ## 2025-05-20 - Batched Alpha Bucketing for Canvas Edge Rendering
 **Learning:** In 60 FPS Canvas background animations, issuing individual `beginPath()`, `stroke()`, and `rgba(...)` string allocations per edge creates thousands of Canvas engine context switches and CSS color parsing operations per second.
 **Action:** Group canvas paths into discrete alpha buckets to batch multiple line drawing operations into a single `beginPath()`/`stroke()` call per opacity level, eliminating string allocations and reducing canvas draw calls by up to 95%.
+
+## 2025-05-21 - Zero-Allocation Flat Bucketing in 60 FPS Canvas Loops
+**Learning:** Re-instantiating bucket array structures (`[[], [], [], [], []]`) and wrapper objects (`{ n1, n2 }`) inside a 60 FPS `requestAnimationFrame` loop creates hundreds of heap allocations per frame, leading to GC pauses on the main thread during background animations.
+**Action:** Re-use pre-allocated flat array buckets outside the frame loop, reset array lengths with `length = 0` at the start of each frame, and push element pairs directly (`push(n1, n2)`) to eliminate all frame-level array/object heap allocations.

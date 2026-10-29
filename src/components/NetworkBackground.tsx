@@ -110,6 +110,10 @@ export const NetworkBackground: React.FC = () => {
     const maxDistance = 145;
     const maxDistanceSq = maxDistance * maxDistance;
 
+    // Pre-allocated flat alpha bucket arrays for edge rendering (reused across 60 FPS frames to avoid GC allocations)
+    const alphaBuckets: Node[][] = [[], [], [], [], []];
+    const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
+
     const loop = (currentTime: number) => {
       if (!isVisible) return;
       animationFrameId = requestAnimationFrame(loop);
@@ -157,10 +161,12 @@ export const NetworkBackground: React.FC = () => {
         }
       }
 
-      // Draw connection edges (batched by alpha bucket to avoid per-edge stroke() calls and string allocations)
-      const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
-      const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
+      // Reset edge bucket array lengths without reallocating arrays or objects on the GC heap
+      for (let b = 0; b < 5; b++) {
+        alphaBuckets[b].length = 0;
+      }
 
+      // Draw connection edges (batched by alpha bucket with flat node pairs)
       for (let i = 0; i < nodes.length; i++) {
         const n1 = nodes[i];
         for (let j = i + 1; j < nodes.length; j++) {
@@ -173,7 +179,7 @@ export const NetworkBackground: React.FC = () => {
             const dist = Math.sqrt(distSq);
             const alpha = (1 - dist / maxDistance) * 0.2;
             const bucketIndex = Math.min(4, Math.floor((alpha / 0.2) * 5));
-            alphaBuckets[bucketIndex].push({ n1, n2 });
+            alphaBuckets[bucketIndex].push(n1, n2);
 
             // Randomly trigger a packet across active edge
             if (Math.random() < 0.0006 && packets.length < maxPackets) {
@@ -192,10 +198,9 @@ export const NetworkBackground: React.FC = () => {
 
         ctx.globalAlpha = bucketAlphas[b];
         ctx.beginPath();
-        for (let idx = 0; idx < bucket.length; idx++) {
-          const edge = bucket[idx];
-          ctx.moveTo(edge.n1.x, edge.n1.y);
-          ctx.lineTo(edge.n2.x, edge.n2.y);
+        for (let idx = 0; idx < bucket.length; idx += 2) {
+          ctx.moveTo(bucket[idx].x, bucket[idx].y);
+          ctx.lineTo(bucket[idx + 1].x, bucket[idx + 1].y);
         }
         ctx.stroke();
       }
