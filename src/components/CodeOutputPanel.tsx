@@ -165,6 +165,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
           <button
             id="tab-view-config"
             role="tab"
+            tabIndex={activeTab === 'config' ? 0 : -1}
             aria-selected={activeTab === 'config'}
             aria-controls="code-output-body"
             type="button"
@@ -189,6 +190,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
             <button
               id="tab-view-bash"
               role="tab"
+              tabIndex={activeTab === 'bash' ? 0 : -1}
               aria-selected={activeTab === 'bash'}
               aria-controls="code-output-body"
               type="button"
@@ -214,6 +216,7 @@ export const CodeOutputPanel: React.FC<CodeOutputPanelProps> = React.memo(({
             <button
               id="tab-view-reload"
               role="tab"
+              tabIndex={activeTab === 'reload' ? 0 : -1}
               aria-selected={activeTab === 'reload'}
               aria-controls="code-output-body"
               type="button"
