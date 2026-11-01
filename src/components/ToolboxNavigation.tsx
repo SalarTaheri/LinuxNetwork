@@ -312,6 +312,28 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
     scrollContainerRef.current.scrollBy({ left: offset * sign, behavior: 'smooth' });
   };
 
+  const handleTablistKeyDown = (e: React.KeyboardEvent, currentTab: ToolTab) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+    e.preventDefault();
+    const currentIndex = filteredTools.findIndex((t) => t.id === currentTab);
+    if (currentIndex === -1) return;
+
+    let nextIndex = currentIndex;
+    const forward = isFa ? e.key === 'ArrowLeft' : e.key === 'ArrowRight';
+    const backward = isFa ? e.key === 'ArrowRight' : e.key === 'ArrowLeft';
+
+    if (e.key === 'Home') nextIndex = 0;
+    else if (e.key === 'End') nextIndex = filteredTools.length - 1;
+    else if (forward) nextIndex = (currentIndex + 1) % filteredTools.length;
+    else if (backward) nextIndex = (currentIndex - 1 + filteredTools.length) % filteredTools.length;
+
+    const nextTool = filteredTools[nextIndex];
+    if (nextTool) {
+      handleSelectTool(nextTool.id);
+      document.getElementById(`tab-nav-${nextTool.id}`)?.focus();
+    }
+  };
+
   // Memoize categories config to avoid array and object re-creations during search or scroll interactions
   const categories = useMemo<{ id: ToolCategory; label: string; icon: React.ReactNode; count: number }[]>(
     () => [
@@ -449,10 +471,12 @@ export const ToolboxNavigation: React.FC<ToolboxNavigationProps> = React.memo(({
                 key={tool.id}
                 id={`tab-nav-${tool.id}`}
                 role="tab"
+                tabIndex={active ? 0 : -1}
                 aria-selected={active}
                 aria-controls={`tabpanel-${tool.id}`}
                 type="button"
                 onClick={() => handleSelectTool(tool.id)}
+                onKeyDown={(e) => handleTablistKeyDown(e, tool.id)}
                 onMouseEnter={() => onPreloadTool?.(tool.id)}
                 onFocus={() => onPreloadTool?.(tool.id)}
                 onTouchStart={() => onPreloadTool?.(tool.id)}

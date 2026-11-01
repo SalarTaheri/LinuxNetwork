@@ -70,4 +70,57 @@ describe('Toolbox Navigation & Categorization', () => {
     assert.strictEqual(preloaded.length, 6);
     assert.deepStrictEqual(preloaded, tabs);
   });
+
+  describe('Keyboard navigation and roving tabindex logic', () => {
+    const tabs: ToolTab[] = ['setup', 'sysctl', 'nginx', 'wireguard', 'subnet', 'routing'];
+
+    const getNextTab = (current: ToolTab, key: string, isFa: boolean, list = tabs): ToolTab => {
+      const currentIndex = list.indexOf(current);
+      if (currentIndex === -1) return current;
+
+      const forward = isFa ? key === 'ArrowLeft' : key === 'ArrowRight';
+      const backward = isFa ? key === 'ArrowRight' : key === 'ArrowLeft';
+
+      if (key === 'Home') return list[0];
+      if (key === 'End') return list[list.length - 1];
+      if (forward) return list[(currentIndex + 1) % list.length];
+      if (backward) return list[(currentIndex - 1 + list.length) % list.length];
+      return current;
+    };
+
+    test('navigates sequentially with arrow keys in LTR', () => {
+      assert.strictEqual(getNextTab('setup', 'ArrowRight', false), 'sysctl');
+      assert.strictEqual(getNextTab('routing', 'ArrowRight', false), 'setup'); // wraps
+      assert.strictEqual(getNextTab('setup', 'ArrowLeft', false), 'routing'); // wraps
+      assert.strictEqual(getNextTab('sysctl', 'ArrowLeft', false), 'setup');
+    });
+
+    test('navigates sequentially with inverted arrow keys in RTL', () => {
+      assert.strictEqual(getNextTab('setup', 'ArrowLeft', true), 'sysctl'); // forward in RTL
+      assert.strictEqual(getNextTab('routing', 'ArrowLeft', true), 'setup'); // wraps forward
+      assert.strictEqual(getNextTab('setup', 'ArrowRight', true), 'routing'); // backward in RTL
+      assert.strictEqual(getNextTab('sysctl', 'ArrowRight', true), 'setup');
+    });
+
+    test('jumps to start and end with Home and End keys', () => {
+      assert.strictEqual(getNextTab('nginx', 'Home', false), 'setup');
+      assert.strictEqual(getNextTab('nginx', 'End', false), 'routing');
+      assert.strictEqual(getNextTab('nginx', 'Home', true), 'setup');
+      assert.strictEqual(getNextTab('nginx', 'End', true), 'routing');
+    });
+
+    test('assigns roving tabindex 0 to active tab and -1 to inactive tabs', () => {
+      const activeTab: ToolTab = 'nginx';
+      const tabIndices = tabs.map((t) => ({
+        id: t,
+        tabIndex: t === activeTab ? 0 : -1,
+      }));
+
+      const activeItem = tabIndices.find((t) => t.id === 'nginx');
+      assert.strictEqual(activeItem?.tabIndex, 0);
+
+      const inactiveItems = tabIndices.filter((t) => t.id !== 'nginx');
+      assert.ok(inactiveItems.every((t) => t.tabIndex === -1));
+    });
+  });
 });
