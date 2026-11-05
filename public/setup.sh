@@ -357,9 +357,12 @@ pkg_install() {
 backup_file() {
     local target="$1"
     if [[ -f "$target" ]]; then
-        mkdir -p "$BACKUP_DIR"
+        # Restrict backup directory permissions to root-only (0700) to protect sensitive files like sshd_config
+        mkdir -p -m 0700 "$BACKUP_DIR"
+        chmod 0700 "$BACKUP_DIR" 2>/dev/null || true
         local backup_path="${BACKUP_DIR}/$(basename "$target").bak"
         cp -a "$target" "$backup_path"
+        chmod 0600 "$backup_path" 2>/dev/null || true
         log_info "Backup created: ${target} -> ${backup_path}"
     fi
 }

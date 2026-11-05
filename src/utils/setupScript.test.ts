@@ -43,4 +43,34 @@ describe('setup.sh CLI Argument Validation Security', () => {
       }
     );
   });
+
+  it('restricts backup directory (0700) and backup file (0600) permissions to prevent information disclosure', async () => {
+    // Extract and run backup_file in isolation with a test target file
+    const testScript = `
+      set -euo pipefail
+      TEST_DIR=$(mktemp -d /tmp/ln_test_sec_XXXXXX)
+      trap 'rm -rf "$TEST_DIR"' EXIT
+      BACKUP_DIR="$TEST_DIR/backup"
+      TARGET_FILE="$TEST_DIR/sshd_config"
+      echo "Port 22" > "$TARGET_FILE"
+      chmod 644 "$TARGET_FILE"
+      log_info() { :; }
+
+      # Source backup_file function from setup.sh
+      eval "$(sed -n '/^backup_file() {/,/^}/p' "${setupScriptPath}")"
+
+      # Execute backup_file on target
+      backup_file "$TARGET_FILE"
+
+      # Verify directory permissions are 0700 (drwx------)
+      DIR_PERM=$(stat -c "%a" "$BACKUP_DIR" 2>/dev/null || stat -f "%OLp" "$BACKUP_DIR")
+      # Verify backup file permissions are 0600 (-rw-------)
+      FILE_PERM=$(stat -c "%a" "$BACKUP_DIR/sshd_config.bak" 2>/dev/null || stat -f "%OLp" "$BACKUP_DIR/sshd_config.bak")
+
+      echo "$DIR_PERM $FILE_PERM"
+    `;
+
+    const { stdout } = await execFileAsync('bash', ['-c', testScript]);
+    assert.match(stdout.trim(), /^700 600$/);
+  });
 });
