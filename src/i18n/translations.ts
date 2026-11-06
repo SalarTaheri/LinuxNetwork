@@ -8,6 +8,8 @@ export const translations = {
     github: 'گیت‌هاب',
     docs: 'مستندات',
     
+    skipToContent: 'پرش به محتوای اصلی',
+
     // Navigation
     nav: {
       home: 'صفحه اصلی',
@@ -448,6 +450,8 @@ export const translations = {
     switchLang: 'فارسی',
     github: 'GitHub',
     docs: 'Documentation',
+
+    skipToContent: 'Skip to main content',
 
     // Navigation
     nav: {
