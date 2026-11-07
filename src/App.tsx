@@ -145,6 +145,22 @@ export default function App() {
       {/* Dynamic Cyber Network Background Canvas */}
       <NetworkBackground />
 
+      {/* Skip to Main Content Link for Keyboard and Screen Reader Accessibility (WCAG 2.4.1) */}
+      <a
+        href="#main-content"
+        onClick={(e) => {
+          e.preventDefault();
+          const target = document.getElementById('main-content');
+          if (target) {
+            target.focus();
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        }}
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-emerald-500 focus:text-slate-950 focus:font-bold focus:text-xs focus:rounded-lg focus:shadow-xl focus:shadow-emerald-950/60 focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:outline-none transition-transform"
+      >
+        {t.nav.skipToContent}
+      </a>
+
       {/* Navbar & Privacy Banner */}
       <Header
         lang={lang}
@@ -158,7 +174,11 @@ export default function App() {
       <SEOHead view={view} activeTab={activeTab} lang={lang} />
 
       {/* Main Container */}
-      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 focus:outline-none"
+      >
         <Suspense fallback={<ToolLoadingFallback />}>
           <AnimatePresence mode="wait">
             {view === 'landing' ? (
