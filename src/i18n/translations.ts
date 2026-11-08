@@ -2,6 +2,7 @@ export const translations = {
   fa: {
     brand: 'LinuxNetwork.ir',
     tagline: 'جعبه‌ابزار کانفیگ شبکه و لینوکس',
+    skipToContent: 'پرش به محتوای اصلی',
     privacyBanner: 'پردازش کاملاً سمت کاربر / Client-Side Only (Zero Logs)',
     privacyTooltip: 'هیچ داده‌ای به هیچ سروری ارسال نمی‌شود. تمامی محاسبات، کلیدسازی رمزنگاری و ساخت کانفیگ‌ها در مرورگر شما انجام می‌شود.',
     switchLang: 'English',
@@ -443,6 +444,7 @@ export const translations = {
   en: {
     brand: 'LinuxNetwork.ir',
     tagline: 'Linux Network & Kernel Tuning Toolbox',
+    skipToContent: 'Skip to main content',
     privacyBanner: 'Client-Side Only (Zero Logs) / پردازش کاملاً سمت کاربر',
     privacyTooltip: 'Zero telemetry. All configurations, subnet calculations, and Curve25519 key generation run strictly inside your browser.',
     switchLang: 'فارسی',
