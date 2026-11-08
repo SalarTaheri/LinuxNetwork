@@ -12,38 +12,77 @@ interface Edge {
   alpha: number;
 }
 
-function simulateUnbatchedDraw(edges: Edge[]): { strokeCount: number; colorStringAllocations: number } {
-  let strokeCount = 0;
-  let colorStringAllocations = 0;
-
-  for (let i = 0; i < edges.length; i++) {
-    const edge = edges[i];
-    const colorStr = `rgba(16, 185, 129, ${edge.alpha})`;
-    colorStringAllocations++;
-    strokeCount++;
-  }
-
-  return { strokeCount, colorStringAllocations };
+interface MockCanvasContext {
+  beginPath: () => void;
+  moveTo: (x: number, y: number) => void;
+  lineTo: (x: number, y: number) => void;
+  stroke: () => void;
+  strokeStyle: string;
+  lineWidth: number;
+  globalAlpha: number;
+  strokeCount: number;
+  colorStringAllocations: number;
 }
 
-function simulateBatchedDraw(edges: Edge[]): { strokeCount: number; colorStringAllocations: number } {
-  const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
-  let strokeCount = 0;
-  let colorStringAllocations = 0;
+function createMockCanvasContext(): MockCanvasContext {
+  return {
+    strokeCount: 0,
+    colorStringAllocations: 0,
+    beginPath() {},
+    moveTo() {},
+    lineTo() {},
+    stroke() {
+      this.strokeCount++;
+    },
+    strokeStyle: '',
+    lineWidth: 1,
+    globalAlpha: 1,
+  };
+}
+
+function simulateUnbatchedDraw(ctx: MockCanvasContext, edges: Edge[]): void {
+  for (let i = 0; i < edges.length; i++) {
+    const edge = edges[i];
+    ctx.strokeStyle = `rgba(16, 185, 129, ${edge.alpha})`;
+    ctx.colorStringAllocations++;
+    ctx.beginPath();
+    ctx.moveTo(edge.n1.x, edge.n1.y);
+    ctx.lineTo(edge.n2.x, edge.n2.y);
+    ctx.stroke();
+  }
+}
+
+// Reusable buckets to avoid per-frame allocations
+const reusableBuckets: Edge[][] = [[], [], [], [], []];
+const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
+
+function simulateBatchedDraw(ctx: MockCanvasContext, edges: Edge[]): void {
+  for (let b = 0; b < 5; b++) {
+    reusableBuckets[b].length = 0;
+  }
 
   for (let i = 0; i < edges.length; i++) {
     const edge = edges[i];
     const bucketIndex = Math.min(4, Math.floor((edge.alpha / 0.2) * 5));
-    alphaBuckets[bucketIndex].push({ n1: edge.n1, n2: edge.n2 });
+    reusableBuckets[bucketIndex].push(edge);
   }
+
+  ctx.strokeStyle = '#10b981';
+  ctx.lineWidth = 0.8;
 
   for (let b = 0; b < 5; b++) {
-    if (alphaBuckets[b].length > 0) {
-      strokeCount++;
-    }
-  }
+    const bucket = reusableBuckets[b];
+    if (bucket.length === 0) continue;
 
-  return { strokeCount, colorStringAllocations };
+    ctx.globalAlpha = bucketAlphas[b];
+    ctx.beginPath();
+    for (let idx = 0; idx < bucket.length; idx++) {
+      const edge = bucket[idx];
+      ctx.moveTo(edge.n1.x, edge.n1.y);
+      ctx.lineTo(edge.n2.x, edge.n2.y);
+    }
+    ctx.stroke();
+  }
 }
 
 describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
@@ -57,17 +96,20 @@ describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
       });
     }
 
-    const unbatched = simulateUnbatchedDraw(edges);
-    const batched = simulateBatchedDraw(edges);
+    const unbatchedCtx = createMockCanvasContext();
+    simulateUnbatchedDraw(unbatchedCtx, edges);
 
-    assert.equal(unbatched.strokeCount, 100);
-    assert.equal(unbatched.colorStringAllocations, 100);
-    assert.ok(batched.strokeCount <= 5);
-    assert.equal(batched.colorStringAllocations, 0);
+    const batchedCtx = createMockCanvasContext();
+    simulateBatchedDraw(batchedCtx, edges);
+
+    assert.equal(unbatchedCtx.strokeCount, 100);
+    assert.equal(unbatchedCtx.colorStringAllocations, 100);
+    assert.ok(batchedCtx.strokeCount <= 5);
+    assert.equal(batchedCtx.colorStringAllocations, 0);
   });
 
   it('benchmark: compare unbatched vs batched rendering simulation', () => {
-    const frames = 6000; // 100 seconds at 60 FPS
+    const frames = 3000;
     const edgesPerFrame: Edge[] = [];
     for (let i = 0; i < 120; i++) {
       edgesPerFrame.push({
@@ -77,15 +119,23 @@ describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
       });
     }
 
+    const mockCtx = createMockCanvasContext();
+
+    // Warmup to stabilize JIT optimization
+    for (let f = 0; f < 50; f++) {
+      simulateUnbatchedDraw(mockCtx, edgesPerFrame);
+      simulateBatchedDraw(mockCtx, edgesPerFrame);
+    }
+
     const startUnbatched = performance.now();
     for (let f = 0; f < frames; f++) {
-      simulateUnbatchedDraw(edgesPerFrame);
+      simulateUnbatchedDraw(mockCtx, edgesPerFrame);
     }
     const durationUnbatched = performance.now() - startUnbatched;
 
     const startBatched = performance.now();
     for (let f = 0; f < frames; f++) {
-      simulateBatchedDraw(edgesPerFrame);
+      simulateBatchedDraw(mockCtx, edgesPerFrame);
     }
     const durationBatched = performance.now() - startBatched;
 
@@ -95,6 +145,6 @@ describe('NetworkBackground Canvas Edge Rendering Benchmark', () => {
     console.log(`Batched duration:   ${durationBatched.toFixed(3)} ms`);
     console.log(`Speedup:            ${speedupPct}%\n`);
 
-    assert.ok(durationBatched <= durationUnbatched, 'Batched canvas rendering should be faster or equal');
+    assert.ok(durationBatched < durationUnbatched, 'Batched canvas rendering should be faster than unbatched');
   });
 });

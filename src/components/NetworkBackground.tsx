@@ -110,6 +110,10 @@ export const NetworkBackground: React.FC = () => {
     const maxDistance = 145;
     const maxDistanceSq = maxDistance * maxDistance;
 
+    // Pre-allocated edge buckets to eliminate allocations on each 60 FPS animation frame
+    const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
+    const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
+
     const loop = (currentTime: number) => {
       if (!isVisible) return;
       animationFrameId = requestAnimationFrame(loop);
@@ -158,8 +162,10 @@ export const NetworkBackground: React.FC = () => {
       }
 
       // Draw connection edges (batched by alpha bucket to avoid per-edge stroke() calls and string allocations)
-      const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
-      const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
+      // Reusing pre-allocated buckets across frames avoids allocating 5 arrays and dozens of edge objects per 60fps frame
+      for (let b = 0; b < 5; b++) {
+        alphaBuckets[b].length = 0;
+      }
 
       for (let i = 0; i < nodes.length; i++) {
         const n1 = nodes[i];
