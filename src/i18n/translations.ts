@@ -10,6 +10,7 @@ export const translations = {
     
     // Navigation
     nav: {
+      skipToContent: 'پرش به محتوای اصلی',
       home: 'صفحه اصلی',
       toolbox: 'جعبه‌ابزار',
       launchToolbox: 'ورود به جعبه‌ابزار',
@@ -451,6 +452,7 @@ export const translations = {
 
     // Navigation
     nav: {
+      skipToContent: 'Skip to main content',
       home: 'Home',
       toolbox: 'Toolbox',
       launchToolbox: 'Launch Toolbox',
