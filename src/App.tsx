@@ -142,6 +142,14 @@ export default function App() {
 
   return (
     <div className={`min-h-screen flex flex-col bg-[#090d16] text-slate-100 relative overflow-x-hidden ${lang === 'fa' ? 'font-sans' : ''}`}>
+      {/* Accessible Skip to Content Link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-emerald-600 focus:text-white focus:text-xs focus:font-semibold focus:rounded-lg focus:shadow-xl focus:shadow-emerald-950/80 focus:ring-2 focus:ring-emerald-400 focus:outline-none transition-transform"
+      >
+        {t.nav.skipToContent}
+      </a>
+
       {/* Dynamic Cyber Network Background Canvas */}
       <NetworkBackground />
 
@@ -158,7 +166,11 @@ export default function App() {
       <SEOHead view={view} activeTab={activeTab} lang={lang} />
 
       {/* Main Container */}
-      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 focus:outline-none"
+      >
         <Suspense fallback={<ToolLoadingFallback />}>
           <AnimatePresence mode="wait">
             {view === 'landing' ? (
