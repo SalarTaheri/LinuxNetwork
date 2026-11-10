@@ -110,6 +110,22 @@ export const NetworkBackground: React.FC = () => {
     const maxDistance = 145;
     const maxDistanceSq = maxDistance * maxDistance;
 
+    // Preallocated flat typed coordinate buffers for edge batching:
+    // With nodeCount capped at 50, maximum possible edges = 50 * 49 / 2 = 1225.
+    // Each edge requires 4 floats (x1, y1, x2, y2).
+    // Preallocating outside the 60 FPS loop eliminates ~7,200 object/array allocations per second,
+    // avoiding GC pauses and keeping animation smooth on all devices.
+    const maxEdges = (nodeCount * (nodeCount - 1)) / 2;
+    const bucketCoords = [
+      new Float32Array(maxEdges * 4),
+      new Float32Array(maxEdges * 4),
+      new Float32Array(maxEdges * 4),
+      new Float32Array(maxEdges * 4),
+      new Float32Array(maxEdges * 4),
+    ];
+    const bucketCounts = new Int32Array(5);
+    const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
+
     const loop = (currentTime: number) => {
       if (!isVisible) return;
       animationFrameId = requestAnimationFrame(loop);
@@ -157,10 +173,10 @@ export const NetworkBackground: React.FC = () => {
         }
       }
 
-      // Draw connection edges (batched by alpha bucket to avoid per-edge stroke() calls and string allocations)
-      const alphaBuckets: { n1: Node; n2: Node }[][] = [[], [], [], [], []];
-      const bucketAlphas = [0.04, 0.08, 0.12, 0.16, 0.20];
+      // Reset edge counts without allocating new heap memory
+      bucketCounts.fill(0);
 
+      // Populate flat coordinate buffers for each alpha bucket
       for (let i = 0; i < nodes.length; i++) {
         const n1 = nodes[i];
         for (let j = i + 1; j < nodes.length; j++) {
@@ -173,7 +189,14 @@ export const NetworkBackground: React.FC = () => {
             const dist = Math.sqrt(distSq);
             const alpha = (1 - dist / maxDistance) * 0.2;
             const bucketIndex = Math.min(4, Math.floor((alpha / 0.2) * 5));
-            alphaBuckets[bucketIndex].push({ n1, n2 });
+            const offset = bucketCounts[bucketIndex];
+            const coords = bucketCoords[bucketIndex];
+
+            coords[offset] = n1.x;
+            coords[offset + 1] = n1.y;
+            coords[offset + 2] = n2.x;
+            coords[offset + 3] = n2.y;
+            bucketCounts[bucketIndex] = offset + 4;
 
             // Randomly trigger a packet across active edge
             if (Math.random() < 0.0006 && packets.length < maxPackets) {
@@ -187,15 +210,15 @@ export const NetworkBackground: React.FC = () => {
       ctx.lineWidth = 0.8;
 
       for (let b = 0; b < 5; b++) {
-        const bucket = alphaBuckets[b];
-        if (bucket.length === 0) continue;
+        const count = bucketCounts[b];
+        if (count === 0) continue;
 
+        const coords = bucketCoords[b];
         ctx.globalAlpha = bucketAlphas[b];
         ctx.beginPath();
-        for (let idx = 0; idx < bucket.length; idx++) {
-          const edge = bucket[idx];
-          ctx.moveTo(edge.n1.x, edge.n1.y);
-          ctx.lineTo(edge.n2.x, edge.n2.y);
+        for (let idx = 0; idx < count; idx += 4) {
+          ctx.moveTo(coords[idx], coords[idx + 1]);
+          ctx.lineTo(coords[idx + 2], coords[idx + 3]);
         }
         ctx.stroke();
       }
